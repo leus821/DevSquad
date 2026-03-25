@@ -1,0 +1,33 @@
+'use client';
+
+import { cn } from '@/lib/utils';
+import { Slot } from '@radix-ui/react-slot';
+
+const Button = ({
+	children,
+	className,
+	variant = 'primary',
+	asChild = false,
+	...props
+}) => {
+	const Comp = asChild ? Slot : 'button';
+
+	const variants = {
+		primary: 'bg-primary',
+	};
+
+	return (
+		<Comp
+			className={cn(
+				'flex-all-center cursor-pointer p-2 rounded-xl',
+				variants[variant],
+				className,
+			)}
+			{...props}
+		>
+			{children}
+		</Comp>
+	);
+};
+
+export default Button;
