@@ -14,6 +14,7 @@ const Button = ({
 
 	const variants = {
 		primary: 'bg-primary',
+		secondary: 'bg-transparent neon-purple text-primary border-2 border-primary',
 	};
 
 	return (

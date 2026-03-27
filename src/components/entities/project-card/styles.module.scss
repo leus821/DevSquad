@@ -1,0 +1,78 @@
+.card {
+  display: block;
+  max-width: 537px;
+  background-color: #151921;
+  border: 2px solid #2d3342;
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  .content {
+    display: flex;
+    padding: 8px 12px;
+    align-items: stretch;
+    gap: 16px;
+
+    .projectSide {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--card-border);
+      padding-right: 16px;
+      border-right: 1px solid gray;
+
+      .title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 8px;
+      }
+
+      .description {
+        font-size: 14px;
+        color: var(--color-front);
+        line-height: 1.5;
+        margin-bottom: 16px;
+      }
+
+      .skillsWrapper {
+        display: flex;
+        gap: 8px;
+        margin-top: auto;
+      }
+    }
+
+    .vacancySide {
+      flex: 0 0 180px;
+      display: flex;
+      flex-direction: column;
+
+      .vacancyInfo {
+        .vacancyTitle {
+          font-size: 16px;
+          font-weight: 500;
+          color: #fff;
+          margin: 0;
+          line-height: 1.2;
+        }
+
+        .experience {
+          display: block;
+          font-size: 14px;
+          color: var(--color-front);
+          margin-top: 4px;
+        }
+      }
+
+      .applyButton {
+        margin-top: auto;
+        width: 100%;
+      }
+    }
+  }
+}
