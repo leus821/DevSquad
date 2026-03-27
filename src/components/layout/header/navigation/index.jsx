@@ -1,4 +1,4 @@
-import { UserAccountMenu } from '@/features/user/UserAccountMenu';
+import { UserAccountMenu } from '@/components/features/user/UserAccountMenu';
 import { NavIcons } from './NavIcons';
 import NavLinks from './NavLinks';
 import Button from '@/components/ui/Button';

@@ -19,7 +19,7 @@ const Button = ({
 	return (
 		<Comp
 			className={cn(
-				'flex-all-center cursor-pointer p-2 rounded-xl',
+				'flex-all-center p-2 rounded-xl',
 				variants[variant],
 				className,
 			)}
