@@ -21,8 +21,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
 	return (
-		<html lang='en' className={`${inter.className} h-full antialiased`}>
-			<body className='min-h-full bg-background text-white flex flex-col'>
+		<html
+			lang='en'
+			className={`${inter.variable} ${jetbrainMono.variable} h-full antialiased`}
+		>
+			<body className='min-h-full font-inter bg-background text-white flex flex-col'>
 				<Header />
 				{children}
 			</body>

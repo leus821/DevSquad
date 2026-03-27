@@ -23,13 +23,19 @@
 	--color-primary: #6366f1;
 	--color-background: #0f1115;
 	--color-header-icons: #a5a5b9;
+	--color-front: #cbd5e1;
+	--color-card: #151921;
+	--color-card-border: #2d3342;
+
+	--font-inter: var(--font-inter);
+	--font-mono: var(--font-mono);
 }
 
 @utility container-wide {
 	margin-left: auto;
 	margin-right: auto;
 	width: 100%;
-	max-width: 1440px;
+	max-width: 1900px;
 	padding-left: 1rem;
 	padding-right: 1rem;
 
@@ -45,4 +51,10 @@
 	align-items: center;
 }
 
-@custom-variant dark (&:is(.dark *));
+@utility neon-purple {
+	box-shadow: 0 4px 10px 0 rgba(99, 102, 241, 0.4);
+}
+
+button {
+	cursor: pointer;
+}
