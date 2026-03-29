@@ -1,38 +1,30 @@
-import Button from '@/components/ui/Button';
-import CardImage from '@/components/ui/CardImage';
-import Skill from '@/components/ui/Skill';
-import Link from 'next/link';
+import CardVacancy from '@/components/ui/card/CardVacancy';
+import CardImage from '@/components/ui/card/CardImage';
+import CardLink from '@/components/ui/card/CardLink';
+import CardProject from '@/components/ui/card/CardProject';
 
-const ProjectCard = ({ projectProps, vacancyProps, type = 'feed' }) => {
+const ProjectCard = ({
+	title,
+	description,
+	imageUrl,
+	vacancy,
+	status,
+	isBookmarked,
+	type = 'feed',
+}) => {
 	return (
-		<article
-			href='project'
-			className='block bg-card border-card-border border-solid border-2 rounded-xl'
-		>
-			<CardImage />
-			<div className='flex flex-[20%] px-3 py-1 items-stretch'>
-				{/* Блок с проектом */}
-				<div className='border-r-card-border border-r flex flex-col'>
-					<h2 className='font-extrabold text-[18px]'>
-						Приложение для прогноза погоды StudHome
-					</h2>
-					<p className='text-front text-sm mb-2'>
-						Делаем Uber для выгула капибар. Есть готовое приложение на iOS, ищем
-						технаря для фистинга
-					</p>
-					<div className='flex gap-x-2 mt-auto'>
-						<Skill text='Rect' />
-						<Skill text='Rect' />
-						<Skill text='Rect' />
-					</div>
-				</div>
-				{/* Правая колонка с вакансией */}
-				<div className='flex-[71%] grow-0 ml-3 flex flex-col'>
-					<div>
-						<h2 className='font-medium'>Начинающий frontend разработчик</h2>
-						<span className='block text-sm text-front'>Опыт от 1 года</span>
-					</div>
-					<Button className='mt-auto w-full'>Откликнуться</Button>
+		<article className='relative group bg-card border-card-border border-2 rounded-xl overflow-hidden flex flex-col h-full'>
+			<CardLink href={`/projects`} />
+
+			<div className='relative z-10 pointer-events-none flex flex-col h-full'>
+				<CardImage imageUrl={imageUrl} status={status} />
+				<div className='flex flex-1 px-3 py-1 items-stretch gap-0'>
+					<CardProject
+						title={title}
+						description={description}
+						skills={vacancy.skills}
+					/>
+					<CardVacancy role={vacancy.role} experience={vacancy.experience} />
 				</div>
 			</div>
 		</article>
