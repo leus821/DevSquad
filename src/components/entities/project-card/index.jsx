@@ -7,7 +7,9 @@ const ProjectCard = ({
 	title,
 	description,
 	imageUrl,
-	vacancy,
+	vacancyRole,
+	vacancyExperience,
+	skills,
 	status,
 	isBookmarked,
 	type = 'feed',
@@ -22,9 +24,9 @@ const ProjectCard = ({
 					<CardProject
 						title={title}
 						description={description}
-						skills={vacancy.skills}
+						skills={skills}
 					/>
-					<CardVacancy role={vacancy.role} experience={vacancy.experience} />
+					<CardVacancy role={vacancyRole} experience={vacancyExperience} />
 				</div>
 			</div>
 		</article>
