@@ -1,7 +1,7 @@
 import CardVacancy from '@/components/ui/card/CardVacancy';
 import CardImage from '@/components/ui/card/CardImage';
 import CardLink from '@/components/ui/card/CardLink';
-import CardProject from '@/components/ui/card/CardProject';
+import CardProjectInfo from '@/components/ui/card/CardProjectInfo';
 
 const ProjectCard = ({
 	title,
@@ -21,7 +21,7 @@ const ProjectCard = ({
 			<div className='relative z-10 pointer-events-none flex flex-col h-full'>
 				<CardImage imageUrl={imageUrl} status={status} />
 				<div className='flex flex-1 px-3 py-1 items-stretch gap-0'>
-					<CardProject
+					<CardProjectInfo
 						title={title}
 						description={description}
 						skills={skills}

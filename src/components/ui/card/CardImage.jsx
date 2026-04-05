@@ -1,4 +1,4 @@
-import ProjectStatus from '../ProjectStatus';
+import ProjectStatus from '../Project/ProjectStatus';
 
 const CardImage = ({ imageUrl, status }) => {
 	return (

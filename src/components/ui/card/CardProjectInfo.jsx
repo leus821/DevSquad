@@ -1,6 +1,6 @@
 import Skill from '../Skill';
 
-const CardProject = ({ title, description, skills }) => {
+const CardProjectInfo = ({ title, description, skills }) => {
 	return (
 		<div className='flex-[92%] border-r-card-border border-r flex flex-col gap-y-1'>
 			<h2 className='font-extrabold text-[18px] pointer-events-auto line-clamp-2'>
