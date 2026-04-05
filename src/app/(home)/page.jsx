@@ -1,5 +1,6 @@
-import ProjectCard from '@/components/entities/project-card';
+import ProjectCard from '@/components/entities/project/Card';
 import Container from '@/components/ui/Container';
+import ProjectStatus from '@/components/ui/project/ProjectStatus';
 import { MOCK_CARDS } from '@/constants/mock_data';
 import { supabase } from '@/lib/supabase';
 

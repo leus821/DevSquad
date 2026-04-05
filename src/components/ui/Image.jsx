@@ -1,7 +1,9 @@
-const Image = ({ className }) => {
+import { cn } from '@/lib/utils';
+
+const Image = ({ className, ...props }) => {
 	return (
-		<div className={className}>
-			<img className='object-cover' />
+		<div className={cn('overflow-hidden block', className)}>
+			<img className='object-cover block' {...props} />
 		</div>
 	);
 };
