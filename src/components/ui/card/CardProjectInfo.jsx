@@ -20,4 +20,4 @@ const CardProjectInfo = ({ title, description, skills }) => {
 	);
 };
 
-export default CardProject;
+export default CardProjectInfo;

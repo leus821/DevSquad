@@ -9,7 +9,7 @@ const Home = async () => {
 		.from('projects')
 		.select(
 			`
-      *,
+      *,	
       project_vacancies (
         id,
         role_title,

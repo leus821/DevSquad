@@ -8,5 +8,4 @@ export const NAV_ICONS = [
 
 export const NAV_LINKS = [
 	{ id: 1, label: 'Отклики', href: '/responses' },
-	{ id: 2, label: 'Проекты', href: '/projects' },
 ];

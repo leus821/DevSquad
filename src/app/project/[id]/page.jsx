@@ -3,8 +3,10 @@
 import ProjectAbout from '@/components/layout/ProjectAbout';
 import ProjectHeader from '@/components/layout/ProjectHeader';
 import ProjectVacancy from '@/components/layout/ProjectVacancy';
+import TeamList from '@/components/layout/TeamList';
 import VacancyAction from '@/components/layout/VacancyAction';
 import { Accordion } from '@/components/ui/shadcn/accordion';
+import { TEAMLIST } from '@/constants/mock_data';
 
 const vacancyProps = {
 	skills: ['react', 'node.js', 'node.js', 'node.js'],
@@ -18,7 +20,7 @@ const ProjectPage = () => {
 				<div className='flex gap-7'>
 					<Accordion
 						type='multiple'
-						className='w-[70%] rounded-xl flex flex-col gap-7'
+						className='flex-[80%] rounded-xl flex flex-col gap-7'
 					>
 						<ProjectAbout
 							idea='Мы хотим создать самый красивый и быстрый трекер привычек на React Native. Без рекламы, с открытым кодом и фокусом на минимализме'
@@ -27,10 +29,13 @@ const ProjectPage = () => {
 						/>
 						<ProjectVacancy vacancyProps={vacancyProps} />
 					</Accordion>
-					<VacancyAction
-						experience='Опыт от 1 года до 3 лет'
-						role='Начинающий фронтенд разработчик'
-					/>
+					<div>
+						<VacancyAction
+							experience='Опыт от 1 года до 3 лет'
+							role='Начинающий фронтенд разработчик'
+						/>
+						<TeamList teamList={TEAMLIST} />
+					</div>
 				</div>
 			</div>
 		</section>

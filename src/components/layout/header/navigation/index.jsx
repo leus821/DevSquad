@@ -10,8 +10,8 @@ const Navigation = () => {
 			<NavIcons />
 			<NavLinks />
 			<UserAccountMenu />
-			<Button asChild={true}>
-				<Link href='/publish'>Разместить объявление</Link>
+			<Button className='px-7' asChild={true}>
+				<Link href='/projects'>Мои проекты</Link>
 			</Button>
 		</nav>
 	);
