@@ -1,3 +1,4 @@
+import ProjectLinks from '@/components/entities/project/Links';
 import ProjectStatus from '@/components/ui/project/ProjectStatus';
 
 const ProjectHeader = () => {
@@ -14,6 +15,13 @@ const ProjectHeader = () => {
 				</p>
 			</div>
 			<ProjectStatus className='absolute top-2 right-2' />
+			<ProjectLinks
+				className='absolute bottom-2 right-5'
+				links={[
+					{ url: 'https://github.com/...' },
+					{ url: 'https://my-site.pro' },
+				]}
+			/>
 		</div>
 	);
 };

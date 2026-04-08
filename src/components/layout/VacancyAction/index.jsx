@@ -6,8 +6,11 @@ const VacancyAction = ({ experience, role, responses }) => {
 	return (
 		<div className='bg-card flex-1 border-card-border border-2 rounded-3xl p-4 self-start mb-7'>
 			<div className='mb-7'>
-				<h2 className='text-xl
-				 font-bold'>{role}</h2>
+				<h2
+					className='text-xl font-bold'
+				>
+					{role}
+				</h2>
 				<span className='text-front text-sm'>{experience}</span>
 			</div>
 			<div className='flex gap-4 mb-4'>

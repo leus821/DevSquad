@@ -95,21 +95,21 @@ export const TEAMLIST = [
 	{
 		id: 1,
 		name: 'Даниил колбасенко',
-		role: 'Долбаеб ебаный',
+		role: 'CEO',
 		avatarUrl:
 			'https://avatars.mds.yandex.net/i?id=6f2fa2e29019048d55dc0de3cdd5ffd2_l-5350111-images-thumbs&n=13',
 	},
 	{
 		id: 2,
 		name: 'Даниил колбасенко',
-		role: 'Долбаеб ебаный',
+		role: 'CEO',
 		avatarUrl:
 			'https://avatars.mds.yandex.net/i?id=6f2fa2e29019048d55dc0de3cdd5ffd2_l-5350111-images-thumbs&n=13',
 	},
 	{
 		id: 3,
 		name: 'Даниил колбасенко',
-		role: 'Долбаеб ебаный',
+		role: 'CEO',
 		avatarUrl:
 			'https://avatars.mds.yandex.net/i?id=6f2fa2e29019048d55dc0de3cdd5ffd2_l-5350111-images-thumbs&n=13',
 	},

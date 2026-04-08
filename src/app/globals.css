@@ -76,15 +76,20 @@
 }
 
 @utility project-header-border {
-    border: 3px solid transparent;
-    
-    background: 
+	border: 3px solid transparent;
+
+	background: 
         /*радиальный фон (внутренний контент) */
-        radial-gradient(circle at 0% 0%, rgba(76, 29, 149, 0.2) 20%, rgba(21, 25, 33, 0) 70%) padding-box,
-        /*Темная подложка, чтобы фон не был прозрачным (внутренний контент) */
-        linear-gradient(#151921, #151921) padding-box, 
-        /* Сам градиент обводки (внешний слой) */
-        linear-gradient(135deg, #6366f1 0%, rgba(99, 102, 241, 0) 50%) border-box;
+		radial-gradient(
+				circle at 0% 0%,
+				rgba(76, 29, 149, 0.2) 20%,
+				rgba(21, 25, 33, 0) 70%
+			)
+			padding-box,
+		/*Темная подложка, чтобы фон не был прозрачным (внутренний контент) */
+			linear-gradient(#151921, #151921) padding-box,
+		/* Сам градиент обводки (внешний слой) */
+			linear-gradient(135deg, #6366f1 0%, rgba(99, 102, 241, 0) 50%) border-box;
 }
 
 button {

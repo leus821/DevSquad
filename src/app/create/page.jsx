@@ -1,5 +1,5 @@
 const CreatingPage = () => {
-  return (  );
+  return ( <></> );
 }
  
 export default CreatingPage;
