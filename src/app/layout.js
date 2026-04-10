@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
 			className={`${inter.variable} ${jetbrainMono.variable} h-full antialiased`}
 			suppressHydrationWarning
 		>
-			<body className='min-h-full font-inter bg-background text-white flex flex-col'>
+			<body className='min-h-full font-inter bg-dark text-white flex flex-col'>
 				<Header />
 				{children}
 			</body>

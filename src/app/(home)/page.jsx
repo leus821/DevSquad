@@ -22,7 +22,7 @@ const Home = async () => {
 		)
 		.order('created_at', { ascending: false });
 	return (
-		<Container>
+		<div className='flex justify-between items-center py-5 mx-auto px-6'>
 			<div className='grid grid-cols-3 gap-x-8 gap-y-5'>
 				{projects?.map(item => {
 					const firstVacancy = item.project_vacancies?.[0];
@@ -43,7 +43,7 @@ const Home = async () => {
 					);
 				})}
 			</div>
-		</Container>
+		</div>
 	);
 };
 

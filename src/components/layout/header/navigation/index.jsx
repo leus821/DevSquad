@@ -11,7 +11,7 @@ const Navigation = () => {
 			<NavLinks />
 			<UserAccountMenu />
 			<Button className='px-7' asChild={true}>
-				<Link href='/projects'>Мои проекты</Link>
+				<Link href='/myprojects'>Мои проекты</Link>
 			</Button>
 		</nav>
 	);

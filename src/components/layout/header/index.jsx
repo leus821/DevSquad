@@ -5,13 +5,13 @@ import Container from '@/components/ui/Container';
 const Header = () => {
 	return (
 		<header>
-			<Container className='flex justify-between items-center py-5'>
+			<div className='flex justify-between items-center py-5 mx-auto px-6'>
 				<div className='flex'>
 					<Logo />
 					<span className='ml-5 block'>Помощь</span>
 				</div>
 				<Navigation />
-			</Container>
+			</div>
 		</header>
 	);
 };

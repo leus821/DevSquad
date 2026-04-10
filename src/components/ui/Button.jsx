@@ -14,7 +14,10 @@ const Button = ({
 
 	const variants = {
 		primary: 'bg-primary',
-		secondary: 'bg-transparent neon-purple text-primary border-2 border-primary font-medium',
+		secondary:
+			'bg-transparent neon-purple text-primary border-2 border-primary font-medium',
+		ghost:
+			'bg-transparent text-header-icons border border-transparent hover:bg-white/5 hover:text-white hover:border-card-border active:bg-white/10 active:scale-95',
 	};
 
 	return (

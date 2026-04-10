@@ -1,5 +1,7 @@
 const CreatingPage = () => {
-  return ( <></> );
+  return ( <section>
+    
+  </section> );
 }
  
 export default CreatingPage;
