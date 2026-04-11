@@ -1,7 +1,7 @@
 import ProjectLinks from '@/components/entities/project/Links';
 import ProjectStatus from '@/components/ui/project/ProjectStatus';
 import TextLink from '@/components/ui/TextLink';
-import { Link, SquareArrowOutUpRight } from 'lucide-react';
+import {  SquareArrowOutUpRight } from 'lucide-react';
 
 const ProjectHeader = ({ isDashboard, children }) => {
 	return (
@@ -13,21 +13,13 @@ const ProjectHeader = ({ isDashboard, children }) => {
 				<div>
 					<div className='flex gap-10'>
 						<h1 className='text-[50px] font-bold '>STUD HOME</h1>
-						{isDashboard && (
-							<TextLink
-								className='inline-flex text-base text-front'
-								href={'/project/1'}
-								icon={SquareArrowOutUpRight}
-								label='На страницу'
-							/>
-						)}
 					</div>
 					<p className='text-front text-lg'>
 						Платформа для прогноза погоды и управления умным домом и другими
 						крутыми проектами
 					</p>
 				</div>
-				<ProjectStatus className='absolute top-2 right-2' />
+
 				<ProjectLinks
 					className='absolute bottom-2 right-5'
 					links={[
@@ -35,13 +27,21 @@ const ProjectHeader = ({ isDashboard, children }) => {
 						{ url: 'https://my-site.pro' },
 					]}
 				/>
+				<div className='flex absolute top-2 right-2 gap-3'>
+					{isDashboard && (
+						<TextLink
+							className='text-base text-front'
+							href={'/project/1'}
+							icon={SquareArrowOutUpRight}
+							label='На страницу'
+						/>
+					)}
+					<ProjectStatus />
+				</div>
 			</div>
 			{children && (
 				<>
-					{/* Разделительная линия */}
-					<div className='h-[1px] bg-card-border w-full' />
-
-					{/* Контент, который мы передадим (кнопки, команда, статы) */}
+					<div className='h-px bg-card-border w-full' />
 					<div className='px-8 py-4'>{children}</div>
 				</>
 			)}

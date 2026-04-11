@@ -7,7 +7,7 @@ const statuses = {
 		component: <Lightbulb className='text-yellow-300 fill-current w-5' />,
 	},
 
-	MVP: {
+	mvp: {
 		text: 'MVP',
 		component: <Hammer className='text-green-300 fill-current w-5' />,
 	},
@@ -24,7 +24,7 @@ const ProjectStatus = ({ status = 'idea', className }) => {
 	return (
 		<div
 			className={cn(
-				'absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/10 pointer-events-auto',
+				'inline-flex items-center gap-1.5 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/10 pointer-events-auto',
 				className,
 			)}
 		>

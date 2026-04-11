@@ -1,6 +1,7 @@
 import { detectLinkData } from '@/lib/linkDetector';
 
-const ProjectLinks = ({ links = [], className = '' }) => {
+const 
+ProjectLinks = ({ links = [], className = '' }) => {
 	if (links.length === 0) return null;
 
 	return (

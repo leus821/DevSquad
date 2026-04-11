@@ -2,13 +2,14 @@ import TeamStack from '@/components/entities/user/TeamStack';
 import Button from '@/components/ui/Button';
 import StatItem from '@/components/ui/StatItem';
 import { Eye, Mail } from 'lucide-react';
+import Link from 'next/link';
 
 const ProjectDashboardPanel = ({ stats, team }) => {
 	return (
 		<div className='grid grid-cols-5 gap-4 items-center'>
 			<div className='flex col-span-2 gap-3 border-r border-card-border pr-4 h-full items-center'>
-				<Button className='w-1/2 py-2' variant='secondary'>
-					Редактировать
+				<Button className='w-1/2 py-2' variant='secondary' asChild={true}>
+					<Link href='/create'>Редактировать</Link>
 				</Button>
 				<Button className='w-1/2 py-2.5'>Вакансии</Button>
 			</div>
