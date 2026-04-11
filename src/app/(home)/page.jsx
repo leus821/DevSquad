@@ -1,8 +1,5 @@
-import ProjectCard from '@/components/entities/project/Card';
-import Container from '@/components/ui/Container';
-import ProjectStatus from '@/components/ui/project/ProjectStatus';
-import { MOCK_CARDS } from '@/constants/mock_data';
-import { supabase } from '@/lib/supabase';
+import { Card } from '@/widgets';
+import { supabase } from '@/shared/lib/supabase';
 
 const Home = async () => {
 	const { data: projects, error } = await supabase
@@ -29,7 +26,7 @@ const Home = async () => {
 					const skillsArray =
 						firstVacancy?.vacancy_skills?.map(vs => vs.skills.name) || [];
 					return (
-						<ProjectCard
+						<Card
 							key={item.id}
 							title={item.title}
 							description={item.description}

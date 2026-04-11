@@ -1,11 +1,11 @@
-import ImageUpload from '@/components/features/upload-image';
+import { ImageUploader } from '@/features/upload-image';
 
 const CreatingPage = () => {
 	return (
 		<section>
 			<div className='max-w-[1500px] mx-auto'>
 				<div>
-					<ImageUpload />
+					<ImageUploader />
 				</div>
 			</div>
 		</section>

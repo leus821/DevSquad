@@ -1,13 +1,13 @@
-import ProjectDashboardPanel from '@/components/layout/ProjectDashboardPanel';
-import ProjectHeader from '@/components/layout/ProjectHeader';
-import Container from '@/components/ui/Container';
-import { MOCK_PROJECT, MOCK_USERS } from '@/constants/mock_data';
+import { ProjectHeader } from '@/widgets';
+import { Container } from '@/shared/ui';
+import { MOCK_PROJECT } from '@/shared/static/mock_data';
+import { ProjectDashboardPanel } from '@/entities/project';
 
 const MyProjects = () => {
 	return (
 		<section>
 			<Container>
-        <h1 className='title mb-4'>Мои проекты (1 из 3)</h1>
+				<h1 className='title mb-4'>Мои проекты (1 из 3)</h1>
 				<ProjectHeader isDashboard={true}>
 					<ProjectDashboardPanel
 						team={MOCK_PROJECT.team}

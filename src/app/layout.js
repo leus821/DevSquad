@@ -1,6 +1,6 @@
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
-import Header from '@/components/layout/header';
+import { Header } from '@/widgets';
 
 const inter = Inter({
 	subsets: ['latin', 'cyrillic'],
