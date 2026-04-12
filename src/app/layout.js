@@ -1,6 +1,7 @@
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/widgets';
+import { AuthProvider } from './providers/AuthContext';
 
 const inter = Inter({
 	subsets: ['latin', 'cyrillic'],
@@ -26,10 +27,12 @@ export default function RootLayout({ children }) {
 			className={`${inter.variable} ${jetbrainMono.variable} h-full antialiased`}
 			suppressHydrationWarning
 		>
-			<body className='min-h-full font-inter bg-dark text-white flex flex-col'>
-				<Header />
-				{children}
-			</body>
+			<AuthProvider>
+				<body className='min-h-full font-inter bg-dark text-white flex flex-col'>
+					<Header />
+					{children}
+				</body>
+			</AuthProvider>
 		</html>
 	);
 }

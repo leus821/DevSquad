@@ -1,29 +1,34 @@
 import { Input } from '@/shared/ui';
-import { Mail, User, Lock } from 'lucide-react';
 
-const AuthFields = ({ isLogin }) => (
+const AuthFields = ({
+	isLogin,
+	email,
+	setEmail,
+	password,
+	setPassword,
+	name,
+	setName,
+}) => (
 	<>
 		{!isLogin && (
 			<Input
-				label='Как вас зовут?'
-				icon={User}
-				placeholder='Иван Иванов'
-				required
+				value={name}
+				onChange={e => setName(e.target.value)}
+				label='Имя'
+				placeholder='Иван'
 			/>
 		)}
 		<Input
-			label='Электронная почта'
-			icon={Mail}
+			value={email}
+			onChange={e => setEmail(e.target.value)}
+			label='Почта'
 			type='email'
-			placeholder='you@example.com'
-			required
 		/>
 		<Input
+			value={password}
+			onChange={e => setPassword(e.target.value)}
 			label='Пароль'
-			icon={Lock}
 			type='password'
-			placeholder='••••••••'
-			required
 		/>
 	</>
 );

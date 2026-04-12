@@ -1,5 +1,6 @@
 import { Logo } from '@/shared/ui';
 import Navigation from './navigation';
+import { useAuth } from '@/app/providers/AuthContext';
 
 const Header = () => {
 	return (

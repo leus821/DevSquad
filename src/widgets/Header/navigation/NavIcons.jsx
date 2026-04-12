@@ -1,7 +1,7 @@
 import { NAV_ICONS } from '@/shared/static/navigations';
 import Link from 'next/link';
 
-export const NavIcons = () => {
+const NavIcons = () => {
 	return (
 		<ul className='flex gap-x-3'>
 			{NAV_ICONS.map(item => {
@@ -17,3 +17,5 @@ export const NavIcons = () => {
 		</ul>
 	);
 };
+
+export default NavIcons;
