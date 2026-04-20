@@ -1,1 +1,2 @@
-export { default as AuthModal } from './ui/AuthModal.jsx';
+export { default as AuthModal } from './ui/AuthModal/AuthModal';
+export { default as useAuthActions } from './lib/useAuthActions';

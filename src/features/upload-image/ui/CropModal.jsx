@@ -16,7 +16,7 @@ const CropModal = ({
 }) => {
 	return (
 		<Modal isOpen={isOpen} onClose={onClose} showCloseButton={false}>
-			<div className='relative w-full h-[400px] bg-black overflow-hidden'>
+			<div className='relative w-full h-100 bg-black overflow-hidden'>
 				{image && (
 					<Cropper
 						image={image}

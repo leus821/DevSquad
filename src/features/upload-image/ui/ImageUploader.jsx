@@ -2,7 +2,7 @@
 import { useState, useRef } from 'react';
 import { Camera, X, Edit2 } from 'lucide-react';
 import CropModal from './CropModal';
-import { getCroppedImg } from '@/shared/lib/utils/cropImage';
+import { getCroppedImg } from '../lib/cropImage';
 import { cn } from '@/shared/lib/utils/commonUtils';
 
 const ImageUploader = ({ onImageChange, className = '' }) => {

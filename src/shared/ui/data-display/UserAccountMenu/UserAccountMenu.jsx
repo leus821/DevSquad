@@ -11,8 +11,9 @@ import {
 } from '@/shared/ui/shadcn/dropdown-menu';
 import { cn } from '@/shared/lib/utils/commonUtils';
 import { ChevronDown, User, Settings, LogOut } from 'lucide-react';
+import Link from 'next/link';
 
-function UserAccountMenu() {
+function UserAccountMenu({ handleUserExit }) {
 	const [isActive, toggleActive] = useState(false);
 
 	return (
@@ -33,15 +34,19 @@ function UserAccountMenu() {
 			<DropdownMenuContent align='end' className='w-56'>
 				<DropdownMenuLabel>Мой аккаунт</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem className='cursor-pointer'>
-					<User className='mr-2 h-4 w-4' /> Профиль
+				<DropdownMenuItem>
+					<Link className='flex items-center' href='/myprofile'>
+						<User className='mr-2 h-4 w-4' /> Профиль
+					</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem className='cursor-pointer'>
 					<Settings className='mr-2 h-4 w-4' /> Настройки
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem className='text-red-500 cursor-pointer'>
-					<LogOut className='mr-2 h-4 w-4' /> Выйти
+				<DropdownMenuItem className='text-red-500'>
+					<button onClick={handleUserExit} className='flex-all-center'>
+						<LogOut className='mr-2 h-4 w-4' /> Выйти
+					</button>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

@@ -8,21 +8,62 @@ export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(true);
 
-	useEffect(() => {
-		const setData = async () => {
+	const fetchProfile = async sessionUser => {
+		if (!sessionUser) return null;
+		try {
+			const { data: profile } = await supabase
+				.from('profiles')
+				.select('*')
+				.eq('id', sessionUser.id)
+				.maybeSingle();
+
+			if (!profile || !profile.is_completed) {
+				return { ...sessionUser, is_completed: false };
+			}
+
+			return { ...sessionUser, ...profile, is_completed: true };
+		} catch (e) {
+			console.error('Ошибка загрузки профиля:', e.message);
+			return { ...sessionUser, is_completed: false };
+		}
+	};
+
+	const initializeAuth = async () => {
+		try {
+			setLoading(true);
 			const {
 				data: { session },
 			} = await supabase.auth.getSession();
-			setUser(session?.user ?? null);
-			setLoading(false);
-		};
 
-		setData();
+			if (session?.user) {
+				const fullUser = await fetchProfile(session.user);
+				setUser(fullUser);
+			} else {
+				setUser(null);
+			}
+		} catch (e) {
+			setUser(null);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		initializeAuth();
 
 		const {
 			data: { subscription },
-		} = supabase.auth.onAuthStateChange((_event, session) => {
-			setUser(session?.user ?? null);
+		} = supabase.auth.onAuthStateChange(async (event, session) => {
+			if (event === 'SIGNED_OUT') {
+				setUser(null);
+				setLoading(false);
+				return;
+			}
+
+			if (session?.user) {
+				const fullUser = await fetchProfile(session.user);
+				setUser(fullUser);
+			}
 			setLoading(false);
 		});
 
@@ -30,7 +71,14 @@ export const AuthProvider = ({ children }) => {
 	}, []);
 
 	return (
-		<AuthContext.Provider value={{ user, loading }}>
+		<AuthContext.Provider
+			value={{
+				user,
+				loading,
+				refreshUser: initializeAuth,
+				isAuthenticated: !!user && user.is_completed === true,
+			}}
+		>
 			{children}
 		</AuthContext.Provider>
 	);
