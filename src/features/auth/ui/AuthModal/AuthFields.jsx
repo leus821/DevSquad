@@ -5,31 +5,31 @@ const AuthFields = ({ isLogin, register, errors }) => (
 		{!isLogin && (
 			<>
 				<Input
+					{...register('name')}
 					label='Имя'
 					type='text'
 					placeholder='Иван'
-					registration={register('name')}
 					error={errors.name}
 				/>
 				<Input
+					{...register('surname')}
 					label='Фамилия'
 					type='text'
 					placeholder='Иванов'
-					registration={register('surname')}
 					error={errors.surname}
 				/>
 			</>
 		)}
 		<Input
+			{...register('email')}
 			label='Почта'
 			type='email'
-			registration={register('email')}
 			error={errors.email}
 		/>
 		<Input
+			{...register('password')}
 			label='Пароль'
 			type='password'
-			registration={register('password')}
 			error={errors.password}
 		/>
 	</>

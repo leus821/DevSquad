@@ -17,12 +17,12 @@ const Navigation = () => {
 	const router = useRouter();
 	const isGuest = params?.get('auth');
 
+	console.log(isLoading);
+
 	const handleUserExit = async () => {
 		await exit();
 		router?.push('/');
 	};
-
-	console.log(isLoading)
 
 	useEffect(() => {
 		if (isGuest) {

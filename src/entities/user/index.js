@@ -1,1 +1,2 @@
-export { default as UserAvatar } from './ui/UserAvatar/UserAvatar.jsx';
+export { default as UserAvatar } from './ui/UserAvatar/UserAvatar';
+export { default as UserStatusSelect } from './ui/UserStatusSelect/UserStatusSelect';

@@ -114,7 +114,6 @@ const AuthModal = ({ isOpen, onClose }) => {
 					variant='secondary'
 					type='button'
 					className='w-full py-3 gap-3'
-					onClick={() => console.log(2)}
 				>
 					<Github />
 					Продолжить с GitHub

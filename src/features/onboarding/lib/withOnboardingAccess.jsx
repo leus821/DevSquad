@@ -19,7 +19,6 @@ const withOnboardingAccess = Component => {
 			if (user.is_completed) {
 				router.push('/');
 			}
-			console.log(user);
 		}, [user, loading, router]);
 
 		if (loading || !user || user.is_completed) return null;

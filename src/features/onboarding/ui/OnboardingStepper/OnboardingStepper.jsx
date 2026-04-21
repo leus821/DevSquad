@@ -22,6 +22,7 @@ const OnboardingStepper = () => {
 		register,
 		handleSubmit,
 		setValue,
+		control,
 		trigger,
 		formState: { errors },
 	} = useForm({
@@ -69,10 +70,14 @@ const OnboardingStepper = () => {
 
 				<div className='min-h-80'>
 					{step === 1 && (
-						<StepOne setValue={setValue} register={register} errors={errors} />
+						<StepOne
+							setValue={setValue}
+							register={register}
+							control={control}
+						/>
 					)}
-					{step === 2 && <StepTwo register={register} errors={errors} />}
-					{step === 3 && <StepThree register={register} />}
+					{step === 2 && <StepTwo control={control} register={register} />}
+					{step === 3 && <StepThree control={control} register={register} />}
 				</div>
 
 				{apiError && (
