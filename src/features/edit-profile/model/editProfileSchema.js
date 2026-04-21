@@ -5,6 +5,7 @@ import {
 	usernameRule,
 	bioRule,
 	hoursRule,
+	techStackRule,
 } from '@/shared/lib/validations/validations';
 
 export const editProfileSchema = z.object({
@@ -59,4 +60,6 @@ export const editProfileSchema = z.object({
 		.url('Введите корректную ссылку')
 		.optional()
 		.or(z.literal('')),
+
+	skills: techStackRule,
 });

@@ -33,3 +33,14 @@ export const hoursRule = z.coerce
 	.number()
 	.min(1, 'Минимум 1 час')
 	.max(168, 'В неделе всего 168 часов');
+
+export const singleSkillRule = z
+	.string()
+	.min(1, 'Название слишком короткое')
+	.max(30, 'Название слишком длинное (макс 30 симв.)')
+	.trim();
+
+export const techStackRule = z
+	.array(singleSkillRule)
+	.min(1, 'Выберите хотя бы один навык')
+	.max(20, 'Можно добавить не более 20 навыков');

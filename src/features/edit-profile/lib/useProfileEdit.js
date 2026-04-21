@@ -26,6 +26,7 @@ const useProfileEdit = () => {
 			education: '',
 			github_url: '',
 			telegram: '',
+			skills: [],
 		},
 	});
 
@@ -44,6 +45,7 @@ const useProfileEdit = () => {
 				education: user.education || '',
 				github_url: user.github_url || '',
 				telegram: user.telegram || '',
+				skills: user.skills || [],
 			});
 		}
 	}, [user, authLoading]);

@@ -1,10 +1,11 @@
 'use client';
 
-import { useWatch } from 'react-hook-form';
+import { Controller, useWatch } from 'react-hook-form';
 import { useProfileEdit } from '@/features/edit-profile';
 import { Save } from 'lucide-react';
-import { Button, Input, TextArea } from '@/shared/ui';
+import { Button, MultiCreatableSelect, TextArea } from '@/shared/ui';
 import { EditMainInfo, EditProfileLeft } from '@/widgets';
+import { SUGGESTED_SKILLS } from '@/shared/static/skills';
 
 const ProfileEditPage = () => {
 	const { form, updateProfile, isLoading, isSubmitting, isDirty, apiError } =
@@ -62,7 +63,7 @@ const ProfileEditPage = () => {
 							errors={errors}
 						/>
 
-						<div className='card p-8 flex flex-col gap-4'>
+						<div className='card p-8 '>
 							<h3 className='text-white text-lg font-bold'>О себе</h3>
 							<TextArea
 								maxLength={2000}
@@ -72,6 +73,20 @@ const ProfileEditPage = () => {
 								placeholder='Расскажите о себе (минимум 20 символов)'
 							/>
 						</div>
+						<Controller
+							name='skills'
+							control={control}
+							render={({ field }) => (
+								<MultiCreatableSelect
+									label='Технологический стек'
+									placeholder='Начните вводить: React, Node, Docker...'
+									value={field.value || []}
+									onChange={field.onChange}
+									suggestions={SUGGESTED_SKILLS}
+									error={errors.skills}
+								/>
+							)}
+						/>
 					</div>
 				</div>
 			</section>
