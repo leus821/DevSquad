@@ -1,4 +1,5 @@
 import { cn } from '@/shared/lib/utils/commonUtils';
+import { ErrorField } from '@/shared/ui';
 
 const TextArea = ({
 	registration,
@@ -35,11 +36,7 @@ const TextArea = ({
 				</p>
 			</div>
 
-			{error && (
-				<p className='text-[10px] text-red-500 ml-1 font-medium animate-in fade-in'>
-					{error.message}
-				</p>
-			)}
+			{error && <ErrorField errorText={error.message} />}
 		</div>
 	);
 };

@@ -9,7 +9,7 @@ import { onboardingSchema } from '../../model/onBoardingSchema';
 import StepOne from './StepOne';
 import StepTwo from './StepTwo';
 import StepThree from './StepThree';
-import { Button } from '@/shared/ui';
+import { Button, ErrorField } from '@/shared/ui';
 import { Progress } from '@/shared/ui/shadcn/progress';
 import { ArrowRight, Check } from 'lucide-react';
 
@@ -80,11 +80,7 @@ const OnboardingStepper = () => {
 					{step === 3 && <StepThree control={control} register={register} />}
 				</div>
 
-				{apiError && (
-					<p className='text-red-500 text-sm mt-4 text-center bg-red-500/10 p-3 rounded-xl border border-red-500/20'>
-						{apiError}
-					</p>
-				)}
+				{apiError && <ErrorField errorText={apiError} />}
 
 				<footer className='flex justify-between items-center mt-6 pt-8 border-t border-card-border/50'>
 					<button

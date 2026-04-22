@@ -5,5 +5,3 @@ export { default as TeamStack } from './TeamStack/TeamStack';
 export { default as VacancyAction } from './VacancyAction/VacancyAction';
 export { default as ProjectHeader } from './ProjectHeader/ProjectHeader';
 export { default as Card } from './Card/Card';
-export { default as EditProfileLeft } from './EditProfileLeft';
-export { default as EditMainInfo } from './EditMainInfo/index.jsx';

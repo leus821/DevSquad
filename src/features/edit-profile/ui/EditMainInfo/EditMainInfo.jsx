@@ -4,7 +4,7 @@ import { ImageUploader } from '@/features/upload-image';
 import { Input } from '@/shared/ui';
 import { Controller } from 'react-hook-form';
 
-const EditMainInfo = ({ register, errors, control }) => {
+const EditMainInfo = ({ errors, control }) => {
 	return (
 		<div className='card p-8 flex flex-col md:flex-row gap-8 items-center md:items-start'>
 			<div className='flex flex-col items-center gap-3'>

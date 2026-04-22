@@ -5,3 +5,4 @@ export { default as Image } from './Image/Image.jsx';
 export { default as Skill } from './Skill/Skill.jsx';
 export { default as ProjectStatus } from './ProjectStatus/ProjectStatus.jsx';
 export { default as LinksList } from './LinksList/LinksList.jsx';
+export { default as ErrorField } from './ErrorField/ErrorField.jsx';

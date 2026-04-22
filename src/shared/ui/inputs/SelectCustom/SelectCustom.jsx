@@ -7,6 +7,7 @@ import {
 	SelectValue,
 	SelectGroup,
 } from '@/shared/ui/shadcn/select';
+import { ErrorField } from '@/shared/ui';
 
 const SelectCustom = ({
 	label,
@@ -57,11 +58,7 @@ const SelectCustom = ({
 					</SelectGroup>
 				</SelectContent>
 			</Select>
-			{error && (
-				<p className='text-[10px] text-red-500 ml-1 font-medium animate-in fade-in slide-in-from-top-1'>
-					{error.message}
-				</p>
-			)}
+			{error && <ErrorField errorText={error.message} />}
 		</div>
 	);
 };

@@ -1,6 +1,7 @@
 'use client';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { cn } from '@/shared/lib/utils/commonUtils';
+import { ErrorField } from '@/shared/ui';
 
 const Input = forwardRef(
 	({ label, icon: Icon, error, className, ...props }, ref) => {
@@ -49,11 +50,7 @@ const Input = forwardRef(
 						)}
 					/>
 				</div>
-				{error && (
-					<p className='text-[10px] text-red-500 ml-1 font-medium animate-in fade-in'>
-						{error.message}
-					</p>
-				)}
+				{error && <ErrorField errorText={error.message} />}
 			</div>
 		);
 	},
