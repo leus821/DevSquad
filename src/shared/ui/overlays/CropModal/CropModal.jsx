@@ -1,3 +1,5 @@
+'use client';
+
 import Cropper from 'react-easy-crop';
 import { Button, Modal } from '@/shared/ui';
 import { Check, Upload } from 'lucide-react';

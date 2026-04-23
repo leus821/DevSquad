@@ -1,5 +1,5 @@
 import { useFormState } from 'react-hook-form';
-import { ImageUploader } from '@/features/upload-image';
+import { ImageUploader } from '@/shared/ui';
 import { Input } from '@/shared/ui';
 import { Briefcase } from 'lucide-react';
 

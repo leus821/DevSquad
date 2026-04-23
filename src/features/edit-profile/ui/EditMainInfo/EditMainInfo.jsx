@@ -1,6 +1,6 @@
 'use client';
 
-import { ImageUploader } from '@/features/upload-image';
+import { ImageUploader } from '@/shared/ui';
 import { Input } from '@/shared/ui';
 import { Controller } from 'react-hook-form';
 

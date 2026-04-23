@@ -1,11 +1,11 @@
 'use client';
 import { useState, useRef } from 'react';
 import { Camera, X, Edit2 } from 'lucide-react';
-import CropModal from './CropModal';
-import { getCroppedImg } from '../lib/cropImage';
+import { getCroppedImg } from '@/shared/lib/utils/cropImage';
+import { CropModal } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils/commonUtils';
 
-const ImageUploader = ({ onImageChange, className = '' }) => {
+const ImageUploader = ({ onImageChange, className }) => {
 	const [tempImage, setTempImage] = useState(null);
 	const [preview, setPreview] = useState(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
