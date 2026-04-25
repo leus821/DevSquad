@@ -1,50 +1,35 @@
 'use client';
 
-import { useState } from 'react';
-import { Input, TextArea, Button } from '@/shared/ui';
-import { Plus, Sparkles, Trash2, Link2, ImagePlus } from 'lucide-react';
 import CreateProjectFormHeader from './CreateProjectFormHeader';
 import CreateProjectAbout from './CreateProjectAbout';
 import CreateProjectGallery from './CreateProjectGallery';
+import CreateProjectFormLinks from './CreateProjectFormLinks';
+import { Controller } from 'react-hook-form';
 
-const CreateProjectForm = () => {
-	const [images, setImages] = useState([]);
-
+const CreateProjectForm = ({ control, errors, register }) => {
 	return (
 		<form className='flex flex-col gap-10 pb-24'>
-			<CreateProjectFormHeader />
-
-			<CreateProjectAbout />
-			{/* === ГАЛЕРЕЯ === */}
-			<CreateProjectGallery
-				value={images}
-				onChange={newImages => setImages(newImages)}
+			<CreateProjectFormHeader
+				register={register}
+				errors={errors}
+				control={control}
 			/>
 
-			{/* === ССЫЛКИ === */}
-			<div className='card p-8 space-y-6'>
-				<h3 className='text-white font-bold text-xl'>Ссылки</h3>
-				<div className='flex flex-col gap-4'>
-					<div className='flex items-center gap-4'>
-						<div className='w-1/3'>
-							<Input placeholder='Название (например, Сайт)' />
-						</div>
-						<div className='flex-1'>
-							<Input placeholder='https://...' />
-						</div>
-						<button
-							type='button'
-							className='text-header-icons hover:text-red-500 transition-colors p-2'
-						>
-							<Trash2 size={20} />
-						</button>
-					</div>
+			<CreateProjectAbout errors={errors} control={control} />
 
-					<Button variant='secondary' size='sm' className='w-max gap-2 mt-2'>
-						<Link2 size={16} /> Добавить ссылку
-					</Button>
-				</div>
-			</div>
+			<Controller
+				name='gallery'
+				control={control}
+				render={({ field }) => (
+					<CreateProjectGallery
+						value={field.value || []}
+						onChange={field.onChange}
+						error={errors?.gallery}
+					/>
+				)}
+			/>
+
+			<CreateProjectFormLinks control={control} errors={errors} />
 		</form>
 	);
 };

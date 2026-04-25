@@ -54,10 +54,12 @@ const ProjectInfoBlock = ({
 					approach={approach}
 					description={description}
 				/>
-				<div className='pl-8 pr-6'>
-					<h3 className='text-xl font-semibold mt-4 mb-2'>Галерея</h3>
-					<ProjectGallery />
-				</div>
+				{gallery?.length > 0 && (
+					<div className='pl-8 pr-6'>
+						<h3 className='text-xl font-semibold mt-4 mb-2'>Галерея</h3>
+						<ProjectGallery gallery={gallery} />
+					</div>
+				)}
 				<ProjectRoadMap steps={steps} />
 			</AccordionContent>
 		</AccordionItem>

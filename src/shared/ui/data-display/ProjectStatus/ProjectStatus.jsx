@@ -1,25 +1,8 @@
 import { cn } from '@/shared/lib/utils/commonUtils';
-import { Hammer, Lightbulb, Rocket } from 'lucide-react';
-
-const statuses = {
-	idea: {
-		text: 'Идея',
-		component: <Lightbulb className='text-yellow-300 fill-current w-5' />,
-	},
-
-	mvp: {
-		text: 'MVP',
-		component: <Hammer className='text-green-300 fill-current w-5' />,
-	},
-
-	launched: {
-		text: 'Запущен',
-		component: <Rocket className='text-red-300 fill-current w-5' />,
-	},
-};
+import { PROJECT_STATUSES } from '@/shared/static/project';
 
 const ProjectStatus = ({ status = 'idea', className }) => {
-	const activeStatus = statuses[status];
+	const activeStatus = PROJECT_STATUSES[status];
 
 	return (
 		<div
@@ -30,7 +13,7 @@ const ProjectStatus = ({ status = 'idea', className }) => {
 		>
 			<span className='text-orange-400'>{activeStatus?.component}</span>
 			<span className='text-xs font-medium text-white'>
-				{activeStatus?.text}
+				{activeStatus?.label}
 			</span>
 		</div>
 	);

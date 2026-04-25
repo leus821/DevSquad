@@ -15,8 +15,8 @@ const EditProfileForm = ({ control, errors, register, bioValue }) => {
 					<h3 className='text-white text-lg font-bold mb-2'>О себе</h3>
 					<TextArea
 						maxLength={2000}
-						registration={register('bio')}
 						watchValue={bioValue}
+						{...register('bio')}
 						error={errors.bio}
 						placeholder='Расскажите о себе (минимум 20 символов)'
 					/>

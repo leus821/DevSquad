@@ -2,7 +2,7 @@ import { useFormState, useWatch } from 'react-hook-form';
 import { Input, TextArea } from '@/shared/ui';
 import { Globe } from 'lucide-react';
 
-const StepThree = ({ register, control }) => {
+const StepThree = ({ register, control, bio }) => {
 	const { errors } = useFormState({ control });
 
 	const bioValue = useWatch({
@@ -18,7 +18,7 @@ const StepThree = ({ register, control }) => {
 					Краткое био
 				</label>
 				<TextArea
-					registration={register('bio')}
+					{...register('bio')}
 					error={errors.bio}
 					watchValue={bioValue}
 					maxLength={2000}
@@ -27,15 +27,15 @@ const StepThree = ({ register, control }) => {
 			</div>
 			<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
 				<Input
+					{...register('github_url')}
 					label='GitHub'
 					icon={Globe}
 					placeholder='github.com/username'
-					registration={register('github_url')}
 				/>
 				<Input
+					{...register('telegram')}
 					label='Telegram'
 					placeholder='@username'
-					registration={register('telegram')}
 				/>
 			</div>
 		</div>

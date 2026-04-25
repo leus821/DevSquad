@@ -6,3 +6,5 @@ export { default as Skill } from './Skill/Skill.jsx';
 export { default as ProjectStatus } from './ProjectStatus/ProjectStatus.jsx';
 export { default as LinksList } from './LinksList/LinksList.jsx';
 export { default as ErrorField } from './ErrorField/ErrorField.jsx';
+export { default as LinkIcon } from './LinkIcon/LinkIcon';
+export { default as Quantity } from './Quantity/Quantity';

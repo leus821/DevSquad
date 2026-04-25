@@ -1,28 +1,60 @@
 'use client';
 import { forwardRef } from 'react';
 import { cn } from '@/shared/lib/utils/commonUtils';
-import { ErrorField } from '@/shared/ui';
+import { ErrorField, Quantity } from '@/shared/ui';
 
 const Input = forwardRef(
-	({ label, icon: Icon, error, className, ...props }, ref) => {
+	(
+		{
+			label,
+			icon: Icon,
+			error,
+			className,
+			required,
+			watchValue,
+			maxLength,
+			...props
+		},
+		ref,
+	) => {
 		const handleKeyDown = e => {
 			if (props.type === 'number' && ['-', '+', 'e', 'E'].includes(e.key)) {
 				e.preventDefault();
 			}
 		};
 
+		const currentLength = watchValue?.length || 0;
+
 		return (
 			<div className='w-full space-y-1.5'>
-				{label && (
-					<label
-						className={cn(
-							'text-xs font-bold text-header-icons uppercase',
-							Icon && 'ml-1',
-						)}
-					>
-						{label}
-					</label>
-				)}
+				<div className='flex items-center'>
+					{label && (
+						<label
+							className={cn(
+								'text-xs font-bold text-header-icons flex uppercase',
+								Icon && 'ml-1',
+							)}
+						>
+							{label}
+							{required && (
+								<span
+									className='text-primary text-lg leading-none'
+									title='Обязательное поле'
+								>
+									*
+								</span>
+							)}
+						</label>
+					)}
+					{maxLength && (
+						<Quantity
+							className='uppercase font-bold text-[10px] tracking-widest ml-auto inline text-right'
+							quantity={currentLength}
+							outOf={maxLength}
+							
+						/>
+					)}
+				</div>
 				<div className='relative group'>
 					{Icon && (
 						<Icon
@@ -36,8 +68,9 @@ const Input = forwardRef(
 						/>
 					)}
 					<input
-						ref={ref}
 						{...props}
+						maxLength={maxLength}
+						ref={ref}
 						onKeyDown={handleKeyDown}
 						className={cn(
 							'w-full bg-input border rounded-xl py-3 text-white outline-none transition-all',

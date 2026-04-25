@@ -1,5 +1,6 @@
 import { Card } from '@/widgets';
 import { supabase } from '@/shared/lib/supabase';
+import { Image } from '@/shared/ui';
 
 const Home = async () => {
 	const { data: projects, error } = await supabase

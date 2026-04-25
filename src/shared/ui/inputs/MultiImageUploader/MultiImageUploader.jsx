@@ -1,21 +1,13 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Plus, ImageIcon, Edit2, Loader2 } from 'lucide-react';
+import { Trash2, Plus, ImageIcon, Edit2 } from 'lucide-react';
+import { getCroppedImg } from '@/shared/lib/utils/cropImage';
 import { cn } from '@/shared/lib/utils/commonUtils';
+import { ErrorField, CropModal, RemoveButton } from '@/shared/ui';
 
-import CropModal from './CropModal';
-import { getCroppedImg } from '../lib/cropImage';
-
-const MultiImageUploader = ({
-	value = [],
-	onChange,
-	maxFiles = 10,
-	label = 'Галерея проекта',
-	error,
-}) => {
-	// Состояния для кроппера
+const MultiImageUploader = ({ value = [], onChange, maxFiles = 10, error }) => {
 	const [isCropOpen, setIsCropOpen] = useState(false);
 	const [imageToCrop, setImageToCrop] = useState(null);
 	const [editIndex, setEditIndex] = useState(null);
@@ -24,27 +16,47 @@ const MultiImageUploader = ({
 	const [zoom, setZoom] = useState(1);
 	const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
-	// 1. Логика массовой загрузки (Dropzone)
-	const onDrop = useCallback(
-		acceptedFiles => {
-			const remainingSlots = maxFiles - value.length;
-			const filesToProcess = acceptedFiles.slice(0, remainingSlots);
+	const replaceInputRef = useRef(null);
 
-			filesToProcess.forEach(file => {
-				const reader = new FileReader();
-				reader.onload = () => {
-					const newImage = reader.result;
-					// Добавляем в массив, если такой картинки еще нет
-					if (!value.includes(newImage)) {
-						onChange(prev => [...prev, newImage]);
-					}
-				};
-				reader.readAsDataURL(file);
-			});
+	const readFile = file => {
+		return new Promise(resolve => {
+			const reader = new FileReader();
+			reader.onload = () => resolve(reader.result);
+			reader.readAsDataURL(file);
+		});
+	};
+
+	const handleReplaceFile = e => {
+		const file = e.target.files[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = () => {
+				setImageToCrop(reader.result);
+				setCrop({ x: 0, y: 0 });
+				setZoom(1);
+			};
+			reader.readAsDataURL(file);
+			e.target.value = '';
+		}
+	};
+
+	const onDrop = useCallback(
+		async acceptedFiles => {
+			const remainingSlots = maxFiles - value.length;
+			if (remainingSlots <= 0) return;
+
+			const filesToProcess = acceptedFiles.slice(0, remainingSlots);
+			const newImages = await Promise.all(
+				filesToProcess.map(file => readFile(file)),
+			);
+			const uniqueImages = newImages.filter(img => !value.includes(img));
+
+			if (uniqueImages.length > 0) {
+				onChange([...value, ...uniqueImages]);
+			}
 		},
 		[value, onChange, maxFiles],
 	);
-
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop,
 		accept: { 'image/*': [] },
@@ -81,17 +93,13 @@ const MultiImageUploader = ({
 	return (
 		<div className='card p-8 space-y-6'>
 			{/* Header блока */}
-			<div className='flex items-center justify-between'>
-				<div className='flex items-center gap-3'>
-					<div className='p-2 bg-brand-purple/10 rounded-lg text-brand-purple'>
-						<ImageIcon size={20} />
-					</div>
-					<h3 className='text-white font-bold text-xl'>{label}</h3>
-				</div>
-				<span className='text-[10px] text-header-icons font-black uppercase tracking-widest px-3 py-1 border border-card-border rounded-full'>
-					{value.length} / {maxFiles} фото
-				</span>
-			</div>
+			<input
+				type='file'
+				ref={replaceInputRef}
+				onChange={handleReplaceFile}
+				accept='image/*'
+				className='hidden'
+			/>
 
 			<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
 				<AnimatePresence mode='popLayout'>
@@ -120,13 +128,7 @@ const MultiImageUploader = ({
 								>
 									<Edit2 size={20} />
 								</button>
-								<button
-									type='button'
-									onClick={() => removeImage(index)}
-									className='p-2.5 bg-red-500/80 hover:bg-red-500 rounded-xl backdrop-blur-md text-white transition-all hover:scale-110'
-								>
-									<Trash2 size={20} />
-								</button>
+								<RemoveButton onClick={() => removeImage(index)} />
 							</div>
 						</motion.div>
 					))}
@@ -155,7 +157,6 @@ const MultiImageUploader = ({
 				</AnimatePresence>
 			</div>
 
-			{/* Кроппер (тот же самый компонент) */}
 			<CropModal
 				isOpen={isCropOpen}
 				image={imageToCrop}
@@ -166,10 +167,11 @@ const MultiImageUploader = ({
 				onCropComplete={(_, pixels) => setCroppedAreaPixels(pixels)}
 				onSave={handleSaveCropped}
 				onClose={() => setIsCropOpen(false)}
+				onSelectNew={() => replaceInputRef.current?.click()}
 				aspect={16 / 9}
 			/>
 
-			{error && <p className='text-xs text-red-500 mt-2'>{error.message}</p>}
+			{error && <ErrorField errorText={error.message} />}
 		</div>
 	);
 };

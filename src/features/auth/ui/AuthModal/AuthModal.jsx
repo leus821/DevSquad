@@ -9,6 +9,7 @@ import AuthFooter from './AuthFooter';
 import { Modal, Button, ErrorField } from '@/shared/ui';
 import { ArrowRight } from 'lucide-react';
 import { Github } from '@/shared/assets/icons';
+import { loginSchema, registerSchema } from '../../model/schemas';
 
 const AuthModal = ({ isOpen, onClose }) => {
 	const { login, register: signUp, error: apiError } = useAuthActions();

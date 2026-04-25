@@ -2,29 +2,31 @@ import { ProjectLogo } from '@/entities/project';
 import { TextLink, LinksList, ProjectStatus } from '@/shared/ui';
 import { SquareArrowOutUpRight } from 'lucide-react';
 
-const ProjectHeader = ({ isDashboard, children }) => {
+const ProjectHeader = ({
+	isDashboard,
+	children,
+	projectName = '',
+	links,
+	slogan,
+	status,
+}) => {
 	return (
 		<div className='mb-10 rounded-2xl project-header-border'>
-			<div className='flex gap-21.5 items-center relative pl-16 py-5 pr-8'>
-				<ProjectLogo text='STUD' />
-				<div>
+			<div className='flex gap-10 items-center relative pl-16 py-6 pr-8'>
+				<ProjectLogo text={projectName} />
+				<div className='w-full min-w-0'>
 					<div className='flex gap-10'>
-						<h1 className='text-[50px] font-bold '>STUD HOME</h1>
+						<h1 className='text-[50px] w-full leading-14 font-bold wrap-break-word'>
+							{projectName}
+						</h1>
 					</div>
-					<p className='text-front text-lg'>
-						Платформа для прогноза погоды и управления умным домом и другими
-						крутыми проектами
+					<p className='text-front text-lg wrap-break-word w-[80%]'>
+						{slogan}
 					</p>
 				</div>
 
-				<LinksList
-					className='absolute bottom-2 right-5'
-					links={[
-						{ url: 'https://github.com/...' },
-						{ url: 'https://my-site.pro' },
-					]}
-				/>
-				<div className='flex absolute top-2 right-2 gap-3'>
+				<LinksList className='absolute bottom-2 right-5' links={links} />
+				<div className='flex absolute top-1 right-1 gap-3'>
 					{isDashboard && (
 						<TextLink
 							className='text-base text-front'
@@ -33,7 +35,7 @@ const ProjectHeader = ({ isDashboard, children }) => {
 							label='На страницу'
 						/>
 					)}
-					<ProjectStatus />
+					<ProjectStatus status={status} />
 				</div>
 			</div>
 			{children && (

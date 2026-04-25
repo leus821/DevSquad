@@ -17,7 +17,7 @@ const ProfileEditPage = () => {
 	} = form;
 
 	const bioValue = useWatch({
-		control,
+		control: control,
 		name: 'bio',
 		defaultValue: '',
 	});

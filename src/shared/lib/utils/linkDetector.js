@@ -32,7 +32,6 @@ const LINK_CONFIG = [
 export const detectLinkData = url => {
 	const lowUrl = url.toLowerCase();
 
-	// Ищем совпадение по паттернам
 	const found = LINK_CONFIG.find(item =>
 		Array.isArray(item.pattern)
 			? item.pattern.some(p => lowUrl.includes(p))
@@ -40,11 +39,9 @@ export const detectLinkData = url => {
 	);
 
 	if (found) {
-		// Если нашли VK — возвращаем кастомную иконку
 		if (found.name === 'vk') return { icon: VkIcon, isSocial: true };
 		return { icon: found.icon, isSocial: true };
 	}
 
-	// Дефолт для всех остальных сайтов
 	return { icon: Globe, isSocial: false };
 };

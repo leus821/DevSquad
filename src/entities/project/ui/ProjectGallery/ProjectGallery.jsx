@@ -1,18 +1,18 @@
 import { Image } from '@/shared/ui';
 
-const ProjectGallery = () => {
+const ProjectGallery = ({ gallery }) => {
+	if (!gallery || gallery.length === 0) return null;
 	return (
-		<div className='flex gap-5'>
-			{Array(3)
-				.fill(null)
-				.map((_, index) => (
-					<Image
-						key={index}
-						src='https://yastatic.net/naydex/yandex-search/bwO8Sc021/0eb805Mz8g/KF-GzqN20WlZQQgE3314imEFkv_ZOL6ndW0Of7rristnXdVWb6fUmisizKMnlpPMkgHitDfcoWAUvitV8y0mIzxbxYLkN8oxCQQfUNd-fYh8WNHuxWK6-m8vUiCu6YKVNFy-Ok_fofJVRefXWu_eycUHs_QpyrIGLQ'
-						className='rounded-xl w-1/3'
-					/>
-				))}
-		</div>
+		<ul className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
+			{gallery.map((item, index) => (
+				<li
+					className='relative aspect-video rounded-2xl overflow-hidden border border-card-border bg-input group'
+					key={index}
+				>
+					<Image alt='Элемент галереи проекта' src={item} className='' />
+				</li>
+			))}
+		</ul>
 	);
 };
 

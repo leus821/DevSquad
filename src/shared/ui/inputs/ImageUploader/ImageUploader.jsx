@@ -5,9 +5,9 @@ import { getCroppedImg } from '@/shared/lib/utils/cropImage';
 import { CropModal } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils/commonUtils';
 
-const ImageUploader = ({ onImageChange, className }) => {
+const ImageUploader = ({ onImageChange, initialImage = null, className }) => {
 	const [tempImage, setTempImage] = useState(null);
-	const [preview, setPreview] = useState(null);
+	const [preview, setPreview] = useState(initialImage);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const [crop, setCrop] = useState({ x: 0, y: 0 });
