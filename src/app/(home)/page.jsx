@@ -1,6 +1,7 @@
 import { Card } from '@/widgets';
 import { supabase } from '@/shared/lib/supabase';
 import { Image } from '@/shared/ui';
+import { MOCK_CARDS } from '@/shared/static';
 
 const Home = async () => {
 	const { data: projects, error } = await supabase
@@ -22,7 +23,7 @@ const Home = async () => {
 	return (
 		<div className='flex justify-between items-center py-5 mx-auto px-6'>
 			<div className='grid grid-cols-3 gap-x-8 gap-y-5'>
-				{projects?.map(item => {
+				{MOCK_CARDS?.map(item => {
 					const firstVacancy = item.project_vacancies?.[0];
 					const skillsArray =
 						firstVacancy?.vacancy_skills?.map(vs => vs.skills.name) || [];

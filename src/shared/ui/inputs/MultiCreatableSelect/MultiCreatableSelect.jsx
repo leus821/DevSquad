@@ -11,6 +11,7 @@ const MultiCreatableSelect = ({
 	suggestions = [],
 	placeholder = 'Начните вводить (например: React)...',
 	error,
+	name,
 }) => {
 	const formattedValue = value.map(skill => ({ label: skill, value: skill }));
 
@@ -32,6 +33,7 @@ const MultiCreatableSelect = ({
 				onChange={handleChange}
 				options={suggestions}
 				placeholder={placeholder}
+				instanceId={name || 'tech-stack-select'}
 				formatCreateLabel={inputValue => `Добавить "${inputValue}"`}
 				unstyled
 				isValidNewOption={inputValue => {

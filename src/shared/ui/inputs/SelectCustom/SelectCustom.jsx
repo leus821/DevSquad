@@ -16,6 +16,7 @@ const SelectCustom = ({
 	options,
 	value,
 	className,
+	name,
 }) => {
 	return (
 		<div className='w-full space-y-1.5'>
@@ -26,6 +27,7 @@ const SelectCustom = ({
 			)}
 			<Select
 				value={value}
+				instanceId={name || 'tech-stack-select'}
 				onValueChange={onChange}
 				className={cn(
 					'w-full bg-input border rounded-xl py-3 px-4 text-white outline-none transition-all appearance-none cursor-pointer',
@@ -48,8 +50,8 @@ const SelectCustom = ({
 					<SelectGroup>
 						{options.map(item => (
 							<SelectItem
-								className='cursor-pointer not-last:mb-2'
 								key={item.id}
+								className='cursor-pointer not-last:mb-2'
 								value={item.value}
 							>
 								{item.label}

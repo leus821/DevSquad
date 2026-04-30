@@ -1,5 +1,7 @@
 'use client';
 
+import { useParams } from 'next/navigation';
+import { useProjectDetails } from '@/entities/project';
 import {
 	VacancyBlock,
 	ProjectInfoBlock,
@@ -9,25 +11,42 @@ import {
 } from '@/widgets';
 import { Accordion } from '@/shared/ui/shadcn/accordion';
 import { TEAMLIST } from '@/shared/static/mock_data';
+import { Loader2 } from 'lucide-react';
 
 const vacancyProps = {
 	skills: ['react', 'node.js', 'node.js', 'node.js'],
 };
 
 const ProjectPage = () => {
+	const { id } = useParams();
+	const { project, loading, error } = useProjectDetails(id);
+
+	if (loading) {
+		return (
+			<div className='min-h-screen flex flex-all-center'>
+				<Loader2 className='animate-spin text-brand-purple' size={40} />
+			</div>
+		);
+	}
+
 	return (
 		<section>
 			<div className='mx-auto max-w-300 w-full'>
-				<ProjectHeader />
+				<ProjectHeader
+					slogan={project.slogan}
+					links={project.links}
+					projectName={project.name}
+					status={project.status}
+				/>
 				<div className='flex gap-7'>
 					<Accordion
 						type='multiple'
 						className='flex-[80%] rounded-xl flex flex-col gap-7'
 					>
 						<ProjectInfoBlock
-							idea='Мы хотим создать самый красивый и быстрый трекер привычек на React Native. Без рекламы, с открытым кодом и фокусом на минимализме'
-							description='StudHome - Проект где все обращается в реальность, присоединяйся к нам'
-							approach='Каждый год тысячи студентов тратят недели на поиск жилья, сталкиваясь с мошенниками и переплатами..'
+							idea={project.idea}
+							description={project.description}
+							approach={project.approach}
 						/>
 						<VacancyBlock vacancyProps={vacancyProps} />
 					</Accordion>

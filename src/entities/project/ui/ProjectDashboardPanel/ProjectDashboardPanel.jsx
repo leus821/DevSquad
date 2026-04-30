@@ -3,14 +3,16 @@ import { Button, StatItem } from '@/shared/ui';
 import { Eye, Mail } from 'lucide-react';
 import { TeamAvatars } from '@/entities/team';
 
-const ProjectDashboardPanel = ({ stats, team }) => {
+const ProjectDashboardPanel = ({ stats, team, projectId }) => {
 	return (
 		<div className='grid grid-cols-5 gap-4 items-center'>
 			<div className='flex col-span-2 gap-3 border-r border-card-border pr-4 h-full items-center'>
 				<Button className='w-1/2 py-2' variant='secondary' asChild={true}>
-					<Link href='/create'>Редактировать</Link>
+					<Link href={`/editproject/${projectId}`}>Редактировать</Link>
 				</Button>
-				<Button className='w-1/2 py-2.5'>Вакансии</Button>
+				<Button asChild={true} className='w-1/2 py-2.5'>
+					<Link href={`project/${projectId}/vacancies/1`}>Вакансии</Link>
+				</Button>
 			</div>
 
 			<div className='flex items-center col-span-2 gap-4 border-r border-card-border'>

@@ -2,4 +2,6 @@ export { default as ProjectRoadMap } from './ui/ProjectRoadMap/ProjectRoadMap.js
 export { default as ProjectGallery } from './ui/ProjectGallery/ProjectGallery.jsx';
 export { default as ProjectTextInfo } from './ui/ProjectTextInfo/ProjectTextInfo.jsx';
 export { default as ProjectLogo } from './ui/ProjectLogo/ProjectLogo.jsx';
-export { default as ProjectDashboardPanel } from './ui/ProjectDashboardPanel/ProjectDashboardPanel.jsx';
+export { default as ProjectDashboardPanel } from './ui/ProjectDashboardPanel/ProjectDashboardPanel';
+export { default as useProjectDetails } from './lib/useProjectDetails';
+export { default as useProjectIdentity } from './lib/useProjectIdentity';

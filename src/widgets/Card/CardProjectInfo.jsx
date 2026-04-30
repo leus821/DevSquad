@@ -10,7 +10,7 @@ const CardProjectInfo = ({ title, description, skills }) => {
 				{description}
 			</p>
 			<div className='flex gap-x-2 mt-auto'>
-				{skills.map((item, index) => (
+				{skills?.map((item, index) => (
 					<li key={index}>
 						<Skill skillName={item} />
 					</li>

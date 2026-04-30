@@ -5,4 +5,4 @@ export { default as MultiCreatableSelect } from './MultiCreatableSelect/MultiCre
 export { default as ImageUploader } from './ImageUploader/ImageUploader';
 export { default as MultiImageUploader } from './MultiImageUploader/MultiImageUploader';
 export { default as LinksEditor } from './LinksEditor/LinksEditor';
-
+export { default as RichEditor } from './RichEditor/RichEditor';

@@ -9,6 +9,7 @@ const ProjectHeader = ({
 	links,
 	slogan,
 	status,
+	projectId,
 }) => {
 	return (
 		<div className='mb-10 rounded-2xl project-header-border'>
@@ -20,9 +21,7 @@ const ProjectHeader = ({
 							{projectName}
 						</h1>
 					</div>
-					<p className='text-front text-lg wrap-break-word w-[80%]'>
-						{slogan}
-					</p>
+					<p className='text-front text-lg wrap-break-word w-[80%]'>{slogan}</p>
 				</div>
 
 				<LinksList className='absolute bottom-2 right-5' links={links} />
@@ -30,7 +29,7 @@ const ProjectHeader = ({
 					{isDashboard && (
 						<TextLink
 							className='text-base text-front'
-							href={'/project/1'}
+							href={`/project/${projectId}`}
 							icon={SquareArrowOutUpRight}
 							label='На страницу'
 						/>

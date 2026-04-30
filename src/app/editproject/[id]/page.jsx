@@ -1,6 +1,8 @@
 'use client';
 
+import { useParams } from 'next/navigation';
 import { useState } from 'react';
+import { useWatch } from 'react-hook-form';
 import {
 	CreateProjectForm,
 	useProjectForm,
@@ -8,10 +10,10 @@ import {
 	ViewModal,
 } from '@/features/create-project';
 import { TeamStack } from '@/widgets';
-import { useWatch } from 'react-hook-form';
 
-const CreateProjectPage = () => {
+const EditProjectPage = () => {
 	const [openModal, setOpenModal] = useState(false);
+	const { id } = useParams();
 
 	const {
 		form,
@@ -19,7 +21,7 @@ const CreateProjectPage = () => {
 		isFetching,
 		isSubmitting,
 		error: apiError,
-	} = useProjectForm();
+	} = useProjectForm(id);
 	const {
 		handleSubmit,
 		control,
@@ -67,4 +69,4 @@ const CreateProjectPage = () => {
 	);
 };
 
-export default CreateProjectPage;
+export default EditProjectPage;
