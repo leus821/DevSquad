@@ -5,7 +5,12 @@ import { getCroppedImg } from '@/shared/lib/utils/cropImage';
 import { CropModal } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils/commonUtils';
 
-const ImageUploader = ({ onImageChange, initialImage = null, className }) => {
+const ImageUploader = ({
+	onImageChange,
+	initialImage = null,
+	className,
+	aspect,
+}) => {
 	const [tempImage, setTempImage] = useState(null);
 	const [preview, setPreview] = useState(initialImage);
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -103,6 +108,7 @@ const ImageUploader = ({ onImageChange, initialImage = null, className }) => {
 
 			<CropModal
 				isOpen={isModalOpen}
+				aspect={aspect}
 				image={tempImage}
 				crop={crop}
 				zoom={zoom}

@@ -1,21 +1,60 @@
 'use client';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Bold, Italic, List, ListOrdered, Quote } from 'lucide-react';
+import Placeholder from '@tiptap/extension-placeholder';
+import { Bold, Italic, List, ListOrdered, Underline } from 'lucide-react';
 import { cn } from '@/shared/lib/utils/commonUtils';
+import { ErrorField, Quantity } from '@/shared/ui';
+import CharacterCount from '@tiptap/extension-character-count';
+import { useState } from 'react';
 
-const RichEditor = ({ value, onChange, placeholder, error }) => {
+const RichEditor = ({
+	value,
+	onChange,
+	placeholder,
+	error,
+	maxLength = 2000,
+}) => {
+	const [characters, setCharacters] = useState(value ? value.length : 0);
+
 	const editor = useEditor({
-		extensions: [StarterKit],
+		extensions: [
+			StarterKit.configure({
+				bulletList: {
+					keepMarks: true,
+					keepAttributes: false,
+				},
+				orderedList: {
+					keepMarks: true,
+					keepAttributes: false,
+				},
+			}),
+			Placeholder.configure({
+				placeholder: placeholder || 'Введите описание...',
+			}),
+			CharacterCount.configure({
+				limit: maxLength,
+			}),
+		],
 		content: value,
 		immediatelyRender: false,
 		onUpdate: ({ editor }) => {
 			onChange(editor.getHTML());
+			setCharacters(editor.storage.characterCount.characters());
 		},
 		editorProps: {
 			attributes: {
-				class:
+				class: cn(
 					'prose prose-invert max-w-none focus:outline-none min-h-[200px] p-5 text-white',
+					'prose-ul:list-disc prose-ul:ml-4 prose-ol:list-decimal prose-ol:ml-4',
+					'prose-li:my-0',
+				),
+			},
+			transformPastedText(text) {
+				return text.replace(/[\r\n]+/g, ' ');
+			},
+			transformPastedHTML(html) {
+				return html.replace(/<\/p><p>/g, ' ').replace(/<br\s*\/?>/g, ' ');
 			},
 		},
 	});
@@ -23,40 +62,55 @@ const RichEditor = ({ value, onChange, placeholder, error }) => {
 	if (!editor) return null;
 
 	return (
-		<div
-			className={cn(
-				'w-full bg-input border rounded-2xl overflow-hidden transition-all',
-				error
-					? 'border-red-500'
-					: 'border-card-border focus-within:border-brand-purple',
-			)}
-		>
-			{/* Панель инструментов */}
-			<div className='flex items-center gap-1 p-2 border-b border-card-border bg-black/20'>
-				<MenuButton
-					onClick={() => editor.chain().focus().toggleBold().run()}
-					active={editor.isActive('bold')}
-					icon={Bold}
-				/>
-				<MenuButton
-					onClick={() => editor.chain().focus().toggleItalic().run()}
-					active={editor.isActive('italic')}
-					icon={Italic}
-				/>
-				<div className='w-px h-4 bg-card-border mx-1' />
-				<MenuButton
-					onClick={() => editor.chain().focus().toggleBulletList().run()}
-					active={editor.isActive('bulletList')}
-					icon={List}
-				/>
-				<MenuButton
-					onClick={() => editor.chain().focus().toggleOrderedList().run()}
-					active={editor.isActive('orderedList')}
-					icon={ListOrdered}
-				/>
-			</div>
+		<div>
+			<div
+				className={cn(
+					'w-full bg-input border rounded-2xl overflow-hidden transition-all',
+					error
+						? 'border-red-500'
+						: 'border-card-border focus-within:border-brand-purple',
+				)}
+			>
+				{/* Панель инструментов */}
+				<div className='flex items-center gap-1 p-2 border-b border-card-border bg-black/20'>
+					<MenuButton
+						onClick={() => editor.chain().focus().toggleBold().run()}
+						active={editor.isActive('bold')}
+						icon={Bold}
+					/>
+					<MenuButton
+						onClick={() => editor.chain().focus().toggleItalic().run()}
+						active={editor.isActive('italic')}
+						icon={Italic}
+					/>
+					<MenuButton
+						onClick={() => editor.chain().focus().toggleUnderline().run()}
+						active={editor.isActive('underline')}
+						icon={Underline}
+					/>
+					<div className='w-px h-4 bg-card-border mx-1' />
 
-			<EditorContent editor={editor} />
+					{/* Кнопка ненумерованного списка */}
+					<MenuButton
+						onClick={() => editor.chain().focus().toggleBulletList().run()}
+						active={editor.isActive('bulletList')}
+						icon={List}
+					/>
+
+					{/* Кнопка нумерованного списка */}
+					<MenuButton
+						onClick={() => editor.chain().focus().toggleOrderedList().run()}
+						active={editor.isActive('orderedList')}
+						icon={ListOrdered}
+					/>
+				</div>
+
+				<EditorContent editor={editor} />
+			</div>
+			<div className='flex justify-between items-center'>
+				{error && <ErrorField errorText={error.message} />}
+				<Quantity className='ml-auto' quantity={characters} outOf={maxLength} />
+			</div>
 		</div>
 	);
 };

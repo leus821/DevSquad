@@ -57,9 +57,9 @@ const useVacancyForm = (projectId, vacancyId = null) => {
 
 		try {
 			const finalCoverUrl = await uploadFile(
-				data.cover_url,
+				data.thumbnail_url,
 				'project-assets',
-				'vacancy-covers',
+				'vacancy-thumbnails',
 			);
 
 			const payload = {

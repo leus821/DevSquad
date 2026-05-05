@@ -9,24 +9,19 @@ import {
 } from '@/shared/lib/validations/validations';
 
 export const editProfileSchema = z.object({
-	// Базовая информация
 	name: fullNameRule,
 	surname: fullNameRule,
 	username: usernameRule,
 	role: roleRule,
 
-	// О себе
 	bio: bioRule,
 
-	// Статус и доступность
 	status: z.string().min(1, 'Выберите статус'),
 	hours_available: hoursRule,
 
-	// Дополнительная инфо (необязательные поля)
-	// .optional().or(z.literal('')) позволяет полю быть пустым без ошибок
 	location: z
 		.string()
-		.max(100, 'Слишком длинное название')
+		.max(20, 'Слишком длинное название')
 		.optional()
 		.or(z.literal('')),
 	languages: z

@@ -2,8 +2,9 @@ import CardVacancy from './CardVacancy';
 import CardLink from './CardLink';
 import CardProjectInfo from './CardProjectInfo';
 import { VacancyImage } from '@/entities/vacancy';
+import { cn } from '@/shared/lib/utils/commonUtils';
 
-const Card = ({
+const VacancyCard = ({
 	title,
 	description,
 	imageUrl,
@@ -12,11 +13,16 @@ const Card = ({
 	skills,
 	status,
 	isBookmarked,
-	type = 'feed',
+	className,
 }) => {
 	return (
-		<article className='relative group bg-card border-card-border border-2 rounded-xl overflow-hidden flex flex-col h-full'>
-			<CardLink href={`/projects`} />
+		<article
+			className={cn(
+				'relative group bg-card border-card-border border-2 rounded-xl overflow-hidden flex flex-col h-full',
+				className,
+			)}
+		>
+			<CardLink href={`/projects$`} />
 
 			<div className='relative z-10 pointer-events-none flex flex-col h-full'>
 				<VacancyImage imageUrl={imageUrl} status={status} />
@@ -33,4 +39,4 @@ const Card = ({
 	);
 };
 
-export default Card;
+export default VacancyCard;

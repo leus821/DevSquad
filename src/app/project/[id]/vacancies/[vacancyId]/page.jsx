@@ -1,16 +1,19 @@
 'use client';
+import { useWatch } from 'react-hook-form';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useProjectIdentity } from '@/entities/project';
 import { useVacancyForm, VacancyForm } from '@/features/create-vacancy';
-import { Button } from '@/shared/ui';
+import { Button, Modal } from '@/shared/ui';
 import { Eye, Save } from 'lucide-react';
-import { Card } from '@/widgets';
-import { useWatch } from 'react-hook-form';
+import { VacancyCard } from '@/entities/vacancy';
 
 const CreateVacancyPage = () => {
 	const { id: projectId } = useParams();
 
-	const { form, submitForm, isFetching, isSubmitting } =
+	const [isOpenModal, setIsOpenModal] = useState(false);
+
+	const { form, submitForm, isFetching, isSubmitting, error } =
 		useVacancyForm(projectId);
 
 	const { project: projectIdentity, loading: isProjectLoading } =
@@ -24,16 +27,14 @@ const CreateVacancyPage = () => {
 		formState: { errors },
 	} = form;
 
-	const onSubmit = () => {
-		console.log('Публикация вакансии');
+	const onSubmit = async data => {
+		await submitForm(data);
 	};
 
 	const watchedData = useWatch({
 		control,
 		defaultValue: form.getValues(),
 	});
-
-	console.log(watchedData);
 
 	return (
 		<main className='container-wide py-10'>
@@ -49,14 +50,17 @@ const CreateVacancyPage = () => {
 
 						<aside className='w-full lg:w-[320px] shrink-0 sticky top-10 flex flex-col gap-6'>
 							<div className='card p-6 flex flex-col gap-4'>
-								<Button className='w-full gap-2 py-4'>
+								<Button
+									onClick={handleSubmit(onSubmit)}
+									className='w-full gap-2 py-4'
+								>
 									<Save size={18} />
 									{isSubmitting ? 'Публикация...' : 'Опубликовать'}
 								</Button>
 
 								<Button
 									variant='secondary'
-									onClick={() => setOpenModal(true)}
+									onClick={() => setIsOpenModal(true)}
 									className='w-full gap-2'
 								>
 									<Eye size={18} />
@@ -64,16 +68,22 @@ const CreateVacancyPage = () => {
 								</Button>
 							</div>
 
-							{/* ЖИВОЕ ПРЕВЬЮ (Прямо в сайдбаре) */}
-							{/* <Card
-								title={projectIdentity?.name || 'Название'}
-								description={watchedData?.hook || 'Введите описание'}
-								imageUrl={watchedData?.thumbnail_url}
-								vacancyRole={watchedData?.role || 'Введите роль'}
-								vacancyExperience={watchedData?.experience}
-								skills={watchedData?.skills}
-								status={projectIdentity?.status}
-							/> */}
+							<Modal
+								className='p-10 max-w-150 flex-all-center'
+								isOpen={isOpenModal}
+								onClose={() => setIsOpenModal(false)}
+							>
+								<VacancyCard
+									className='max-w-200 w-full'
+									title={projectIdentity?.name || 'Название'}
+									description={watchedData?.hook || 'Введите описание'}
+									imageUrl={watchedData?.thumbnail_url}
+									vacancyRole={watchedData?.role || 'Введите роль'}
+									vacancyExperience={watchedData?.experience}
+									skills={watchedData?.skills}
+									status={projectIdentity?.status}
+								/>
+							</Modal>
 						</aside>
 					</div>
 				</>

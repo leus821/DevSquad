@@ -2,11 +2,11 @@ import { Skill } from '@/shared/ui';
 
 const CardProjectInfo = ({ title, description, skills }) => {
 	return (
-		<div className='flex-[92%] border-r-card-border border-r flex flex-col gap-y-1'>
+		<div className='flex-[92%] border-r-card-border border-r wrap-break-word flex min-w-0 flex-col gap-y-1'>
 			<h2 className='font-extrabold text-[18px] pointer-events-auto line-clamp-2'>
 				{title}
 			</h2>
-			<p className='text-front text-sm mb-2 pointer-events-auto line-clamp-3'>
+			<p className='text-front break-all text-sm mb-2 pointer-events-auto line-clamp-3'>
 				{description}
 			</p>
 			<div className='flex gap-x-2 mt-auto'>

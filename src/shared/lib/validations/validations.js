@@ -15,6 +15,7 @@ export const fullNameRule = z
 export const usernameRule = z
 	.string()
 	.min(3, 'Никнейм от 3 символов')
+	.max(20, 'Максимальная длина - 20 символов')
 	.regex(/^[a-zA-Z0-9_]+$/, 'Только латиница, цифры и _');
 
 export const bioRule = z

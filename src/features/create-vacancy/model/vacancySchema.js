@@ -8,6 +8,6 @@ export const vacancySchema = z.object({
 		.string()
 		.min(20, 'Хук слишком короткий')
 		.max(160, 'Максимум 160 символов'),
-	thumbnail_url: z.string().min(1, 'Добавьте обложку').optional(),
+	thumbnail_url: z.string(),
 	description: z.string().min(50, 'Опишите вакансию подробнее'),
 });

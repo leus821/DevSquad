@@ -1,6 +1,5 @@
-import { Card } from '@/widgets';
+import { VacancyCard } from '@/entities/vacancy';
 import { supabase } from '@/shared/lib/supabase';
-import { Image } from '@/shared/ui';
 import { MOCK_CARDS } from '@/shared/static';
 
 const Home = async () => {
@@ -28,7 +27,7 @@ const Home = async () => {
 					const skillsArray =
 						firstVacancy?.vacancy_skills?.map(vs => vs.skills.name) || [];
 					return (
-						<Card
+						<VacancyCard
 							key={item.id}
 							title={item.title}
 							description={item.description}
