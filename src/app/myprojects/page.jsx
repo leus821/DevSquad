@@ -57,7 +57,7 @@ const MyProjects = () => {
 						<div className='card p-20 flex flex-col items-center gap-6 border-dashed opacity-80'>
 							<h3 className='text-xl font-bold text-white'>Здесь пока пусто</h3>
 							<Button asChild={true}>
-								<Link href='/createproject'>Создать первый проект</Link>
+								<Link href='/CreateProject'>Создать первый проект</Link>
 							</Button>
 						</div>
 					)}
