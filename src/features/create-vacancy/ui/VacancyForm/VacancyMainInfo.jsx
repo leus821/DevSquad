@@ -34,6 +34,7 @@ const VacancyMainInfo = ({ control, errors }) => {
 					control={control}
 					render={({ field }) => (
 						<SelectCustom
+							value={field.value}
 							label='Опыт работы'
 							options={EXPERIENCE_OPTIONS}
 							onChange={field.onChange}

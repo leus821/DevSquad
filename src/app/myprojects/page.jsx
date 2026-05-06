@@ -27,7 +27,7 @@ const MyProjects = () => {
 
 					{canCreate && projects.length > 0 && (
 						<Button asChild className='gap-2'>
-							<Link href='/createproject'>
+							<Link href='/CreateProject'>
 								<Plus size={18} /> Создать проект
 							</Link>
 						</Button>

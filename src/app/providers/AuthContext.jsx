@@ -11,19 +11,24 @@ export const AuthProvider = ({ children }) => {
 	const fetchProfile = async sessionUser => {
 		if (!sessionUser) return null;
 		try {
-			const { data: profile } = await supabase
+			const { data: profile, error } = await supabase
 				.from('profiles')
 				.select('*')
 				.eq('id', sessionUser.id)
 				.maybeSingle();
 
+			if (error) throw error;
+
+			// Если профиля нет или он не завершен
 			if (!profile || !profile.is_completed) {
 				return { ...sessionUser, is_completed: false };
 			}
 
+			// Возвращаем полный объект
 			return { ...sessionUser, ...profile, is_completed: true };
 		} catch (e) {
 			console.error('Ошибка загрузки профиля:', e.message);
+			// В случае ошибки возвращаем хотя бы базовые данные из Auth
 			return { ...sessionUser, is_completed: false };
 		}
 	};
@@ -42,6 +47,7 @@ export const AuthProvider = ({ children }) => {
 				setUser(null);
 			}
 		} catch (e) {
+			console.error('Auth init error:', e);
 			setUser(null);
 		} finally {
 			setLoading(false);
@@ -61,6 +67,7 @@ export const AuthProvider = ({ children }) => {
 			}
 
 			if (session?.user) {
+				// Не включаем loading заново, чтобы UI не "моргал" при обновлении токена
 				const fullUser = await fetchProfile(session.user);
 				setUser(fullUser);
 			}

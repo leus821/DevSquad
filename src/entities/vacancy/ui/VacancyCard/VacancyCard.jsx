@@ -5,15 +5,15 @@ import { VacancyImage } from '@/entities/vacancy';
 import { cn } from '@/shared/lib/utils/commonUtils';
 
 const VacancyCard = ({
-	title,
+	projectTitle,
 	description,
 	imageUrl,
 	vacancyRole,
 	vacancyExperience,
 	skills,
 	status,
-	isBookmarked,
 	className,
+	projectId,
 }) => {
 	return (
 		<article
@@ -22,13 +22,13 @@ const VacancyCard = ({
 				className,
 			)}
 		>
-			<CardLink href={`/projects$`} />
+			<CardLink href={`/project/${projectId}`} />
 
 			<div className='relative z-10 pointer-events-none flex flex-col h-full'>
 				<VacancyImage imageUrl={imageUrl} status={status} />
 				<div className='flex flex-1 px-3 py-1 items-stretch gap-0'>
 					<CardProjectInfo
-						title={title}
+						title={projectTitle}
 						description={description}
 						skills={skills}
 					/>

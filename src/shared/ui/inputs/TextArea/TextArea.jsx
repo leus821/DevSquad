@@ -21,7 +21,7 @@ const TextArea = ({
 					maxLength={maxLength}
 					maxRows={20}
 					className={cn(
-						'w-full min-h-50 bg-black/20 border rounded-2xl p-5 text-white outline-none transition-all leading-relaxed',
+						'w-full resize-none min-h-50 bg-black/20 border rounded-2xl p-5 text-white outline-none transition-all leading-relaxed',
 						error
 							? 'border-red-500'
 							: 'border-card-border focus:border-brand-purple',

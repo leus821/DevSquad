@@ -22,7 +22,7 @@ const VacancyViewFeed = ({ control, errors }) => {
 								onImageChange={field.onChange}
 								className='w-full aspect-video rounded-3xl border-dashed border-2 grow'
 								initialImage={field?.thumbnail_url || null}
-								aspect={16 / 10}
+								aspect={16 / 7}
 							/>
 						)}
 					/>

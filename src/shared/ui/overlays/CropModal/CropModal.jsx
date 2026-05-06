@@ -15,6 +15,7 @@ const CropModal = ({
 	onSave,
 	onClose,
 	onSelectNew,
+	aspect,
 }) => {
 	return (
 		<Modal isOpen={isOpen} onClose={onClose} showCloseButton={false}>
@@ -24,7 +25,7 @@ const CropModal = ({
 						image={image}
 						crop={crop}
 						zoom={zoom}
-						aspect={1}
+						aspect={aspect}
 						onCropChange={onCropChange}
 						onZoomChange={onZoomChange}
 						onCropComplete={onCropComplete}

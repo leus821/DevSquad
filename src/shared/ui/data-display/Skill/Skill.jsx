@@ -1,7 +1,6 @@
 'use client';
 
 import { cn } from '@/shared/lib/utils/commonUtils';
-import { X } from 'lucide-react'; // Для иконки удаления
 
 const Skill = ({ skillName, className, variant = 'purple' }) => {
 	const variants = {
@@ -19,13 +18,6 @@ const Skill = ({ skillName, className, variant = 'purple' }) => {
 			)}
 		>
 			<span>{skillName}</span>
-
-			<button
-				type='button'
-				className='hover:text-white transition-colors -ml-1'
-			>
-				<X size={14} strokeWidth={2.5} />
-			</button>
 		</div>
 	);
 };

@@ -33,7 +33,7 @@ const VacancyImage = ({ imageUrl, status, projectName, className }) => {
 	return (
 		<div
 			className={cn(
-				'relative aspect-video overflow-hidden rounded-2xl border border-card-border',
+				'relative aspect-16/7 overflow-hidden rounded-2xl border border-card-border',
 				'bg-linear-to-br from-primary via-[#4f46e5] to-[#1e1b4b]',
 				'flex items-center justify-center p-6',
 				className,
