@@ -12,9 +12,13 @@ import {
 import { cn } from '@/shared/lib/utils/commonUtils';
 import { ChevronDown, User, Settings, LogOut } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/app/providers/AuthContext';
 
 function UserAccountMenu({ handleUserExit }) {
+	const { user } = useAuth();
 	const [isActive, toggleActive] = useState(false);
+
+	console.log(user);
 
 	return (
 		<DropdownMenu onOpenChange={() => toggleActive(prev => !prev)}>
@@ -22,7 +26,7 @@ function UserAccountMenu({ handleUserExit }) {
 				<div className='w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700'>
 					<User size={18} />
 				</div>
-				<span>Анастасия</span>
+				<span>{user?.user_metadata?.name}</span>
 				<ChevronDown
 					size={14}
 					className={cn(
@@ -35,7 +39,7 @@ function UserAccountMenu({ handleUserExit }) {
 				<DropdownMenuLabel>Мой аккаунт</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem>
-					<Link className='flex items-center' href='/myprofile'>
+					<Link className='flex items-center' href={`/user/${user.id}`}>
 						<User className='mr-2 h-4 w-4' /> Профиль
 					</Link>
 				</DropdownMenuItem>
