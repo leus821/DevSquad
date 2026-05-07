@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Camera, X, Edit2 } from 'lucide-react';
 import { getCroppedImg } from '@/shared/lib/utils/cropImage';
 import { CropModal } from '@/shared/ui';
@@ -20,6 +20,13 @@ const ImageUploader = ({
 	const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
 	const fileInputRef = useRef(null);
+
+	useEffect(() => {
+		if (initialImage) {
+			setPreview(initialImage);
+			setTempImage(initialImage);
+		}
+	}, [initialImage]);
 
 	const handleFileChange = e => {
 		const file = e.target.files[0];

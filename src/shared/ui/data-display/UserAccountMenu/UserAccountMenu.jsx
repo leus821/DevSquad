@@ -13,18 +13,21 @@ import { cn } from '@/shared/lib/utils/commonUtils';
 import { ChevronDown, User, Settings, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/app/providers/AuthContext';
+import { UserAvatar } from '@/entities/user';
 
 function UserAccountMenu({ handleUserExit }) {
 	const { user } = useAuth();
 	const [isActive, toggleActive] = useState(false);
 
-	console.log(user);
-
 	return (
 		<DropdownMenu onOpenChange={() => toggleActive(prev => !prev)}>
 			<DropdownMenuTrigger className='flex items-center gap-2 outline-none hover:opacity-80 transition'>
 				<div className='w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700'>
-					<User size={18} />
+					<UserAvatar
+						iconSize={20}
+						className='h-full w-full border'
+						avatarUrl={user?.avatar_url}
+					/>
 				</div>
 				<span>{user?.user_metadata?.name}</span>
 				<ChevronDown

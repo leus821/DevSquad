@@ -5,3 +5,7 @@ export { default as TeamStack } from './TeamStack/TeamStack';
 export { default as VacancyAction } from './VacancyAction/VacancyAction';
 export { default as ProjectHeader } from './ProjectHeader/ProjectHeader';
 export { default as VacancyFeed } from './VacancyFeed/VacancyFeed';
+export { default as UserProfileLeft } from './UserProfileLeft/UserProfileLeft';
+export { default as UserSkillsList } from './UserSkillsList/UserSkillsList';
+export { default as UserProjects } from './UserProjects/UserProjects';
+export { default as VacancyProject } from './VacancyProject/VacancyProject';

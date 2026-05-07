@@ -13,7 +13,7 @@ export const editProfileSchema = z.object({
 	surname: fullNameRule,
 	username: usernameRule,
 	role: roleRule,
-
+	avatar_url: z.string(),
 	bio: bioRule,
 
 	status: z.string().min(1, 'Выберите статус'),

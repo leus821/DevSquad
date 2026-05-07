@@ -1,6 +1,5 @@
 'use client';
 
-import { useWatch } from 'react-hook-form';
 import { EditProfileForm, useProfileEdit } from '@/features/edit-profile';
 import { Save } from 'lucide-react';
 import { Button } from '@/shared/ui';
@@ -10,17 +9,10 @@ const ProfileEditPage = () => {
 		useProfileEdit();
 
 	const {
-		register,
 		handleSubmit,
 		control,
 		formState: { errors },
 	} = form;
-
-	const bioValue = useWatch({
-		control: control,
-		name: 'bio',
-		defaultValue: '',
-	});
 
 	const onSubmit = async data => {
 		const result = await updateProfile(data);
@@ -45,12 +37,7 @@ const ProfileEditPage = () => {
 						</Button>
 					</div>
 				</div>
-				<EditProfileForm
-					control={control}
-					errors={errors}
-					register={register}
-					bioValue={bioValue}
-				/>
+				<EditProfileForm control={control} errors={errors} />
 			</section>
 		)
 	);

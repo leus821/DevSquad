@@ -22,7 +22,7 @@ const VacancyFeed = () => {
 						vacancyRole={item.role || 'Роль не указана'}
 						vacancyExperience={item.experience || 'Без опыта'}
 						skills={item.stack}
-						projectId={item.projects.id}
+						vacancyId={item.id}
 					/>
 				))}
 			</div>

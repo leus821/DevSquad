@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { supabase } from '@/shared/lib/supabase';
 import { useAuth } from '@/app/providers/AuthContext';
 import { editProfileSchema } from '../model/editProfileSchema';
+import { uploadFile } from '@/shared/lib/utils/fileUpload';
 
 const useProfileEdit = () => {
 	const { user, refreshUser, loading: authLoading } = useAuth();
@@ -16,6 +18,7 @@ const useProfileEdit = () => {
 		defaultValues: {
 			name: '',
 			surname: '',
+			avatar_url: '',
 			role: '',
 			username: '',
 			bio: '',
@@ -33,9 +36,10 @@ const useProfileEdit = () => {
 	useEffect(() => {
 		if (user && !authLoading && !form.formState.isDirty) {
 			form.reset({
-				name: user.name || '',
-				surname: user.surname || '',
+				name: user.name || user.user_metadata.name || '',
+				surname: user.surname || user.user_metadata.surname || '',
 				role: user.role || '',
+				avatar_url: user.avatar_url || '',
 				username: user.username || '',
 				bio: user.bio || '',
 				status: user.status || 'search',
@@ -55,15 +59,25 @@ const useProfileEdit = () => {
 		setApiError(null);
 
 		try {
+			let avatarUrl = data.avatarUrl;
+
+			if (data.avatar_url && data.avatar_url.startsWith('blob:')) {
+				avatarUrl = await uploadFile(
+					data.avatar_url,
+					'project-assets',
+					'avatars',
+				);
+			}
 			const { error } = await supabase
 				.from('profiles')
 				.update({
 					...data,
+					avatar_url: avatarUrl,
 				})
 				.eq('id', user.id);
 
 			if (error) throw error;
-
+			await refreshUser();
 			return { success: true };
 		} catch (err) {
 			setApiError(err.message);

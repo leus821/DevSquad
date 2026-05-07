@@ -13,7 +13,7 @@ const VacancyCard = ({
 	skills,
 	status,
 	className,
-	projectId,
+	vacancyId,
 }) => {
 	return (
 		<article
@@ -22,7 +22,7 @@ const VacancyCard = ({
 				className,
 			)}
 		>
-			<CardLink href={`/project/${projectId}`} />
+			<CardLink href={`/vacancy/${vacancyId}`} />
 
 			<div className='relative z-10 pointer-events-none flex flex-col h-full'>
 				<VacancyImage imageUrl={imageUrl} status={status} />

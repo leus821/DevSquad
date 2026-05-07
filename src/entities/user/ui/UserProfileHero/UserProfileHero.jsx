@@ -1,8 +1,7 @@
 'use client';
 import { UserAvatar } from '@/entities/user';
-import { TextLink, LinksList, Button } from '@/shared/ui';
-import { Settings, UserPlus } from 'lucide-react';
-import { cn } from '@/shared/lib/utils/commonUtils';
+import { LinksList, Button } from '@/shared/ui';
+import Link from 'next/link';
 
 const ProfileHero = ({ user, isOwner }) => {
 	const socialLinks = [
@@ -15,7 +14,7 @@ const ProfileHero = ({ user, isOwner }) => {
 		<div className='mb-10 rounded-2xl project-header-border'>
 			<div className='flex gap-10 items-center relative pl-16 py-6 pr-8'>
 				<UserAvatar
-					src={user.avatar_url}
+					avatarUrl={user.avatar_url}
 					name={user.full_name}
 					className='w-45 border-primary aspect-square border-2 rounded-full shrink-0'
 				/>
@@ -34,9 +33,11 @@ const ProfileHero = ({ user, isOwner }) => {
 							{user.role || 'Разработчик на реакте чисто'}
 						</p>
 						<div className='flex gap-2 justify-end'>
-							<LinksList className='' links={socialLinks} />
+							<LinksList links={user.links} />
 							{isOwner ? (
-								<Button>Редактировать профиль</Button>
+								<Button asChild>
+									<Link href='/myprofile'>Редактировать профиль</Link>
+								</Button>
 							) : (
 								<Button>Пригласить в проект</Button>
 							)}

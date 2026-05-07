@@ -2,3 +2,5 @@ export { default as Vacancy } from './ui/Vacancy/Vacancy.jsx';
 export { default as VacancyImage } from './ui/VacancyImage/VacancyImage.jsx';
 export { default as VacancyCard } from './ui/VacancyCard/VacancyCard';
 export { default as useVacancyFeed } from './lib/useVacancyFeed';
+export { default as useVacancy } from './lib/useVacancy';
+

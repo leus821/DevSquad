@@ -16,7 +16,7 @@ const VacancyBlock = ({ vacancyProps }) => {
 				Вакансия
 			</AccordionTrigger>
 			<AccordionContent>
-				<Vacancy vacancyProps={vacancyProps} />
+				<Vacancy vacancy={vacancyProps} />
 			</AccordionContent>
 		</AccordionItem>
 	);

@@ -9,3 +9,5 @@ export { default as ErrorField } from './ErrorField/ErrorField.jsx';
 export { default as LinkIcon } from './LinkIcon/LinkIcon';
 export { default as Quantity } from './Quantity/Quantity';
 export { default as UserStatus } from './UserStatus/UserStatus';
+export { default as RichTextDisplay } from './RichTextDisplay/RichTextDisplay';
+

@@ -2,7 +2,7 @@ import { Image } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils/commonUtils';
 import { User2 } from 'lucide-react';
 
-const UserAvatar = ({ avatarUrl, className }) => {
+const UserAvatar = ({ avatarUrl, iconSize = 100, className }) => {
 	if (!avatarUrl)
 		return (
 			<div
@@ -11,7 +11,7 @@ const UserAvatar = ({ avatarUrl, className }) => {
 					className,
 				)}
 			>
-				<User2 size={100} />
+				<User2 size={iconSize} />
 			</div>
 		);
 

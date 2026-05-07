@@ -19,16 +19,14 @@ export const AuthProvider = ({ children }) => {
 
 			if (error) throw error;
 
-			// Если профиля нет или он не завершен
-			if (!profile || !profile.is_completed) {
+			// Если профиля физически нет в таблице
+			if (!profile) {
 				return { ...sessionUser, is_completed: false };
 			}
 
-			// Возвращаем полный объект
-			return { ...sessionUser, ...profile, is_completed: true };
+			return { ...sessionUser, ...profile };
 		} catch (e) {
 			console.error('Ошибка загрузки профиля:', e.message);
-			// В случае ошибки возвращаем хотя бы базовые данные из Auth
 			return { ...sessionUser, is_completed: false };
 		}
 	};

@@ -8,7 +8,17 @@ const EditMainInfo = ({ errors, control }) => {
 	return (
 		<div className='card p-8 flex flex-col md:flex-row gap-8 items-center md:items-start'>
 			<div className='flex flex-col items-center gap-3'>
-				<ImageUploader className='w-40 h-40' />
+				<Controller
+					name='avatar_url'
+					control={control}
+					render={({ field }) => (
+						<ImageUploader
+							onImageChange={field.onChange}
+							initialImage={field.value}
+							className='w-40 h-40'
+						/>
+					)}
+				/>
 				<span className='text-[10px] text-header-icons uppercase font-bold'>
 					Сменить фото
 				</span>
