@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
 			suppressHydrationWarning
 		>
 			<AuthProvider>
-				<body className='min-h-full font-inter bg-dark text-white flex flex-col'>
+				<body className='min-h-full font-inter bg-white text-white flex flex-col'>
 					<Header />
 					{children}
 				</body>
