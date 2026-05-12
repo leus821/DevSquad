@@ -2,6 +2,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/widgets';
 import { AuthProvider } from './providers/AuthContext';
+import { HelpModal } from '@/features/help';
 
 const inter = Inter({
 	subsets: ['latin', 'cyrillic'],
@@ -33,6 +34,7 @@ export default function RootLayout({ children }) {
 					{children}
 				</body>
 			</AuthProvider>
+			<HelpModal />
 		</html>
 	);
 }

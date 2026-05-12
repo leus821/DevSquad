@@ -6,7 +6,7 @@ const CreateProjectActions = ({ handleSubmit, isSubmitting, setOpenModal }) => {
 	const pathname = usePathname();
 	const isCreating = pathname.toLowerCase().includes('create');
 
-	const buttonText = isCreating ? 'Создать' : 'Изменить';
+	const buttonText = isCreating ? 'Сохранить' : 'Изменить';
 
 	return (
 		<div className='card p-6 flex flex-col gap-4'>
