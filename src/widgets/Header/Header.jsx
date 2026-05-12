@@ -1,6 +1,6 @@
 import { Logo } from '@/shared/ui';
 import Navigation from './navigation';
-
+import { Suspense } from 'react';
 
 const Header = () => {
 	return (
@@ -10,7 +10,9 @@ const Header = () => {
 					<Logo />
 					<span className='ml-5 block'>Помощь</span>
 				</div>
-				<Navigation />
+				<Suspense fallback={<>Loading</>}>
+					<Navigation />
+				</Suspense>
 			</div>
 		</header>
 	);

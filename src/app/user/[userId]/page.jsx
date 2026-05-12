@@ -42,7 +42,7 @@ const ProfilePage = () => {
 							</div>
 						</div>
 
-						{user.skills.length > 0 && <UserSkillsList skills={user.skills} />}
+						{user?.skills?.length > 0 && <UserSkillsList skills={user.skills} />}
 
 						{user.founded_projects?.length > 0 && (
 							<UserProjects projects={user.founded_projects} />

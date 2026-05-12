@@ -4,7 +4,7 @@ import EditMainInfo from '../EditMainInfo/EditMainInfo';
 import { TextArea } from '@/shared/ui';
 import { Controller } from 'react-hook-form';
 
-const EditProfileForm = ({ control, errors, bioValue }) => {
+const EditProfileForm = ({ control, errors }) => {
 	return (
 		<div className='grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-8 items-start'>
 			<EditProfileLeft control={control} errors={errors} />
