@@ -1,6 +1,7 @@
 import { Logo } from '@/shared/ui';
 import Navigation from './navigation';
 import { Suspense } from 'react';
+import Link from 'next/link';
 
 const Header = () => {
 	return (
@@ -8,7 +9,9 @@ const Header = () => {
 			<div className='flex justify-between items-center py-5 mx-auto px-6'>
 				<div className='flex'>
 					<Logo />
-					<span className='ml-5 block'>Помощь</span>
+					<Link target='_blank' href={'/docs/documentation.pdf'} className='ml-5 block'>
+						Документация
+					</Link>
 				</div>
 				<Suspense fallback={<>Loading</>}>
 					<Navigation />
