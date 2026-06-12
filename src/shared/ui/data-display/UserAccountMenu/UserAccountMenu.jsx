@@ -29,7 +29,7 @@ function UserAccountMenu({ handleUserExit }) {
 						avatarUrl={user?.avatar_url}
 					/>
 				</div>
-				<span>{user?.user_metadata?.name}</span>
+				<span>{user?.full_name || user?.user_metadata?.name}</span>
 				<ChevronDown
 					size={14}
 					className={cn(

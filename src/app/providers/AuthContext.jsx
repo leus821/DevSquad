@@ -19,12 +19,8 @@ export const AuthProvider = ({ children }) => {
 
 			if (error) throw error;
 
-			// Если профиля физически нет в таблице
-			if (!profile) {
-				return { ...sessionUser, is_completed: false };
-			}
-
-			return { ...sessionUser, ...profile };
+			// Если профиля нет, возвращаем данные из сессии, чтобы не блокировать UI
+			return profile ? { ...sessionUser, ...profile } : { ...sessionUser, is_completed: false };
 		} catch (e) {
 			console.error('Ошибка загрузки профиля:', e.message);
 			return { ...sessionUser, is_completed: false };
@@ -34,30 +30,46 @@ export const AuthProvider = ({ children }) => {
 	const initializeAuth = async () => {
 		try {
 			setLoading(true);
-			const {
-				data: { session },
-			} = await supabase.auth.getSession();
+			const { data: { session } } = await supabase.auth.getSession();
 
 			if (session?.user) {
+				// Сначала ставим базовые данные из сессии (email, id),
+				// чтобы UI уже мог что-то отобразить
+				setUser(session.user);
+				// СРАЗУ выключаем лоадер, чтобы сайт не был черным
+				setLoading(false); 
+
+				// А теперь спокойно запрашиваем профиль в фоне
 				const fullUser = await fetchProfile(session.user);
-				setUser(fullUser);
+				if (fullUser) {
+					setUser(fullUser);
+				}
 			} else {
 				setUser(null);
+				setLoading(false);
 			}
 		} catch (e) {
 			console.error('Auth init error:', e);
 			setUser(null);
-		} finally {
 			setLoading(false);
 		}
 	};
 
 	useEffect(() => {
-		initializeAuth();
+		let isMounted = true;
 
-		const {
-			data: { subscription },
-		} = supabase.auth.onAuthStateChange(async (event, session) => {
+		const init = async () => {
+			const { data: { session } } = await supabase.auth.getSession();
+			if (session?.user && isMounted) {
+				const fullUser = await fetchProfile(session.user);
+				setUser(fullUser);
+			}
+			if (isMounted) setLoading(false);
+		};
+
+		init();
+
+		const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
 			if (event === 'SIGNED_OUT') {
 				setUser(null);
 				setLoading(false);
@@ -65,14 +77,22 @@ export const AuthProvider = ({ children }) => {
 			}
 
 			if (session?.user) {
-				// Не включаем loading заново, чтобы UI не "моргал" при обновлении токена
+				// Ставим пользователя и выключаем лоадер
+				setUser(session.user);
+				setLoading(false);
+
+				// Обновляем профиль в фоне
 				const fullUser = await fetchProfile(session.user);
-				setUser(fullUser);
+				if (fullUser) setUser(fullUser);
+			} else {
+				setLoading(false);
 			}
-			setLoading(false);
 		});
 
-		return () => subscription.unsubscribe();
+		return () => {
+			isMounted = false;
+			subscription.unsubscribe();
+		};
 	}, []);
 
 	return (

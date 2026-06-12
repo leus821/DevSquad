@@ -6,7 +6,7 @@ import { Bold, Italic, List, ListOrdered, Underline } from 'lucide-react';
 import { cn } from '@/shared/lib/utils/commonUtils';
 import { ErrorField, Quantity } from '@/shared/ui';
 import CharacterCount from '@tiptap/extension-character-count';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const RichEditor = ({
 	value,
@@ -58,6 +58,12 @@ const RichEditor = ({
 			},
 		},
 	});
+
+	useEffect(() => {
+		if (editor && value !== editor.getHTML()) {
+			editor.commands.setContent(value || '');
+		}
+	}, [value, editor]);
 
 	if (!editor) return null;
 

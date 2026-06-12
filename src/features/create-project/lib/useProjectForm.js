@@ -7,8 +7,13 @@ import { useAuth } from '@/app/providers/AuthContext';
 import { createProjectSchema } from '../model/createProjectSchema';
 import { uploadFile } from '@/shared/lib/utils/fileUpload';
 
+import { useRouter } from 'next/navigation'; 
+
 const useProjectForm = (projectId = null) => {
 	const { user } = useAuth();
+
+	const router = useRouter(); 
+
 	const [isFetching, setIsFetching] = useState(!!projectId);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState(null);
@@ -98,10 +103,13 @@ const useProjectForm = (projectId = null) => {
 				console.log(result);
 			} else {
 				result = await supabase.from('projects').insert([payload]);
-				console.log(result);
 			}
 
 			if (result.error) throw result.error;
+
+			router.refresh(); 
+			router.push('/myprojects');
+
 		} catch (err) {
 			setError(err.message);
 		} finally {
