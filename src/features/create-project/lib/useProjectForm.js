@@ -9,6 +9,8 @@ import { uploadFile } from '@/shared/lib/utils/fileUpload';
 
 import { useRouter } from 'next/navigation'; 
 
+const generateDefaultLinks = () => [{ id: crypto.randomUUID(), label: 'Сайт', url: '' }];
+
 const useProjectForm = (projectId = null) => {
 	const { user } = useAuth();
 
@@ -28,7 +30,7 @@ const useProjectForm = (projectId = null) => {
 			description: '',
 			idea: '',
 			approach: '',
-			links: [{ id: Date.now().toString(), label: 'Сайт', url: '' }],
+			links: generateDefaultLinks(),
 			gallery: [],
 		},
 	});
@@ -61,7 +63,8 @@ const useProjectForm = (projectId = null) => {
 		};
 
 		fetchProject();
-	}, [projectId, form]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [projectId]);
 
 	const submitForm = async data => {
 		setIsSubmitting(true);
