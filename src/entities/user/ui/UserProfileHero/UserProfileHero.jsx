@@ -34,12 +34,10 @@ const ProfileHero = ({ user, isOwner }) => {
 						</p>
 						<div className='flex gap-2 justify-end'>
 							<LinksList links={user.links} />
-							{isOwner ? (
+							{isOwner && (
 								<Button asChild>
 									<Link href='/myprofile'>Редактировать профиль</Link>
-								</Button>
-							) : (
-								<Button>Пригласить в проект</Button>
+								</Button>							
 							)}
 						</div>
 					</div>

@@ -1,4 +1,5 @@
 import { UserAvatar } from '@/entities/user';
+import Link from 'next/link'; // 1. Импортируем Link
 
 const TeamStack = ({ users = [], maxVisible = 4, size = 'md' }) => {
 	const visibleUsers = users.slice(0, maxVisible);
@@ -13,28 +14,24 @@ const TeamStack = ({ users = [], maxVisible = 4, size = 'md' }) => {
 	return (
 		<div className='flex items-center -space-x-5 overflow-hidden'>
 			{visibleUsers.map((user, index) => (
-				<div
-					key={user.id || index}
-					className={`
-            relative rounded-full 
-            transition-transform hover:translate-y-0.5 hover:z-10
-          `}
+				// 2. Оборачиваем в Link
+				<Link
+					key={user.user_id || index}
+					href={`/user/${user.user_id}`}
+					className="relative rounded-full transition-transform hover:-translate-y-1 hover:z-50"
 					style={{ zIndex: index + 1 }}
 				>
 					<UserAvatar
-						avatarUrl={user.avatar}
-						name={user.name}
-						className={sizeClasses[size]}
+						avatarUrl={user.avatar_url || user.avatar}
+						name={user.full_name || user.name}
+						className={`${sizeClasses[size]} border-2 border-deep-dark hover:border-brand-purple`}
 					/>
-				</div>
+				</Link>
 			))}
 
 			{extraCount > 0 && (
 				<div
-					className={`
-            flex-all-center rounded-full bg-dark border-2 border-deep-dark text-xs font-bold text-white aspect-square
-            ${sizeClasses[size - 4]}
-          `}
+					className={`flex-all-center rounded-full bg-dark border-2 border-deep-dark text-xs font-bold text-white aspect-square ${sizeClasses[size]}`}
 					style={{ zIndex: 10 }}
 				>
 					+{extraCount}

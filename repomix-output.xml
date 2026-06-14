@@ -75,6 +75,7 @@ src/app/myprofile/page.jsx
 src/app/myprojects/page.jsx
 src/app/myprojects/vacancies/[vacancyId]/page.jsx
 src/app/project/[id]/page.jsx
+src/app/project/[id]/vacancies/[vacancyId]/applications/page.jsx
 src/app/project/[id]/vacancies/[vacancyId]/page.jsx
 src/app/project/[id]/vacancies/page.jsx
 src/app/providers/AuthContext.jsx
@@ -85,6 +86,7 @@ src/entities/project/index.js
 src/entities/project/lib/useProjectDetails.js
 src/entities/project/lib/useProjectIdentity.js
 src/entities/project/ui/ProjectCard/ProjectCard.jsx
+src/entities/project/ui/ProjectCard/ProjectCardMinimal.jsx
 src/entities/project/ui/ProjectDashboardPanel/ProjectDashboardPanel.jsx
 src/entities/project/ui/ProjectGallery/ProjectGallery.jsx
 src/entities/project/ui/ProjectLogo/ProjectLogo.jsx
@@ -239,6 +241,214 @@ src/widgets/VacancyProject/VacancyProject.jsx
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="src/app/project/[id]/vacancies/[vacancyId]/applications/page.jsx">
+'use client';
+import { Container, Button } from '@/shared/ui'; 
+import { UserAvatar } from '@/entities/user';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/shared/lib/supabase';
+import { Check, Loader2, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+
+const VacancyApplicationsPage = () => {
+	const { id: projectId, vacancyId } = useParams();
+	const [profiles, setProfiles] = useState([]);
+	const [vacancy, setVacancy] = useState(null);
+	const [isLoading, setIsLoading] = useState(true);
+	const router = useRouter();
+
+	useEffect(() => {
+		const fetchData = async () => {
+			setIsLoading(true);
+			// 1. Берем данные вакансии, чтобы знать роль и список ID соискателей
+			const { data: vac } = await supabase
+				.from('vacancies')
+				.select('*')
+				.eq('id', vacancyId)
+				.single();
+			
+			setVacancy(vac);
+
+			if (vac?.applicants?.length > 0) {
+				// 2. Магия: запрашиваем профили всех людей, чьи ID есть в массиве applicants
+				const { data: users, error } = await supabase
+					.from('profiles')
+					.select('*')
+					.in('id', vac.applicants);
+				
+				if (!error) setProfiles(users || []);
+			}
+			setIsLoading(false);
+		};
+		fetchData();
+	}, [vacancyId]);
+
+	const handleAccept = async (candidate) => {
+        const confirmText = `Принять ${candidate.full_name} в команду на роль "${vacancy.role}"? \n\nЭто закроет вакансию для других.`;
+        if (!confirm(confirmText)) return;
+    
+        try {
+            const { data: projectData, error: projFetchError } = await supabase
+                .from('projects')
+                .select('members')
+                .eq('id', projectId)
+                .single();
+    
+            if (projFetchError) throw projFetchError;
+    
+            const newMember = {
+                user_id: candidate.id,
+                full_name: candidate.full_name,
+                role: vacancy.role, // Берем роль из вакансии
+                avatar_url: candidate.avatar_url,
+                joined_at: new Date().toISOString()
+            };
+    
+            // 2. Обновляем проект: пушим нового участника в массив members
+            // Если members еще пустой (null), создаем новый массив
+            const currentMembers = Array.isArray(projectData.members) ? projectData.members : [];
+            
+            const { error: projectUpdateError } = await supabase
+                .from('projects')
+                .update({ 
+                    members: [...currentMembers, newMember] 
+                })
+                .eq('id', projectId);
+    
+            if (projectUpdateError) throw projectUpdateError;
+    
+            // 3. Закрываем вакансию и очищаем список соискателей
+            const { error: vacancyUpdateError } = await supabase
+                .from('vacancies')
+                .update({ 
+                    is_closed: true,
+                    applicants: [] // Очищаем массив, так как место занято
+                })
+                .eq('id', vacancyId);
+    
+            if (vacancyUpdateError) throw vacancyUpdateError;
+    
+            alert('Участник принят! Вакансия закрыта и удалена из общего поиска.');
+            
+            // Перенаправляем обратно в список вакансий проекта
+            router.push(`/project/${projectId}/vacancies`);
+    
+        } catch (e) {
+            console.error('Ошибка при принятии:', e);
+            alert('Не удалось принять участника: ' + e.message);
+        }
+    };
+
+	if (isLoading) return (
+		<div className='min-h-screen flex-all-center'>
+			<Loader2 className='animate-spin text-brand-purple' size={40} />
+		</div>
+	);
+
+	return (
+		<main className="py-10">
+			<Container>
+				<Link 
+					href={`/project/${projectId}/vacancies`} 
+					className="flex items-center gap-2 text-header-icons hover:text-white mb-6 transition-colors w-fit"
+				>
+					<ArrowLeft size={16} /> Назад к вакансиям
+				</Link>
+
+				<div className="mb-10">
+					<h1 className="text-3xl font-bold text-white">Кандидаты</h1>
+					<p className="text-header-icons mt-1">
+						Роль: <span className="text-brand-purple font-bold">{vacancy?.role}</span>
+					</p>
+				</div>
+
+				<div className="grid gap-4">
+					{profiles.length > 0 ? (
+						profiles.map(user => (
+							<div key={user.id} className="card p-6 flex flex-col sm:flex-row justify-between items-center gap-6">
+								<div className="flex items-center gap-4 w-full">
+									<UserAvatar avatarUrl={user.avatar_url} name={user.full_name} className="w-14 h-14" />
+									<div className="min-w-0">
+										<p className="font-bold text-white text-lg truncate">{user.full_name}</p>
+										<p className="text-sm text-header-icons">@{user.username}</p>
+										<Link 
+											href={`/user/${user.id}`} 
+											target="_blank"
+											className="text-xs text-brand-purple hover:underline mt-1 block"
+										>
+											Посмотреть профиль →
+										</Link>
+									</div>
+								</div>
+								
+								<Button 
+									onClick={() => handleAccept(user)} 
+									className="gap-2 w-full sm:w-auto px-8 bg-deep-lime text-black hover:bg-opacity-90"
+								>
+									<Check size={18} strokeWidth={3}/> Принять
+								</Button>
+							</div>
+						))
+					) : (
+						<div className="card p-20 text-center border-dashed opacity-50">
+							<p className="text-white text-lg">На эту вакансию пока никто не откликнулся.</p>
+						</div>
+					)}
+				</div>
+			</Container>
+		</main>
+	);
+};
+
+export default VacancyApplicationsPage;
+</file>
+
+<file path="src/entities/project/ui/ProjectCard/ProjectCardMinimal.jsx">
+import Link from 'next/link';
+import { ProjectStatus } from '@/shared/ui';
+import { ChevronRight, Briefcase } from 'lucide-react';
+
+const ProjectCardMinimal = ({ project, userId }) => {
+    // Находим роль текущего пользователя в этом проекте
+    const myRole = project.members?.find(m => m.user_id === userId)?.role || 'Владелец';
+
+	return (
+		<Link 
+			href={`/project/${project.id}`}
+			className='group flex items-center justify-between p-4 bg-card border border-card-border rounded-2xl hover:border-brand-purple/40 transition-all'
+		>
+			<div className='flex items-center gap-4 min-w-0'>
+                {/* Иконка вместо большой картинки */}
+                <div className='w-10 h-10 rounded-xl bg-brand-purple/10 flex items-center justify-center text-brand-purple shrink-0'>
+                    <Briefcase size={20} />
+                </div>
+
+				<div className='flex flex-col min-w-0'>
+					<div className='flex items-center gap-2'>
+						<h4 className='font-bold text-white uppercase text-sm truncate'>
+							{project.name}
+						</h4>
+						<ProjectStatus status={project.status} className="scale-75 origin-left" />
+					</div>
+					<p className='text-[11px] text-header-icons truncate'>
+						Твоя роль: <span className='text-brand-purple font-bold'>{myRole}</span>
+					</p>
+				</div>
+			</div>
+
+			<div className='flex items-center gap-3 shrink-0'>
+				<div className='p-2 rounded-lg bg-white/5 text-header-icons group-hover:text-white transition-colors'>
+					<ChevronRight size={18} />
+				</div>
+			</div>
+		</Link>
+	);
+};
+
+export default ProjectCardMinimal;
+</file>
 
 <file path=".gitignore">
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
@@ -448,10 +658,6 @@ export default EditProjectPage;
 </file>
 
 <file path="src/app/myprojects/vacancies/[vacancyId]/page.jsx">
-
-</file>
-
-<file path="src/app/project/[id]/vacancies/page.jsx">
 
 </file>
 
@@ -803,12 +1009,19 @@ import { UserAvatar } from '@/entities/user';
 const TeamList = ({ teamList = [] }) => {
 	return (
 		<ul className='flex flex-col gap-2 mb-4'>
-			{teamList.map(member => (
-				<li key={member.id} className='flex items-center gap-2'>
-					<UserAvatar avatarUrl={member.avatarUrl} />
-					<div>
-						<span className='block font-medium'>{member.name}</span>
-						<span className='block text-sm text-front'>{member.role}</span>
+			{teamList.map((member, index) => (
+				<li key={member.user_id || index} className='flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-colors'>
+					<UserAvatar 
+						avatarUrl={member.avatar_url || member.avatarUrl} 
+						className="w-10 h-10 border-2"
+					/>
+					<div className="min-w-0">
+						<span className='block font-bold text-white truncate'>
+							{member.full_name || member.name}
+						</span>
+						<span className='block text-xs text-header-icons truncate'>
+							{member.role}
+						</span>
 					</div>
 				</li>
 			))}
@@ -821,40 +1034,61 @@ export default TeamList;
 
 <file path="src/entities/user/lib/useProfile.js">
 'use client';
-
 import { supabase } from '@/shared/lib/supabase';
 import { useEffect, useState } from 'react';
 
-const useProfile = username => {
+const useProfile = userId => {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
+		if (!userId) return;
+
 		const fetchFullProfile = async () => {
 			try {
 				setLoading(true);
-				// 1. Берем профиль
+				
+				// 1. Получаем данные профиля
 				const { data: profile } = await supabase
 					.from('profiles')
 					.select('*')
-					.eq('id', username)
+					.eq('id', userId)
 					.single();
 
 				if (profile) {
-					// 2. Берем проекты этого юзера
-					const { data: projects } = await supabase
+					// 2. Проекты, которые он СОЗДАЛ (как владелец)
+					const { data: founded } = await supabase
 						.from('projects')
 						.select('*')
-						.eq('owner_id', profile.id);
+						.eq('owner_id', userId);
 
-					setData({ ...profile, founded_projects: projects || [] });
+					// 3. Проекты, где он УЧАСТНИК (поиск в JSONB колонке members)
+					const { data: joined } = await supabase
+						.from('projects')
+						.select('*')
+						.contains('members', [{ user_id: userId }]);
+
+					// Объединяем списки, чтобы не было дубликатов (если владелец добавил сам себя в members)
+					const allActiveProjects = [...(founded || [])];
+					joined?.forEach(proj => {
+						if (!allActiveProjects.find(p => p.id === proj.id)) {
+							allActiveProjects.push(proj);
+						}
+					});
+
+					setData({ 
+						...profile, 
+						active_projects: allActiveProjects 
+					});
 				}
+			} catch (e) {
+				console.error("Ошибка загрузки профиля:", e);
 			} finally {
 				setLoading(false);
 			}
 		};
 		fetchFullProfile();
-	}, [username]);
+	}, [userId]);
 
 	return { data, loading };
 };
@@ -968,7 +1202,7 @@ const useVacancyFeed = () => {
 				const { data, error } = await supabase.from('vacancies').select(`
 						*,
 						projects (*) 
-					`);
+					`).eq('is_closed', false);
 
 				if (error) throw error;
 				setRawVacancies(data || []);
@@ -1068,10 +1302,103 @@ export { default as ApplyButton } from './ui/ApplyButton.jsx';
 </file>
 
 <file path="src/features/apply-project/ui/ApplyButton.jsx">
+'use client';
 import { Button } from '@/shared/ui';
+import { supabase } from '@/shared/lib/supabase';
+import { useAuth } from '@/app/providers/AuthContext';
+import { useState, useEffect } from 'react';
 
-const ApplyButton = () => {
-	return <Button className='w-full'>Откликнуться</Button>;
+const ApplyButton = ({ vacancyId, projectId }) => {
+	const { user } = useAuth();
+	const [loading, setLoading] = useState(false);
+	const [status, setStatus] = useState('idle'); // 'idle' | 'applied' | 'member'
+
+	useEffect(() => {
+		if (!user || !projectId || !vacancyId) return;
+
+		const checkStatus = async () => {
+			// 1. Проверяем, не является ли пользователь уже участником проекта
+			const { data: project } = await supabase
+				.from('projects')
+				.select('members')
+				.eq('id', projectId)
+				.single();
+
+			const isMember = project?.members?.some(m => m.user_id === user.id);
+			if (isMember) {
+				setStatus('member');
+				return;
+			}
+
+			// 2. Проверяем, не подавался ли он уже конкретно на эту вакансию
+			const { data: vac } = await supabase
+				.from('vacancies')
+				.select('applicants')
+				.eq('id', vacancyId)
+				.single();
+
+			if (vac?.applicants?.includes(user.id)) {
+				setStatus('applied');
+			}
+		};
+
+		checkStatus();
+	}, [user, projectId, vacancyId]);
+
+	const handleApply = async (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		if (!user) return alert('Войдите в аккаунт');
+		if (status === 'member') return alert('Вы уже участвуете в этом проекте!');
+
+		setLoading(true);
+
+		try {
+			const { data: vac } = await supabase
+				.from('vacancies')
+				.select('applicants, is_closed')
+				.eq('id', vacancyId)
+				.single();
+
+			if (vac.is_closed) throw new Error("Вакансия закрыта");
+
+			const { error } = await supabase
+				.from('vacancies')
+				.update({ 
+					applicants: [...(vac.applicants || []), user.id] 
+				})
+				.eq('id', vacancyId);
+
+			if (error) throw error;
+
+			alert('Заявка отправлена!');
+			setStatus('applied');
+		} catch (err) {
+			alert(err.message);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	// Определяем текст и состояние кнопки
+	const getButtonProps = () => {
+		if (status === 'member') return { text: 'Уже в команде', disabled: true };
+		if (status === 'applied') return { text: 'Откликнуто', disabled: true };
+		return { text: loading ? 'Загрузка...' : 'Откликнуться', disabled: loading };
+	};
+
+	const props = getButtonProps();
+
+	return (
+		<Button 
+			onClick={handleApply} 
+			disabled={props.disabled} 
+			className='w-full'
+		>
+			{props.text}
+		</Button>
+	);
 };
 
 export default ApplyButton;
@@ -1724,15 +2051,6 @@ export const useMyProjects = () => {
 		count: projects.length,
 	};
 };
-</file>
-
-<file path="src/shared/lib/supabase.js">
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 </file>
 
 <file path="src/shared/lib/utils/fileUpload.js">
@@ -3261,231 +3579,6 @@ export {
 }
 </file>
 
-<file path="src/shared/ui/shadcn/dropdown-menu.jsx">
-'use client';
-
-import * as React from 'react';
-import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
-
-import { cn } from '@/shared/lib/utils/commonUtils';
-import { CheckIcon, ChevronRightIcon } from 'lucide-react';
-
-function DropdownMenu({ ...props }) {
-	return <DropdownMenuPrimitive.Root data-slot='dropdown-menu' {...props} />;
-}
-
-function DropdownMenuPortal({ ...props }) {
-	return (
-		<DropdownMenuPrimitive.Portal data-slot='dropdown-menu-portal' {...props} />
-	);
-}
-
-function DropdownMenuTrigger({ ...props }) {
-	return (
-		<DropdownMenuPrimitive.Trigger
-			data-slot='dropdown-menu-trigger'
-			{...props}
-		/>
-	);
-}
-
-function DropdownMenuContent({
-	className,
-	align = 'start',
-	sideOffset = 4,
-	...props
-}) {
-	return (
-		<DropdownMenuPrimitive.Portal>
-			<DropdownMenuPrimitive.Content
-				data-slot='dropdown-menu-content'
-				sideOffset={sideOffset}
-				align={align}
-				className={cn(
-					'z-50 max-h-(--radix-dropdown-menu-content-available-height) w-(--radix-dropdown-menu-trigger-width) min-w-32 origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:overflow-hidden data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
-					className,
-				)}
-				{...props}
-			/>
-		</DropdownMenuPrimitive.Portal>
-	);
-}
-
-function DropdownMenuGroup({ ...props }) {
-	return (
-		<DropdownMenuPrimitive.Group data-slot='dropdown-menu-group' {...props} />
-	);
-}
-
-function DropdownMenuItem({ className, inset, variant = 'default', ...props }) {
-	return (
-		<DropdownMenuPrimitive.Item
-			data-slot='dropdown-menu-item'
-			data-inset={inset}
-			data-variant={variant}
-			className={cn(
-				"group/dropdown-menu-item relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-8 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive",
-				className,
-			)}
-			{...props}
-		/>
-	);
-}
-
-function DropdownMenuCheckboxItem({
-	className,
-	children,
-	checked,
-	inset,
-	...props
-}) {
-	return (
-		<DropdownMenuPrimitive.CheckboxItem
-			data-slot='dropdown-menu-checkbox-item'
-			data-inset={inset}
-			className={cn(
-				"relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-8 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-				className,
-			)}
-			checked={checked}
-			{...props}
-		>
-			<span
-				className='pointer-events-none absolute right-2 flex items-center justify-center'
-				data-slot='dropdown-menu-checkbox-item-indicator'
-			>
-				<DropdownMenuPrimitive.ItemIndicator>
-					<CheckIcon />
-				</DropdownMenuPrimitive.ItemIndicator>
-			</span>
-			{children}
-		</DropdownMenuPrimitive.CheckboxItem>
-	);
-}
-
-function DropdownMenuRadioGroup({ ...props }) {
-	return (
-		<DropdownMenuPrimitive.RadioGroup
-			data-slot='dropdown-menu-radio-group'
-			{...props}
-		/>
-	);
-}
-
-function DropdownMenuRadioItem({ className, children, inset, ...props }) {
-	return (
-		<DropdownMenuPrimitive.RadioItem
-			data-slot='dropdown-menu-radio-item'
-			data-inset={inset}
-			className={cn(
-				"relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-8 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-				className,
-			)}
-			{...props}
-		>
-			<span
-				className='pointer-events-none absolute right-2 flex items-center justify-center'
-				data-slot='dropdown-menu-radio-item-indicator'
-			>
-				<DropdownMenuPrimitive.ItemIndicator>
-					<CheckIcon />
-				</DropdownMenuPrimitive.ItemIndicator>
-			</span>
-			{children}
-		</DropdownMenuPrimitive.RadioItem>
-	);
-}
-
-function DropdownMenuLabel({ className, inset, ...props }) {
-	return (
-		<DropdownMenuPrimitive.Label
-			data-slot='dropdown-menu-label'
-			data-inset={inset}
-			className={cn(
-				'px-2 py-1.5 text-xs font-medium text-muted-foreground data-inset:pl-8',
-				className,
-			)}
-			{...props}
-		/>
-	);
-}
-
-function DropdownMenuSeparator({ className, ...props }) {
-	return (
-		<DropdownMenuPrimitive.Separator
-			data-slot='dropdown-menu-separator'
-			className={cn('-mx-1 my-1 h-px bg-border', className)}
-			{...props}
-		/>
-	);
-}
-
-function DropdownMenuShortcut({ className, ...props }) {
-	return (
-		<span
-			data-slot='dropdown-menu-shortcut'
-			className={cn(
-				'ml-auto text-xs tracking-widest text-muted-foreground group-focus/dropdown-menu-item:text-accent-foreground',
-				className,
-			)}
-			{...props}
-		/>
-	);
-}
-
-function DropdownMenuSub({ ...props }) {
-	return <DropdownMenuPrimitive.Sub data-slot='dropdown-menu-sub' {...props} />;
-}
-
-function DropdownMenuSubTrigger({ className, inset, children, ...props }) {
-	return (
-		<DropdownMenuPrimitive.SubTrigger
-			data-slot='dropdown-menu-sub-trigger'
-			data-inset={inset}
-			className={cn(
-				"flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-8 data-open:bg-accent data-open:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-				className,
-			)}
-			{...props}
-		>
-			{children}
-			<ChevronRightIcon className='ml-auto' />
-		</DropdownMenuPrimitive.SubTrigger>
-	);
-}
-
-function DropdownMenuSubContent({ className, ...props }) {
-	return (
-		<DropdownMenuPrimitive.SubContent
-			data-slot='dropdown-menu-sub-content'
-			className={cn(
-				'z-50 min-w-[96px] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md bg-popover p-1 text-popover-foreground shadow-lg ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
-				className,
-			)}
-			{...props}
-		/>
-	);
-}
-
-export {
-	DropdownMenu,
-	DropdownMenuPortal,
-	DropdownMenuTrigger,
-	DropdownMenuContent,
-	DropdownMenuGroup,
-	DropdownMenuLabel,
-	DropdownMenuItem,
-	DropdownMenuCheckboxItem,
-	DropdownMenuRadioGroup,
-	DropdownMenuRadioItem,
-	DropdownMenuSeparator,
-	DropdownMenuShortcut,
-	DropdownMenuSub,
-	DropdownMenuSubTrigger,
-	DropdownMenuSubContent,
-};
-</file>
-
 <file path="src/shared/ui/shadcn/input-group.jsx">
 "use client"
 
@@ -4192,9 +4285,10 @@ import {
 	VacancyAction,
 	VacancyBlock,
 } from '..';
-import { TEAMLIST } from '@/shared/static';
+
 
 const VacancyProject = ({ project, vacancy = null }) => {
+	const team = project.members || [];
 	return (
 		<section>
 			<div className='mx-auto max-w-300 w-full'>
@@ -4224,7 +4318,7 @@ const VacancyProject = ({ project, vacancy = null }) => {
 								role='Начинающий фронтенд разработчик'
 							/>
 						)}
-						<TeamStack teamList={TEAMLIST} />
+						<TeamStack teamList={team} />
 					</div>
 				</div>
 			</div>
@@ -4263,141 +4357,174 @@ export default VacancyProject;
 }
 </file>
 
-<file path="src/app/project/[id]/vacancies/[vacancyId]/page.jsx">
+<file path="src/app/project/[id]/vacancies/page.jsx">
 'use client';
-import { useWatch } from 'react-hook-form';
-import { useState } from 'react';
+
 import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/shared/lib/supabase';
+import { ProjectHeader } from '@/widgets';
 import { useProjectIdentity } from '@/entities/project';
-import { useVacancyForm, VacancyForm } from '@/features/create-vacancy';
-import { Button, Modal } from '@/shared/ui';
-import { Eye, Save } from 'lucide-react';
-import { VacancyCard } from '@/entities/vacancy';
-
-const CreateVacancyPage = () => {
-	const { id: projectId } = useParams();
-
-	const [isOpenModal, setIsOpenModal] = useState(false);
-
-	const { form, submitForm, isFetching, isSubmitting, error } =
-		useVacancyForm(projectId);
-
-	const { project: projectIdentity, loading: isProjectLoading } =
-		useProjectIdentity(projectId);
-
-	const isLoading = isFetching && isProjectLoading;
-
-	const {
-		handleSubmit,
-		control,
-		formState: { errors },
-	} = form;
-
-	const onSubmit = async data => {
-		await submitForm(data);
-	};
-
-	const watchedData = useWatch({
-		control,
-		defaultValue: form.getValues(),
-	});
-
-	return (
-		<main className='container-wide py-10'>
-			{!isLoading && (
-				<>
-					<h1 className='text-3xl font-bold text-white tracking-tight mb-2'>
-						Новая вакансия
-					</h1>
-					<div className='flex flex-col lg:flex-row gap-10 items-start'>
-						<div className='grow w-full space-y-8'>
-							<VacancyForm control={control} errors={errors} />
-						</div>
-
-						<aside className='w-full lg:w-[320px] shrink-0 sticky top-10 flex flex-col gap-6'>
-							<div className='card p-6 flex flex-col gap-4'>
-								<Button
-									onClick={handleSubmit(onSubmit)}
-									className='w-full gap-2 py-4'
-								>
-									<Save size={18} />
-									{isSubmitting ? 'Публикация...' : 'Опубликовать'}
-								</Button>
-
-								<Button
-									variant='secondary'
-									onClick={() => setIsOpenModal(true)}
-									className='w-full gap-2'
-								>
-									<Eye size={18} />
-									Предпросмотр
-								</Button>
-							</div>
-
-							<Modal
-								className='p-10 max-w-150 flex-all-center'
-								isOpen={isOpenModal}
-								onClose={() => setIsOpenModal(false)}
-							>
-								<VacancyCard
-									className='max-w-200 w-full'
-									title={projectIdentity?.name || 'Название'}
-									description={watchedData?.hook || 'Введите описание'}
-									imageUrl={watchedData?.thumbnail_url}
-									vacancyRole={watchedData?.role || 'Введите роль'}
-									vacancyExperience={watchedData?.experience}
-									skills={watchedData?.skills}
-									status={projectIdentity?.status}
-								/>
-							</Modal>
-						</aside>
-					</div>
-				</>
-			)}
-		</main>
-	);
-};
-
-export default CreateVacancyPage;
-</file>
-
-<file path="src/entities/project/ui/ProjectDashboardPanel/ProjectDashboardPanel.jsx">
+import { Button, Container, Quantity, RemoveButton } from '@/shared/ui';
+import { Loader2, Plus, Edit2, Users } from 'lucide-react';
 import Link from 'next/link';
-import { Button, StatItem } from '@/shared/ui';
-import { Eye, Mail } from 'lucide-react';
-import { TeamAvatars } from '@/entities/team';
+import { cn } from '@/shared/lib/utils/commonUtils';
 
-const ProjectDashboardPanel = ({ stats, team, projectId }) => {
-	return (
-		<div className='grid grid-cols-5 gap-4 items-center'>
-			<div className='flex col-span-2 gap-3 border-r border-card-border pr-4 h-full items-center'>
-				<Button className='w-1/2 py-2' variant='secondary' asChild={true}>
-					<Link href={`/editproject/${projectId}`}>Редактировать</Link>
-				</Button>
-				<Button asChild={true} className='w-1/2 py-2.5'>
-					<Link href={`project/${projectId}/vacancies/1`}>Вакансии</Link>
-				</Button>
-			</div>
+const ProjectVacanciesPage = () => {
+    const { id: projectId } = useParams();
+    const [vacancies, setVacancies] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+	
+	const { project: identity, loading: identityLoading } = useProjectIdentity(projectId);
 
-			<div className='flex items-center col-span-2 gap-4 border-r border-card-border'>
-				<TeamAvatars users={team} />
-				<Button variant='ghost'>+ Добавить участника</Button>
-			</div>
+    const fetchVacancies = async () => {
+        setIsLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('vacancies')
+                .select('*')
+                .eq('project_id', projectId);
+            
+            if (error) throw error;
+            setVacancies(data || []);
+        } catch (err) {
+            console.error('Error fetching vacancies:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-			<div className='pl-4 col-span-1'>
-				<StatItem icon={Eye} value={stats.views} label='просмотров' />
-				<StatItem
-					icon={Mail}
-					value={stats.totalResponses - stats.newResponses}
-					label='новых откликов'
-					color='green'
-				/>
-			</div>
-		</div>
-	);
+    const handleDelete = async (vacancyId) => {
+        if (!confirm('Вы уверены, что хотите удалить эту вакансию?')) return;
+
+        try {
+            const { error } = await supabase
+                .from('vacancies')
+                .delete()
+                .eq('id', vacancyId);
+
+            if (error) throw error;
+
+            // Мгновенно удаляем из списка на экране
+            setVacancies(prev => prev.filter(v => v.id !== vacancyId));
+        } catch (err) {
+            alert('Ошибка при удалении: ' + err.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchVacancies();
+    }, [projectId]);
+
+    if (isLoading || identityLoading) {
+        return (
+            <div className='min-h-screen flex-all-center'>
+                <Loader2 className='animate-spin text-brand-purple' size={40} />
+            </div>
+        );
+    }
+
+    return (
+        <main className='py-10'>
+            <Container>
+                <ProjectHeader 
+                    projectName={identity?.name} 
+                    slogan={identity?.slogan} 
+                    status={identity?.status}
+                    isDashboard={true}
+                    projectId={projectId}
+                />
+
+                <div className='flex justify-between items-center mb-8'>
+                    <div className='flex items-center gap-4'>
+                        <h1 className='text-3xl font-bold text-white'>Вакансии проекта</h1>
+                        <Quantity quantity={vacancies.length} outOf={10} text="создано" />
+                    </div>
+                    
+                    {vacancies.length < 10 && (
+                        <Button asChild className='gap-2'>
+                            <Link href={`/project/${projectId}/vacancies/create`}>
+                                <Plus size={18} /> Создать вакансию
+                            </Link>
+                        </Button>
+                    )}
+                </div>
+
+                <div className='grid gap-4'>
+                    {vacancies.length > 0 ? (
+                        vacancies.map(vacancy => (
+                            <div 
+                                key={vacancy.id} 
+                                className={cn(
+                                    'card p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all',
+                                    // Если вакансия закрыта, делаем её полупрозрачной и меняем фон
+                                    vacancy.is_closed ? 'opacity-60 bg-black/40 border-dashed' : 'hover:border-brand-purple/30'
+                                )}
+                            >
+                                <div className='flex-1 min-w-0'>
+                                    <div className="flex items-center gap-3 mb-1">
+                                        <h3 className='text-xl font-bold text-white truncate'>
+                                            {vacancy.role}
+                                        </h3>
+                                        
+                                        {/* ИНДИКАТОР ЗАКРЫТОЙ ВАКАНСИИ */}
+                                        {vacancy.is_closed && (
+                                            <span className="px-2 py-0.5 rounded-md bg-deep-lime/10 border border-deep-lime/30 text-deep-lime text-[10px] font-black uppercase tracking-widest">
+                                                Место занято
+                                            </span>
+                                        )}
+                                    </div>
+                                    
+                                    <p className='text-header-icons text-sm line-clamp-2 leading-relaxed break-all'>
+                                        {vacancy.hook}
+                                    </p>
+                                </div>
+
+                                <div className='flex gap-3 shrink-0 items-center'>
+                                    {/* Если вакансия ОТКРЫТА — показываем все кнопки */}
+                                    {!vacancy.is_closed ? (
+                                        <>
+                                            <Button variant='secondary' asChild size="sm" className="border-card-border">
+                                                <Link href={`/project/${projectId}/vacancies/${vacancy.id}/applications`}>
+                                                    <Users size={16} className='mr-2'/> 
+                                                    Заявки ({vacancy.applicants?.length || 0})
+                                                </Link>
+                                            </Button>
+
+                                            <Button variant='ghost' asChild size="sm" className="border-card-border hover:border-brand-purple/50">
+                                                <Link href={`/project/${projectId}/vacancies/${vacancy.id}`}>
+                                                    <Edit2 size={16} className='mr-2'/> Редактировать
+                                                </Link>
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        /* Если вакансия ЗАКРЫТА — пишем текст вместо кнопок управления */
+                                        <span className="text-header-icons text-xs font-bold uppercase italic mr-4">
+                                            Набор завершен
+                                        </span>
+                                    )}
+
+                                    {/* Кнопку удаления оставляем всегда, чтобы можно было убрать старый слот */}
+                                    <RemoveButton 
+                                        onClick={() => handleDelete(vacancy.id)}
+                                        className="rounded-xl"
+                                        type="colored"
+                                    />
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className='card p-20 text-center opacity-50 border-dashed'>
+                            <p>У проекта пока нет активных вакансий</p>
+                        </div>
+                    )}
+                </div>
+            </Container>
+        </main>
+    );
 };
 
-export default ProjectDashboardPanel;
+export default ProjectVacanciesPage;
 </file>
 
 <file path="src/entities/project/ui/ProjectGallery/ProjectGallery.jsx">
@@ -4517,9 +4644,10 @@ export default Vacancy;
 
 <file path="src/entities/vacancy/ui/VacancyCard/CardVacancy.jsx">
 import { EXPERIENCE_VALUES } from '@/shared/static/vacancy';
-import { Button } from '@/shared/ui';
 
-const CardVacancy = ({ role, experience }) => {
+import { ApplyButton } from '@/features/apply-project'; 
+
+const CardVacancy = ({ role, experience, vacancyId, projectId }) => {
 	return (
 		<div className='ml-3 flex wrap-break-word min-w-0 basis-[44%] shrink flex-col'>
 			<div>
@@ -4530,9 +4658,10 @@ const CardVacancy = ({ role, experience }) => {
 					{EXPERIENCE_VALUES[experience]}
 				</span>
 			</div>
-			<Button className='mt-auto w-full pointer-events-auto'>
-				Откликнуться
-			</Button>
+
+			<div className="mt-auto w-full pointer-events-auto">
+				<ApplyButton vacancyId={vacancyId} projectId={projectId} />
+			</div>
 		</div>
 	);
 };
@@ -4686,124 +4815,6 @@ export { default as CreateProjectForm } from './ui/CreateProjectForm/CreateProje
 export { default as CreateProjectActions } from './ui/CreateProjectActions/CreateProjectActions';
 export { default as ViewModal } from './ui/ViewModal/ViewModal';
 export { default as useProjectForm } from './lib/useProjectForm';
-</file>
-
-<file path="src/features/create-project/lib/useProjectForm.js">
-'use client';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { supabase } from '@/shared/lib/supabase';
-import { useAuth } from '@/app/providers/AuthContext';
-import { createProjectSchema } from '../model/createProjectSchema';
-import { uploadFile } from '@/shared/lib/utils/fileUpload';
-
-const useProjectForm = (projectId = null) => {
-	const { user } = useAuth();
-	const [isFetching, setIsFetching] = useState(!!projectId);
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [error, setError] = useState(null);
-
-	const form = useForm({
-		resolver: zodResolver(createProjectSchema),
-		mode: 'all',
-		defaultValues: {
-			name: '',
-			slogan: '',
-			status: 'idea',
-			description: '',
-			idea: '',
-			approach: '',
-			links: [{ id: Date.now().toString(), label: 'Сайт', url: '' }],
-			gallery: [],
-		},
-	});
-
-	useEffect(() => {
-		if (!projectId) return;
-
-		const fetchProject = async () => {
-			setIsFetching(true);
-			const { data, error } = await supabase
-				.from('projects')
-				.select('*')
-				.eq('id', projectId)
-				.single();
-
-			if (data) {
-				form.reset({
-					name: data.name,
-					slogan: data.slogan,
-					status: data.status,
-					description: data.description,
-					idea: data.idea,
-					approach: data.approach,
-					links: data.links || [],
-					gallery: data.gallery || [],
-					logo_url: data.logo_url,
-				});
-			}
-			setIsFetching(false);
-		};
-
-		fetchProject();
-	}, [projectId, form]);
-
-	const submitForm = async data => {
-		setIsSubmitting(true);
-		try {
-			const logoUrl = await uploadFile(
-				data.logo_url,
-				'project-assets',
-				'logos',
-			);
-
-			const gallery = data.gallery
-				? await Promise.all(
-						data.gallery.map(img =>
-							uploadFile(img, 'project-assets', 'screenshots'),
-						),
-					)
-				: [];
-
-			const payload = {
-				name: data.name,
-				slogan: data.slogan,
-				status: data.status,
-				description: data.description,
-				idea: data.idea,
-				approach: data.approach,
-				links: data.links,
-				gallery: gallery.filter(Boolean),
-				logo_url: logoUrl,
-				owner_id: user.id,
-			};
-
-			let result;
-
-			if (projectId) {
-				result = await supabase
-					.from('projects')
-					.update(payload)
-					.eq('id', projectId);
-				console.log(result);
-			} else {
-				result = await supabase.from('projects').insert([payload]);
-				console.log(result);
-			}
-
-			if (result.error) throw result.error;
-		} catch (err) {
-			setError(err.message);
-		} finally {
-			setIsSubmitting(false);
-		}
-	};
-
-	return { form, submitForm, isFetching, isSubmitting, error };
-};
-
-export default useProjectForm;
 </file>
 
 <file path="src/features/create-project/ui/CreateProjectForm/CreateProjectAbout.jsx">
@@ -5020,109 +5031,6 @@ const CreateProjectGallery = ({ value, onChange, error }) => {
 export default CreateProjectGallery;
 </file>
 
-<file path="src/features/create-vacancy/lib/useVacancyForm.js">
-'use client';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { supabase } from '@/shared/lib/supabase';
-import { uploadFile } from '@/shared/lib/utils/fileUpload';
-import { vacancySchema } from '../model/vacancySchema';
-
-const useVacancyForm = (projectId, vacancyId = null) => {
-	const [isFetching, setIsFetching] = useState(!!vacancyId);
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [error, setError] = useState(null);
-
-	const form = useForm({
-		resolver: zodResolver(vacancySchema),
-		mode: 'onChange',
-		defaultValues: {
-			role: '',
-			experience: 'none',
-			stack: [],
-			thumbnail_url: '',
-			hook: '',
-			description: '',
-		},
-	});
-
-	useEffect(() => {
-		if (!vacancyId) return;
-
-		const fetchVacancy = async () => {
-			setIsFetching(true);
-			const { data } = await supabase
-				.from('vacancies')
-				.select('*')
-				.eq('id', vacancyId)
-				.single();
-
-			if (data) {
-				form.reset({
-					role: data.role,
-					experience: data.experience,
-					stack: data.stack || [],
-					thumbnail_url: data.thumbnail_url,
-					hook: data.hook,
-					description: data.description,
-				});
-			}
-			setIsFetching(false);
-		};
-
-		fetchVacancy();
-	}, [vacancyId, form]);
-
-	const submitForm = async data => {
-		setIsSubmitting(true);
-		setError(null);
-
-		try {
-			const finalCoverUrl = await uploadFile(
-				data.thumbnail_url,
-				'project-assets',
-				'vacancy-thumbnails',
-			);
-
-			const payload = {
-				project_id: projectId,
-				role: data.role,
-				experience: data.experience,
-				stack: data.stack,
-				hook: data.hook,
-				description: data.description,
-				thumbnail_url: finalCoverUrl,
-			};
-
-			let result;
-
-			if (vacancyId) {
-				// Обновление
-				result = await supabase
-					.from('vacancies')
-					.update(payload)
-					.eq('id', vacancyId);
-			} else {
-				// Создание новой
-				result = await supabase.from('vacancies').insert([payload]);
-			}
-
-			if (result.error) throw result.error;
-		} catch (err) {
-			console.error('Ошибка при сохранении вакансии:', err);
-			setError(err.message);
-		} finally {
-			setIsSubmitting(false);
-		}
-	};
-
-	return { form, submitForm, isFetching, isSubmitting, error };
-};
-
-export default useVacancyForm;
-</file>
-
 <file path="src/features/create-vacancy/model/vacancySchema.js">
 import { z } from 'zod';
 
@@ -5299,39 +5207,6 @@ export { default as SkillsSelect } from './ui/SkillsSelect/SkillsSelect';
 export { default as EditProfileForm } from './ui/EditProfileForm/EditProfileForm';
 </file>
 
-<file path="src/features/onboarding/lib/withOnboardingAccess.jsx">
-'use client';
-import { useAuth } from '@/app/providers/AuthContext';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-
-const withOnboardingAccess = Component => {
-	return function ProtectedOnboarding(props) {
-		const { user, loading } = useAuth();
-		const router = useRouter();
-
-		useEffect(() => {
-			if (loading) return;
-
-			if (!user) {
-				router.push('/?auth=true');
-				return;
-			}
-
-			if (user.is_completed) {
-				router.push('/');
-			}
-		}, [user, loading, router]);
-
-		if (loading || !user || user.is_completed) return null;
-
-		return <Component {...props} />;
-	};
-};
-
-export default withOnboardingAccess;
-</file>
-
 <file path="src/features/onboarding/ui/OnboardingStepper/StepTwo.jsx">
 import { Controller, useFormState } from 'react-hook-form';
 import UserStatusSelect from '@/entities/user/ui/UserStatusSelect/UserStatusSelect';
@@ -5418,6 +5293,21 @@ export const Vk = ({ size = 16, ...props }) => (
 		<path d='M7 10c.5 3 2.5 5 5 5s4.5-2 5-5' />
 	</svg>
 );
+</file>
+
+<file path="src/shared/lib/supabase.js">
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+});
 </file>
 
 <file path="src/shared/lib/utils/commonUtils.js">
@@ -5862,142 +5752,6 @@ const MultiImageUploader = ({ value = [], onChange, maxFiles = 10, error }) => {
 export default MultiImageUploader;
 </file>
 
-<file path="src/shared/ui/inputs/RichEditor/RichEditor.jsx">
-'use client';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
-import { Bold, Italic, List, ListOrdered, Underline } from 'lucide-react';
-import { cn } from '@/shared/lib/utils/commonUtils';
-import { ErrorField, Quantity } from '@/shared/ui';
-import CharacterCount from '@tiptap/extension-character-count';
-import { useState } from 'react';
-
-const RichEditor = ({
-	value,
-	onChange,
-	placeholder,
-	error,
-	maxLength = 2000,
-}) => {
-	const [characters, setCharacters] = useState(value ? value.length : 0);
-
-	const editor = useEditor({
-		extensions: [
-			StarterKit.configure({
-				bulletList: {
-					keepMarks: true,
-					keepAttributes: false,
-				},
-				orderedList: {
-					keepMarks: true,
-					keepAttributes: false,
-				},
-			}),
-			Placeholder.configure({
-				placeholder: placeholder || 'Введите описание...',
-			}),
-			CharacterCount.configure({
-				limit: maxLength,
-			}),
-		],
-		content: value,
-		immediatelyRender: false,
-		onUpdate: ({ editor }) => {
-			onChange(editor.getHTML());
-			setCharacters(editor.storage.characterCount.characters());
-		},
-		editorProps: {
-			attributes: {
-				class: cn(
-					'prose prose-invert max-w-none focus:outline-none min-h-[200px] p-5 text-white',
-					'prose-ul:list-disc prose-ul:ml-4 prose-ol:list-decimal prose-ol:ml-4',
-					'prose-li:my-0',
-				),
-			},
-			transformPastedText(text) {
-				return text.replace(/[\r\n]+/g, ' ');
-			},
-			transformPastedHTML(html) {
-				return html.replace(/<\/p><p>/g, ' ').replace(/<br\s*\/?>/g, ' ');
-			},
-		},
-	});
-
-	if (!editor) return null;
-
-	return (
-		<div>
-			<div
-				className={cn(
-					'w-full bg-input border rounded-2xl overflow-hidden transition-all',
-					error
-						? 'border-red-500'
-						: 'border-card-border focus-within:border-brand-purple',
-				)}
-			>
-				{/* Панель инструментов */}
-				<div className='flex items-center gap-1 p-2 border-b border-card-border bg-black/20'>
-					<MenuButton
-						onClick={() => editor.chain().focus().toggleBold().run()}
-						active={editor.isActive('bold')}
-						icon={Bold}
-					/>
-					<MenuButton
-						onClick={() => editor.chain().focus().toggleItalic().run()}
-						active={editor.isActive('italic')}
-						icon={Italic}
-					/>
-					<MenuButton
-						onClick={() => editor.chain().focus().toggleUnderline().run()}
-						active={editor.isActive('underline')}
-						icon={Underline}
-					/>
-					<div className='w-px h-4 bg-card-border mx-1' />
-
-					{/* Кнопка ненумерованного списка */}
-					<MenuButton
-						onClick={() => editor.chain().focus().toggleBulletList().run()}
-						active={editor.isActive('bulletList')}
-						icon={List}
-					/>
-
-					{/* Кнопка нумерованного списка */}
-					<MenuButton
-						onClick={() => editor.chain().focus().toggleOrderedList().run()}
-						active={editor.isActive('orderedList')}
-						icon={ListOrdered}
-					/>
-				</div>
-
-				<EditorContent editor={editor} />
-			</div>
-			<div className='flex justify-between items-center'>
-				{error && <ErrorField errorText={error.message} />}
-				<Quantity className='ml-auto' quantity={characters} outOf={maxLength} />
-			</div>
-		</div>
-	);
-};
-
-const MenuButton = ({ onClick, active, icon: Icon }) => (
-	<button
-		type='button'
-		onClick={onClick}
-		className={cn(
-			'p-2 rounded-lg transition-colors',
-			active
-				? 'bg-brand-purple text-white'
-				: 'text-header-icons hover:bg-white/5 hover:text-white',
-		)}
-	>
-		<Icon size={18} />
-	</button>
-);
-
-export default RichEditor;
-</file>
-
 <file path="src/shared/ui/overlays/CropModal/CropModal.jsx">
 'use client';
 
@@ -6075,6 +5829,235 @@ export default CropModal;
 <file path="src/shared/ui/overlays/index.js">
 export { default as Modal } from './Modal/Modal';
 export { default as CropModal } from './CropModal/CropModal';
+</file>
+
+<file path="src/shared/ui/shadcn/dropdown-menu.jsx">
+'use client';
+
+import * as React from 'react';
+import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
+
+import { cn } from '@/shared/lib/utils/commonUtils';
+import { CheckIcon, ChevronRightIcon } from 'lucide-react';
+
+function DropdownMenu({ ...props }) {
+	return <DropdownMenuPrimitive.Root data-slot='dropdown-menu' {...props} />;
+}
+
+function DropdownMenuPortal({ ...props }) {
+	return (
+		<DropdownMenuPrimitive.Portal data-slot='dropdown-menu-portal' {...props} />
+	);
+}
+
+function DropdownMenuTrigger({ ...props }) {
+	return (
+		<DropdownMenuPrimitive.Trigger
+			data-slot='dropdown-menu-trigger'
+			{...props}
+		/>
+	);
+}
+
+function DropdownMenuContent({
+	className,
+	align = 'start',
+	sideOffset = 4,
+	...props
+}) {
+	return (
+		<DropdownMenuPrimitive.Portal>
+			<DropdownMenuPrimitive.Content
+				data-slot='dropdown-menu-content'
+				sideOffset={sideOffset}
+				align={align}
+				className={cn(
+					'z-50 min-w-32 overflow-hidden rounded-xl', 
+					'bg-card border border-card-border text-white shadow-2xl',
+					'duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95',
+					className,
+				)}
+				{...props}
+			/>
+		</DropdownMenuPrimitive.Portal>
+	);
+}
+
+function DropdownMenuGroup({ ...props }) {
+	return (
+		<DropdownMenuPrimitive.Group data-slot='dropdown-menu-group' {...props} />
+	);
+}
+
+function DropdownMenuItem({ className, inset, variant = 'default', ...props }) {
+	return (
+		<DropdownMenuPrimitive.Item
+			data-slot='dropdown-menu-item'
+			data-inset={inset}
+			data-variant={variant}
+			className={cn(
+				"relative flex cursor-default items-center gap-2 rounded-lg px-3 py-2 text-sm outline-none transition-colors select-none",
+				"focus:bg-white/5 focus:text-white", 
+				"data-disabled:pointer-events-none data-disabled:opacity-50",
+				className,
+			)}
+			{...props}
+		/>
+	);
+}
+
+function DropdownMenuCheckboxItem({
+	className,
+	children,
+	checked,
+	inset,
+	...props
+}) {
+	return (
+		<DropdownMenuPrimitive.CheckboxItem
+			data-slot='dropdown-menu-checkbox-item'
+			data-inset={inset}
+			className={cn(
+				"relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-8 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+				className,
+			)}
+			checked={checked}
+			{...props}
+		>
+			<span
+				className='pointer-events-none absolute right-2 flex items-center justify-center'
+				data-slot='dropdown-menu-checkbox-item-indicator'
+			>
+				<DropdownMenuPrimitive.ItemIndicator>
+					<CheckIcon />
+				</DropdownMenuPrimitive.ItemIndicator>
+			</span>
+			{children}
+		</DropdownMenuPrimitive.CheckboxItem>
+	);
+}
+
+function DropdownMenuRadioGroup({ ...props }) {
+	return (
+		<DropdownMenuPrimitive.RadioGroup
+			data-slot='dropdown-menu-radio-group'
+			{...props}
+		/>
+	);
+}
+
+function DropdownMenuRadioItem({ className, children, inset, ...props }) {
+	return (
+		<DropdownMenuPrimitive.RadioItem
+			data-slot='dropdown-menu-radio-item'
+			data-inset={inset}
+			className={cn(
+				"relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-8 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+				className,
+			)}
+			{...props}
+		>
+			<span
+				className='pointer-events-none absolute right-2 flex items-center justify-center'
+				data-slot='dropdown-menu-radio-item-indicator'
+			>
+				<DropdownMenuPrimitive.ItemIndicator>
+					<CheckIcon />
+				</DropdownMenuPrimitive.ItemIndicator>
+			</span>
+			{children}
+		</DropdownMenuPrimitive.RadioItem>
+	);
+}
+
+function DropdownMenuLabel({ className, inset, ...props }) {
+	return (
+		<DropdownMenuPrimitive.Label
+			data-slot='dropdown-menu-label'
+			data-inset={inset}
+			className={cn(
+				'px-2 py-1.5 text-xs font-medium text-muted-foreground data-inset:pl-8',
+				className,
+			)}
+			{...props}
+		/>
+	);
+}
+
+function DropdownMenuSeparator({ className, ...props }) {
+	return (
+		<DropdownMenuPrimitive.Separator
+			data-slot='dropdown-menu-separator'
+			className={cn('-mx-1 my-1 h-px bg-border', className)}
+			{...props}
+		/>
+	);
+}
+
+function DropdownMenuShortcut({ className, ...props }) {
+	return (
+		<span
+			data-slot='dropdown-menu-shortcut'
+			className={cn(
+				'ml-auto text-xs tracking-widest text-muted-foreground group-focus/dropdown-menu-item:text-accent-foreground',
+				className,
+			)}
+			{...props}
+		/>
+	);
+}
+
+function DropdownMenuSub({ ...props }) {
+	return <DropdownMenuPrimitive.Sub data-slot='dropdown-menu-sub' {...props} />;
+}
+
+function DropdownMenuSubTrigger({ className, inset, children, ...props }) {
+	return (
+		<DropdownMenuPrimitive.SubTrigger
+			data-slot='dropdown-menu-sub-trigger'
+			data-inset={inset}
+			className={cn(
+				"flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-8 data-open:bg-accent data-open:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+				className,
+			)}
+			{...props}
+		>
+			{children}
+			<ChevronRightIcon className='ml-auto' />
+		</DropdownMenuPrimitive.SubTrigger>
+	);
+}
+
+function DropdownMenuSubContent({ className, ...props }) {
+	return (
+		<DropdownMenuPrimitive.SubContent
+			data-slot='dropdown-menu-sub-content'
+			className={cn(
+				'z-50 min-w-[96px] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md bg-popover p-1 text-popover-foreground shadow-lg ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+				className,
+			)}
+			{...props}
+		/>
+	);
+}
+
+export {
+	DropdownMenu,
+	DropdownMenuPortal,
+	DropdownMenuTrigger,
+	DropdownMenuContent,
+	DropdownMenuGroup,
+	DropdownMenuLabel,
+	DropdownMenuItem,
+	DropdownMenuCheckboxItem,
+	DropdownMenuRadioGroup,
+	DropdownMenuRadioItem,
+	DropdownMenuSeparator,
+	DropdownMenuShortcut,
+	DropdownMenuSub,
+	DropdownMenuSubTrigger,
+	DropdownMenuSubContent,
+};
 </file>
 
 <file path="src/widgets/Header/navigation/NavIcons.jsx">
@@ -6249,6 +6232,7 @@ const VacancyFeed = () => {
 						vacancyExperience={item.experience || 'Без опыта'}
 						skills={item.stack}
 						vacancyId={item.id}
+						projectId={item.project_id}
 					/>
 				))}
 			</div>
@@ -6259,12 +6243,109 @@ const VacancyFeed = () => {
 export default VacancyFeed;
 </file>
 
+<file path="src/app/project/[id]/vacancies/[vacancyId]/page.jsx">
+'use client';
+import { useWatch } from 'react-hook-form';
+import { useState } from 'react';
+import { useParams } from 'next/navigation';
+import { useProjectIdentity } from '@/entities/project';
+import { useVacancyForm, VacancyForm } from '@/features/create-vacancy';
+import { Button, Modal } from '@/shared/ui';
+import { Eye, Save } from 'lucide-react';
+import { VacancyCard } from '@/entities/vacancy';
+
+const CreateVacancyPage = () => {
+	const { id: projectId, vacancyId } = useParams();
+
+	const isEditing = vacancyId && vacancyId !== 'create';
+
+	const [isOpenModal, setIsOpenModal] = useState(false);
+
+	const { form, submitForm, isFetching, isSubmitting, error } =
+		useVacancyForm(projectId, vacancyId);
+
+	const { project: projectIdentity, loading: isProjectLoading } =
+		useProjectIdentity(projectId);
+
+	const isLoading = isFetching && isProjectLoading;
+
+	const {handleSubmit, control, formState: { errors },} = form;
+
+	const onSubmit = async data => {
+		await submitForm(data);
+	};
+
+	const watchedData = useWatch({
+		control,
+		defaultValue: form.getValues(),
+	});
+
+	return (
+		<main className='container-wide py-10'>
+			{!isLoading && (
+				<>
+					<h1 className='text-3xl font-bold text-white tracking-tight mb-2'>
+						{isEditing ? 'Редактировать вакансию' : 'Новая вакансия'}
+					</h1>
+					<div className='flex flex-col lg:flex-row gap-10 items-start'>
+						<div className='grow w-full space-y-8'>
+							<VacancyForm control={control} errors={errors} />
+						</div>
+
+						<aside className='w-full lg:w-[320px] shrink-0 sticky top-10 flex flex-col gap-6'>
+							<div className='card p-6 flex flex-col gap-4'>
+								<Button
+									onClick={handleSubmit(onSubmit)}
+									className='w-full gap-2 py-4'
+								>
+									<Save size={18} />
+									{isSubmitting ? 'Сохранение...' : (isEditing ? 'Сохранить изменения' : 'Опубликовать')}
+								</Button>
+
+								<Button
+									variant='secondary'
+									onClick={() => setIsOpenModal(true)}
+									className='w-full gap-2'
+								>
+									<Eye size={18} />
+									Предпросмотр
+								</Button>
+							</div>
+
+							<Modal
+								className='p-10 max-w-150 flex-all-center'
+								isOpen={isOpenModal}
+								onClose={() => setIsOpenModal(false)}
+							>
+								<VacancyCard
+									className='max-w-200 w-full'
+									title={projectIdentity?.name || 'Название'}
+									description={watchedData?.hook || 'Введите описание'}
+									imageUrl={watchedData?.thumbnail_url}
+									vacancyRole={watchedData?.role || 'Введите роль'}
+									vacancyExperience={watchedData?.experience}
+									skills={watchedData?.skills}
+									status={projectIdentity?.status}
+								/>
+							</Modal>
+						</aside>
+					</div>
+				</>
+			)}
+		</main>
+	);
+};
+
+export default CreateVacancyPage;
+</file>
+
 <file path="src/app/user/[userId]/page.jsx">
 'use client';
 import { Container } from '@/shared/ui';
 import { UserProfileHero, useProfile } from '@/entities/user';
 import { useParams } from 'next/navigation';
 import { UserProfileLeft, UserProjects, UserSkillsList } from '@/widgets';
+import ProjectCardMinimal from '@/entities/project/ui/ProjectCard/ProjectCardMinimal';
 
 const ProfilePage = () => {
 	const params = useParams();
@@ -6295,20 +6376,41 @@ const ProfilePage = () => {
 					/>
 
 					<main className='flex flex-col gap-10'>
-						<div className='card p-10 space-y-6 relative overflow-hidden'>
-							<h3 className='text-white text-2xl font-black tracking-tight'>
-								О себе
-							</h3>
-							<div className='prose prose-invert max-w-none text-header-icons text-lg leading-relaxed'>
+						{/* О себе */}
+						<div className='card p-8'>
+							<h3 className='text-white text-xs font-black uppercase tracking-[0.2em] mb-4 opacity-50'>О себе</h3>
+							<div className='text-front text-lg leading-relaxed'>
 								{user.bio || 'Пользователь еще не заполнил информацию о себе.'}
 							</div>
 						</div>
 
-						{user?.skills?.length > 0 && <UserSkillsList skills={user.skills} />}
+						{/* Компактный список проектов */}
+						<div className='space-y-4'>
+							<div className='flex items-center justify-between px-1'>
+								<h3 className='text-white text-xl font-black uppercase tracking-tighter'>Активные проекты</h3>
+								<span className='text-[10px] font-bold text-header-icons bg-white/5 px-2 py-1 rounded-md'>
+									ВСЕГО: {user.active_projects?.length || 0}
+								</span>
+							</div>
+							
+							<div className='grid grid-cols-1 gap-2'>
+								{user.active_projects?.length > 0 ? (
+									user.active_projects.map(project => (
+										<ProjectCardMinimal 
+											key={project.id} 
+											project={project} 
+											userId={userId} 
+										/>
+									))
+								) : (
+									<div className='p-10 border-2 border-dashed border-card-border rounded-3xl text-center text-header-icons italic'>
+										Нет активных проектов
+									</div>
+								)}
+							</div>
+						</div>
 
-						{user.founded_projects?.length > 0 && (
-							<UserProjects projects={user.founded_projects} />
-						)}
+						{user?.skills?.length > 0 && <UserSkillsList skills={user.skills} />}
 					</main>
 				</div>
 			</Container>
@@ -6328,6 +6430,45 @@ export { default as ProjectDashboardPanel } from './ui/ProjectDashboardPanel/Pro
 export { default as ProjectCard } from './ui/ProjectCard/ProjectCard';
 export { default as useProjectDetails } from './lib/useProjectDetails';
 export { default as useProjectIdentity } from './lib/useProjectIdentity';
+</file>
+
+<file path="src/entities/project/ui/ProjectDashboardPanel/ProjectDashboardPanel.jsx">
+import Link from 'next/link';
+import { Button, StatItem } from '@/shared/ui';
+import { Eye, Mail } from 'lucide-react';
+import { TeamAvatars } from '@/entities/team';
+
+const ProjectDashboardPanel = ({ stats, team, projectId }) => {
+	return (
+		<div className='grid grid-cols-5 gap-4 items-center'>
+			<div className='flex col-span-2 gap-3 border-r border-card-border pr-4 h-full items-center'>
+				<Button className='w-1/2 py-2' variant='secondary' asChild={true}>
+					<Link href={`/editproject/${projectId}`}>Редактировать</Link>
+				</Button>
+				<Button asChild={true} className='w-1/2 py-2.5'>
+    				<Link href={`/project/${projectId}/vacancies`}>Вакансии</Link>
+				</Button>
+			</div>
+
+			<div className='flex items-center col-span-2 gap-4 border-r border-card-border'>
+				<TeamAvatars users={team} />
+				<Button variant='ghost'>+ Добавить участника</Button>
+			</div>
+
+			<div className='pl-4 col-span-1'>
+				<StatItem icon={Eye} value={stats.views} label='просмотров' />
+				<StatItem
+					icon={Mail}
+					value={stats.totalResponses - stats.newResponses}
+					label='новых откликов'
+					color='green'
+				/>
+			</div>
+		</div>
+	);
+};
+
+export default ProjectDashboardPanel;
 </file>
 
 <file path="src/entities/user/index.js">
@@ -6386,6 +6527,7 @@ const VacancyCard = ({
 	status,
 	className,
 	vacancyId,
+	projectId
 }) => {
 	return (
 		<article
@@ -6404,7 +6546,12 @@ const VacancyCard = ({
 						description={description}
 						skills={skills}
 					/>
-					<CardVacancy role={vacancyRole} experience={vacancyExperience} />
+					<CardVacancy 
+						role={vacancyRole} 
+						experience={vacancyExperience} 
+						vacancyId={vacancyId}
+						projectId={projectId}
+					/>
 				</div>
 			</div>
 		</article>
@@ -6499,6 +6646,114 @@ const CreateProjectActions = ({ handleSubmit, isSubmitting, setOpenModal }) => {
 export default CreateProjectActions;
 </file>
 
+<file path="src/features/create-vacancy/lib/useVacancyForm.js">
+'use client';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { supabase } from '@/shared/lib/supabase';
+import { uploadFile } from '@/shared/lib/utils/fileUpload';
+import { vacancySchema } from '../model/vacancySchema';
+
+const useVacancyForm = (projectId, vacancyId = null) => {
+	const isEditing = vacancyId && vacancyId !== 'create';
+	const [isFetching, setIsFetching] = useState(isEditing);
+
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [error, setError] = useState(null);
+
+	const form = useForm({
+		resolver: zodResolver(vacancySchema),
+		mode: 'onChange',
+		defaultValues: {
+			role: '',
+			experience: 'none',
+			stack: [],
+			thumbnail_url: '',
+			hook: '',
+			description: '',
+		},
+	});
+
+	useEffect(() => {
+		if (!isEditing) return;
+
+		const fetchVacancy = async () => {
+			setIsFetching(true);
+			const { data } = await supabase
+				.from('vacancies')
+				.select('*')
+				.eq('id', vacancyId)
+				.single();
+
+			if (data) {
+				form.reset({
+                    role: data.role || '',
+                    experience: data.experience || 'none',
+                    stack: data.stack || [],
+                    thumbnail_url: data.thumbnail_url || '',
+                    hook: data.hook || '',
+                    description: data.description || '',
+				});
+			}
+			setIsFetching(false);
+		};
+
+		fetchVacancy();
+	}, [vacancyId, isEditing]);
+
+	const submitForm = async data => {
+		setIsSubmitting(true);
+		setError(null);
+
+		try {
+			const finalCoverUrl = await uploadFile(
+				data.thumbnail_url,
+				'project-assets',
+				'vacancy-thumbnails',
+			);
+
+			const payload = {
+				project_id: projectId,
+                role: data.role,
+                experience: data.experience,
+                stack: data.stack,
+                hook: data.hook,
+                description: data.description,
+                thumbnail_url: finalCoverUrl,
+			};
+
+			let result;
+
+			if (isEditing) {
+				// Обновление
+				result = await supabase
+					.from('vacancies')
+					.update(payload)
+					.eq('id', vacancyId);
+			} else {
+				// Создание новой
+				result = await supabase.from('vacancies').insert([payload]);
+			}
+
+			if (result.error) throw result.error;
+
+			window.location.href = `/project/${projectId}/vacancies`;
+
+		} catch (err) {
+			console.error('Ошибка при сохранении вакансии:', err);
+			setError(err.message);
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
+	return { form, submitForm, isFetching, isSubmitting, error };
+};
+
+export default useVacancyForm;
+</file>
+
 <file path="src/features/edit-profile/ui/EditMainInfo/EditMainInfo.jsx">
 'use client';
 
@@ -6583,6 +6838,42 @@ const EditMainInfo = ({ errors, control }) => {
 };
 
 export default EditMainInfo;
+</file>
+
+<file path="src/features/onboarding/lib/withOnboardingAccess.jsx">
+'use client';
+import { useAuth } from '@/app/providers/AuthContext';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef } from 'react';
+
+const withOnboardingAccess = Component => {
+	return function ProtectedOnboarding(props) {
+		const { user, loading } = useAuth();
+		const router = useRouter();
+		const redirectedRef = useRef(false);
+
+		useEffect(() => {
+			if (loading || redirectedRef.current) return;
+
+			if (!user) {
+				redirectedRef.current = true;
+				router.push('/?auth=true');
+				return;
+			}
+
+			if (user.is_completed) {
+				redirectedRef.current = true;
+				router.push('/');
+			}
+		}, [user, loading, router]);
+
+		if (loading || !user || user.is_completed) return null;
+
+		return <Component {...props} />;
+	};
+};
+
+export default withOnboardingAccess;
 </file>
 
 <file path="src/features/onboarding/ui/OnboardingStepper/OnboardingStepper.jsx">
@@ -7130,101 +7421,6 @@ const CreateProjectPage = () => {
 export default CreateProjectPage;
 </file>
 
-<file path="src/app/providers/AuthContext.jsx">
-'use client';
-import { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/shared/lib/supabase';
-
-const AuthContext = createContext({});
-
-export const AuthProvider = ({ children }) => {
-	const [user, setUser] = useState(null);
-	const [loading, setLoading] = useState(true);
-
-	const fetchProfile = async sessionUser => {
-		if (!sessionUser) return null;
-		try {
-			const { data: profile, error } = await supabase
-				.from('profiles')
-				.select('*')
-				.eq('id', sessionUser.id)
-				.maybeSingle();
-
-			if (error) throw error;
-
-			// Если профиля физически нет в таблице
-			if (!profile) {
-				return { ...sessionUser, is_completed: false };
-			}
-
-			return { ...sessionUser, ...profile };
-		} catch (e) {
-			console.error('Ошибка загрузки профиля:', e.message);
-			return { ...sessionUser, is_completed: false };
-		}
-	};
-
-	const initializeAuth = async () => {
-		try {
-			setLoading(true);
-			const {
-				data: { session },
-			} = await supabase.auth.getSession();
-
-			if (session?.user) {
-				const fullUser = await fetchProfile(session.user);
-				setUser(fullUser);
-			} else {
-				setUser(null);
-			}
-		} catch (e) {
-			console.error('Auth init error:', e);
-			setUser(null);
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		initializeAuth();
-
-		const {
-			data: { subscription },
-		} = supabase.auth.onAuthStateChange(async (event, session) => {
-			if (event === 'SIGNED_OUT') {
-				setUser(null);
-				setLoading(false);
-				return;
-			}
-
-			if (session?.user) {
-				// Не включаем loading заново, чтобы UI не "моргал" при обновлении токена
-				const fullUser = await fetchProfile(session.user);
-				setUser(fullUser);
-			}
-			setLoading(false);
-		});
-
-		return () => subscription.unsubscribe();
-	}, []);
-
-	return (
-		<AuthContext.Provider
-			value={{
-				user,
-				loading,
-				refreshUser: initializeAuth,
-				isAuthenticated: !!user && user.is_completed === true,
-			}}
-		>
-			{children}
-		</AuthContext.Provider>
-	);
-};
-
-export const useAuth = () => useContext(AuthContext);
-</file>
-
 <file path="src/entities/vacancy/index.js">
 export { default as Vacancy } from './ui/Vacancy/Vacancy.jsx';
 export { default as VacancyImage } from './ui/VacancyImage/VacancyImage.jsx';
@@ -7335,106 +7531,133 @@ const AuthModal = ({ isOpen, onClose }) => {
 export default AuthModal;
 </file>
 
-<file path="src/features/edit-profile/lib/useProfileEdit.js">
+<file path="src/features/create-project/lib/useProjectForm.js">
+'use client';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { supabase } from '@/shared/lib/supabase';
 import { useAuth } from '@/app/providers/AuthContext';
-import { editProfileSchema } from '../model/editProfileSchema';
+import { createProjectSchema } from '../model/createProjectSchema';
 import { uploadFile } from '@/shared/lib/utils/fileUpload';
 
-const useProfileEdit = () => {
-	const { user, refreshUser, loading: authLoading } = useAuth();
+import { useRouter } from 'next/navigation'; 
+
+const generateDefaultLinks = () => [{ id: crypto.randomUUID(), label: 'Сайт', url: '' }];
+
+const useProjectForm = (projectId = null) => {
+	const { user } = useAuth();
+
+	const router = useRouter(); 
+
+	const [isFetching, setIsFetching] = useState(!!projectId);
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [apiError, setApiError] = useState(null);
+	const [error, setError] = useState(null);
 
 	const form = useForm({
-		resolver: zodResolver(editProfileSchema),
-		mode: 'onChange',
+		resolver: zodResolver(createProjectSchema),
+		mode: 'all',
 		defaultValues: {
 			name: '',
-			surname: '',
-			avatar_url: '',
-			role: '',
-			username: '',
-			bio: '',
-			status: 'search',
-			hours_available: 20,
-			location: '',
-			languages: '',
-			education: '',
-			github_url: '',
-			telegram: '',
-			skills: [],
+			slogan: '',
+			status: 'idea',
+			description: '',
+			idea: '',
+			approach: '',
+			links: generateDefaultLinks(),
+			gallery: [],
 		},
 	});
 
 	useEffect(() => {
-		if (user && !authLoading && !form.formState.isDirty) {
-			form.reset({
-				name: user.name || user.user_metadata.name || '',
-				surname: user.surname || user.user_metadata.surname || '',
-				role: user.role || '',
-				avatar_url: user.avatar_url || '',
-				username: user.username || '',
-				bio: user.bio || '',
-				status: user.status || 'search',
-				hours_available: user.hours_available || 20,
-				location: user.location || '',
-				languages: user.languages || '',
-				education: user.education || '',
-				github_url: user.github_url || '',
-				telegram: user.telegram || '',
-				skills: user.skills || [],
-			});
-		}
-	}, [user, authLoading]);
+		if (!projectId) return;
 
-	const updateProfile = async data => {
-		setIsSubmitting(true);
-		setApiError(null);
+		const fetchProject = async () => {
+			setIsFetching(true);
+			const { data, error } = await supabase
+				.from('projects')
+				.select('*')
+				.eq('id', projectId)
+				.single();
 
-		try {
-			let avatarUrl = data.avatarUrl;
-
-			if (data.avatar_url && data.avatar_url.startsWith('blob:')) {
-				avatarUrl = await uploadFile(
-					data.avatar_url,
-					'project-assets',
-					'avatars',
-				);
+			if (data) {
+				form.reset({
+					name: data.name,
+					slogan: data.slogan,
+					status: data.status,
+					description: data.description,
+					idea: data.idea,
+					approach: data.approach,
+					links: data.links || [],
+					gallery: data.gallery || [],
+					logo_url: data.logo_url,
+				});
 			}
-			const { error } = await supabase
-				.from('profiles')
-				.update({
-					...data,
-					avatar_url: avatarUrl,
-				})
-				.eq('id', user.id);
+			setIsFetching(false);
+		};
 
-			if (error) throw error;
-			await refreshUser();
-			return { success: true };
+		fetchProject();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [projectId]);
+
+	const submitForm = async data => {
+		setIsSubmitting(true);
+		try {
+			const logoUrl = await uploadFile(
+				data.logo_url,
+				'project-assets',
+				'logos',
+			);
+
+			const gallery = data.gallery
+				? await Promise.all(
+						data.gallery.map(img =>
+							uploadFile(img, 'project-assets', 'screenshots'),
+						),
+					)
+				: [];
+
+			const payload = {
+				name: data.name,
+				slogan: data.slogan,
+				status: data.status,
+				description: data.description,
+				idea: data.idea,
+				approach: data.approach,
+				links: data.links,
+				gallery: gallery.filter(Boolean),
+				logo_url: logoUrl,
+				owner_id: user.id,
+			};
+
+			let result;
+
+			if (projectId) {
+				result = await supabase
+					.from('projects')
+					.update(payload)
+					.eq('id', projectId);
+				console.log(result);
+			} else {
+				result = await supabase.from('projects').insert([payload]);
+			}
+
+			if (result.error) throw result.error;
+
+			router.refresh(); 
+			router.push('/myprojects');
+
 		} catch (err) {
-			setApiError(err.message);
-			return { success: false, error: err.message };
+			setError(err.message);
 		} finally {
 			setIsSubmitting(false);
 		}
 	};
 
-	return {
-		form,
-		updateProfile,
-		isLoading: authLoading,
-		isSubmitting: isSubmitting,
-		apiError,
-		isDirty: form.formState.isDirty,
-	};
+	return { form, submitForm, isFetching, isSubmitting, error };
 };
 
-export default useProfileEdit;
+export default useProjectForm;
 </file>
 
 <file path="src/features/edit-profile/model/editProfileSchema.js">
@@ -7573,72 +7796,6 @@ const Skill = ({ skillName, className, variant = 'purple' }) => {
 export default Skill;
 </file>
 
-<file path="src/shared/ui/data-display/UserAccountMenu/UserAccountMenu.jsx">
-'use client';
-
-import { useState } from 'react';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from '@/shared/ui/shadcn/dropdown-menu';
-import { cn } from '@/shared/lib/utils/commonUtils';
-import { ChevronDown, User, Settings, LogOut } from 'lucide-react';
-import Link from 'next/link';
-import { useAuth } from '@/app/providers/AuthContext';
-import { UserAvatar } from '@/entities/user';
-
-function UserAccountMenu({ handleUserExit }) {
-	const { user } = useAuth();
-	const [isActive, toggleActive] = useState(false);
-
-	return (
-		<DropdownMenu onOpenChange={() => toggleActive(prev => !prev)}>
-			<DropdownMenuTrigger className='flex items-center gap-2 outline-none hover:opacity-80 transition'>
-				<div className='w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700'>
-					<UserAvatar
-						iconSize={20}
-						className='h-full w-full border'
-						avatarUrl={user?.avatar_url}
-					/>
-				</div>
-				<span>{user?.user_metadata?.name}</span>
-				<ChevronDown
-					size={14}
-					className={cn(
-						'text-muted-foreground ease-in-out duration-200',
-						isActive && 'rotate-180',
-					)}
-				/>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align='end' className='w-56'>
-				<DropdownMenuLabel>Мой аккаунт</DropdownMenuLabel>
-				<DropdownMenuSeparator />
-				<DropdownMenuItem>
-					<Link className='flex items-center' href={`/user/${user.id}`}>
-						<User className='mr-2 h-4 w-4' /> Профиль
-					</Link>
-				</DropdownMenuItem>
-				<DropdownMenuItem className='cursor-pointer'>
-					<Settings className='mr-2 h-4 w-4' /> Настройки
-				</DropdownMenuItem>
-				<DropdownMenuSeparator />
-				<DropdownMenuItem className='text-red-500'>
-					<button onClick={handleUserExit} className='flex-all-center'>
-						<LogOut className='mr-2 h-4 w-4' /> Выйти
-					</button>
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
-	);
-}
-
-export default UserAccountMenu;
-</file>
-
 <file path="src/shared/ui/inputs/ImageUploader/ImageUploader.jsx">
 'use client';
 import { useState, useRef, useEffect } from 'react';
@@ -7775,6 +7932,151 @@ const ImageUploader = ({
 export default ImageUploader;
 </file>
 
+<file path="src/shared/ui/inputs/RichEditor/RichEditor.jsx">
+'use client';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Placeholder from '@tiptap/extension-placeholder';
+import { Bold, Italic, List, ListOrdered, Underline } from 'lucide-react';
+import { cn } from '@/shared/lib/utils/commonUtils';
+import { ErrorField, Quantity } from '@/shared/ui';
+import CharacterCount from '@tiptap/extension-character-count';
+import { useState, useEffect, useRef } from 'react';
+
+const RichEditor = ({
+	value,
+	onChange,
+	placeholder,
+	error,
+	maxLength = 2000,
+}) => {
+	const [characters, setCharacters] = useState(value ? value.length : 0);
+	const isUserUpdate = useRef(false);
+
+	const editor = useEditor({
+		extensions: [
+			StarterKit.configure({
+				bulletList: {
+					keepMarks: true,
+					keepAttributes: false,
+				},
+				orderedList: {
+					keepMarks: true,
+					keepAttributes: false,
+				},
+			}),
+			Placeholder.configure({
+				placeholder: placeholder || 'Введите описание...',
+			}),
+			CharacterCount.configure({
+				limit: maxLength,
+			}),
+		],
+		content: value,
+		immediatelyRender: false,
+		onUpdate: ({ editor }) => {
+			isUserUpdate.current = true;
+			onChange(editor.getHTML());
+			setCharacters(editor.storage.characterCount.characters());
+		},
+		editorProps: {
+			attributes: {
+				class: cn(
+					'prose prose-invert max-w-none focus:outline-none min-h-[200px] p-5 text-white',
+					'prose-ul:list-disc prose-ul:ml-4 prose-ol:list-decimal prose-ol:ml-4',
+					'prose-li:my-0',
+				),
+			},
+			transformPastedText(text) {
+				return text.replace(/[\r\n]+/g, ' ');
+			},
+			transformPastedHTML(html) {
+				return html.replace(/<\/p><p>/g, ' ').replace(/<br\s*\/?>/g, ' ');
+			},
+		},
+	});
+
+	useEffect(() => {
+		if (editor && value !== editor.getHTML() && !isUserUpdate.current) {
+			editor.commands.setContent(value || '');
+		}
+		isUserUpdate.current = false;
+	}, [value, editor]);
+
+	if (!editor) return null;
+
+	return (
+		<div>
+			<div
+				className={cn(
+					'w-full bg-input border rounded-2xl overflow-hidden transition-all',
+					error
+						? 'border-red-500'
+						: 'border-card-border focus-within:border-brand-purple',
+				)}
+			>
+				{/* Панель инструментов */}
+				<div className='flex items-center gap-1 p-2 border-b border-card-border bg-black/20'>
+					<MenuButton
+						onClick={() => editor.chain().focus().toggleBold().run()}
+						active={editor.isActive('bold')}
+						icon={Bold}
+					/>
+					<MenuButton
+						onClick={() => editor.chain().focus().toggleItalic().run()}
+						active={editor.isActive('italic')}
+						icon={Italic}
+					/>
+					<MenuButton
+						onClick={() => editor.chain().focus().toggleUnderline().run()}
+						active={editor.isActive('underline')}
+						icon={Underline}
+					/>
+					<div className='w-px h-4 bg-card-border mx-1' />
+
+					{/* Кнопка ненумерованного списка */}
+					<MenuButton
+						onClick={() => editor.chain().focus().toggleBulletList().run()}
+						active={editor.isActive('bulletList')}
+						icon={List}
+					/>
+
+					{/* Кнопка нумерованного списка */}
+					<MenuButton
+						onClick={() => editor.chain().focus().toggleOrderedList().run()}
+						active={editor.isActive('orderedList')}
+						icon={ListOrdered}
+					/>
+				</div>
+
+				<EditorContent editor={editor} />
+			</div>
+			<div className='flex justify-between items-center'>
+				{error && <ErrorField errorText={error.message} />}
+				<Quantity className='ml-auto' quantity={characters} outOf={maxLength} />
+			</div>
+		</div>
+	);
+};
+
+const MenuButton = ({ onClick, active, icon: Icon }) => (
+	<button
+		type='button'
+		onClick={onClick}
+		className={cn(
+			'p-2 rounded-lg transition-colors',
+			active
+				? 'bg-brand-purple text-white'
+				: 'text-header-icons hover:bg-white/5 hover:text-white',
+		)}
+	>
+		<Icon size={18} />
+	</button>
+);
+
+export default RichEditor;
+</file>
+
 <file path="src/shared/ui/inputs/TextArea/TextArea.jsx">
 'use client';
 
@@ -7828,6 +8130,112 @@ const TextArea = ({
 export default TextArea;
 </file>
 
+<file path="src/features/edit-profile/lib/useProfileEdit.js">
+'use client';
+import { useEffect, useState, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { supabase } from '@/shared/lib/supabase';
+import { useAuth } from '@/app/providers/AuthContext';
+import { editProfileSchema } from '../model/editProfileSchema';
+import { uploadFile } from '@/shared/lib/utils/fileUpload';
+
+const useProfileEdit = () => {
+	const { user, refreshUser, loading: authLoading } = useAuth();
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [apiError, setApiError] = useState(null);
+	const hasResetRef = useRef(false);
+
+	const form = useForm({
+		resolver: zodResolver(editProfileSchema),
+		mode: 'onChange',
+		defaultValues: {
+			name: '',
+			surname: '',
+			avatar_url: '',
+			role: '',
+			username: '',
+			bio: '',
+			status: 'search',
+			hours_available: 20,
+			location: '',
+			languages: '',
+			education: '',
+			github_url: '',
+			telegram: '',
+			skills: [],
+		},
+	});
+
+	useEffect(() => {
+		if (user && !authLoading && !hasResetRef.current) {
+			hasResetRef.current = true;
+			form.reset({
+				name: user.name || user.user_metadata?.name || '',
+				surname: user.surname || user.user_metadata?.surname || '',
+				role: user.role || '',
+				avatar_url: user.avatar_url || '',
+				username: user.username || '',
+				bio: user.bio || '',
+				status: user.status || 'search',
+				hours_available: user.hours_available || 20,
+				location: user.location || '',
+				languages: user.languages || '',
+				education: user.education || '',
+				github_url: user.github_url || '',
+				telegram: user.telegram || '',
+				skills: user.skills || [],
+			});
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [user, authLoading]);
+
+	const updateProfile = async data => {
+		setIsSubmitting(true);
+		setApiError(null);
+
+		try {
+			let avatarUrl = data.avatarUrl;
+
+			if (data.avatar_url && data.avatar_url.startsWith('blob:')) {
+				avatarUrl = await uploadFile(
+					data.avatar_url,
+					'project-assets',
+					'avatars',
+				);
+			}
+			const { error } = await supabase
+				.from('profiles')
+				.update({
+					...data,
+					avatar_url: avatarUrl,
+				})
+				.eq('id', user.id);
+
+			if (error) throw error;
+			await refreshUser();
+			return { success: true };
+		} catch (err) {
+			setApiError(err.message);
+			return { success: false, error: err.message };
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
+	return {
+		form,
+		updateProfile,
+		isLoading: authLoading,
+		isSubmitting: isSubmitting,
+		apiError,
+		isDirty: form.formState.isDirty,
+	};
+};
+
+export default useProfileEdit;
+</file>
+
 <file path="src/shared/ui/data-display/index.js">
 export { default as UserAccountMenu } from './UserAccountMenu/UserAccountMenu';
 export { default as StatItem } from './StatItem/StatItem';
@@ -7841,6 +8249,72 @@ export { default as LinkIcon } from './LinkIcon/LinkIcon';
 export { default as Quantity } from './Quantity/Quantity';
 export { default as UserStatus } from './UserStatus/UserStatus';
 export { default as RichTextDisplay } from './RichTextDisplay/RichTextDisplay';
+</file>
+
+<file path="src/shared/ui/data-display/UserAccountMenu/UserAccountMenu.jsx">
+'use client';
+
+import { useState } from 'react';
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from '@/shared/ui/shadcn/dropdown-menu';
+import { cn } from '@/shared/lib/utils/commonUtils';
+import { ChevronDown, User, Settings, LogOut } from 'lucide-react';
+import Link from 'next/link';
+import { useAuth } from '@/app/providers/AuthContext';
+import { UserAvatar } from '@/entities/user';
+
+function UserAccountMenu({ handleUserExit }) {
+	const { user } = useAuth();
+	const [isActive, toggleActive] = useState(false);
+
+	return (
+		<DropdownMenu onOpenChange={() => toggleActive(prev => !prev)}>
+			<DropdownMenuTrigger className='flex items-center gap-2 outline-none hover:opacity-80 transition'>
+				<div className='w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700'>
+					<UserAvatar
+						iconSize={20}
+						className='h-full w-full border'
+						avatarUrl={user?.avatar_url}
+					/>
+				</div>
+				<span>{user?.full_name || user?.user_metadata?.name}</span>
+				<ChevronDown
+					size={14}
+					className={cn(
+						'text-muted-foreground ease-in-out duration-200',
+						isActive && 'rotate-180',
+					)}
+				/>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align='end' className='w-56'>
+				<DropdownMenuLabel>Мой аккаунт</DropdownMenuLabel>
+				<DropdownMenuSeparator />
+				<DropdownMenuItem>
+					<Link className='flex items-center' href={`/user/${user.id}`}>
+						<User className='mr-2 h-4 w-4' /> Профиль
+					</Link>
+				</DropdownMenuItem>
+				<DropdownMenuItem className='cursor-pointer'>
+					<Settings className='mr-2 h-4 w-4' /> Настройки
+				</DropdownMenuItem>
+				<DropdownMenuSeparator />
+				<DropdownMenuItem className='text-red-500'>
+					<button onClick={handleUserExit} className='flex-all-center'>
+						<LogOut className='mr-2 h-4 w-4' /> Выйти
+					</button>
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
+}
+
+export default UserAccountMenu;
 </file>
 
 <file path="src/shared/ui/inputs/Input/Input.jsx">
@@ -8072,6 +8546,114 @@ const ProjectPage = () => {
 export default ProjectPage;
 </file>
 
+<file path="src/app/providers/AuthContext.jsx">
+'use client';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
+import { supabase } from '@/shared/lib/supabase';
+
+const AuthContext = createContext({});
+
+export const AuthProvider = ({ children }) => {
+	const [user, setUser] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const fetchingRef = useRef(false);
+
+	const fetchProfile = async sessionUser => {
+		if (!sessionUser) return null;
+		try {
+			const { data: profile, error } = await supabase
+				.from('profiles')
+				.select('*')
+				.eq('id', sessionUser.id)
+				.maybeSingle();
+
+			if (error) throw error;
+
+			return profile ? { ...sessionUser, ...profile } : { ...sessionUser, is_completed: false };
+		} catch (e) {
+			console.error('Auth: fetchProfile error:', e.message);
+			return { ...sessionUser, is_completed: false };
+		}
+	};
+
+	useEffect(() => {
+		let isMounted = true;
+
+		const init = async () => {
+			setLoading(true);
+			const { data: { session } } = await supabase.auth.getSession();
+
+			if (!isMounted) return;
+
+			if (session?.user) {
+				setUser(session.user);
+				setLoading(false);
+				const fullUser = await fetchProfile(session.user);
+				if (isMounted && fullUser) setUser(fullUser);
+			} else {
+				setUser(null);
+				setLoading(false);
+			}
+		};
+
+		init();
+
+		const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+			if (!isMounted) return;
+
+			if (event === 'SIGNED_OUT') {
+				setUser(null);
+				setLoading(false);
+				return;
+			}
+
+			if (session?.user) {
+				setUser(session.user);
+				setLoading(false);
+				const fullUser = await fetchProfile(session.user);
+				if (isMounted && fullUser) setUser(fullUser);
+			} else {
+				setLoading(false);
+			}
+		});
+
+		return () => {
+			isMounted = false;
+			subscription.unsubscribe();
+		};
+	}, []);
+
+	const refreshUser = async () => {
+		if (fetchingRef.current) return;
+		fetchingRef.current = true;
+		try {
+			const { data: { session } } = await supabase.auth.getSession();
+			if (session?.user) {
+				const fullUser = await fetchProfile(session.user);
+				if (fullUser) setUser(fullUser);
+			}
+		} finally {
+			fetchingRef.current = false;
+		}
+	};
+
+	return (
+		<AuthContext.Provider
+			value={{
+				user,
+				loading,
+				refreshUser,
+				isAuthenticated: !!user && user.is_completed === true,
+			}}
+		>
+			{children}
+		</AuthContext.Provider>
+	);
+};
+
+export const useAuth = () => useContext(AuthContext);
+</file>
+
 <file path="src/shared/ui/inputs/index.js">
 export { default as Input } from './Input/Input';
 export { default as SelectCustom } from './SelectCustom/SelectCustom';
@@ -8181,7 +8763,7 @@ const MyProjects = () => {
 							>
 								<ProjectDashboardPanel
 									projectId={project.id}
-									team={[]}
+									team={project.members || []}
 									stats={{ views: 0, totalResponses: 0, newResponses: 0 }}
 								/>
 							</ProjectHeader>

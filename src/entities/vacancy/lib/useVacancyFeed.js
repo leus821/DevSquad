@@ -17,7 +17,7 @@ const useVacancyFeed = () => {
 				const { data, error } = await supabase.from('vacancies').select(`
 						*,
 						projects (*) 
-					`);
+					`).eq('is_closed', false);
 
 				if (error) throw error;
 				setRawVacancies(data || []);

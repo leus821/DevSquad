@@ -6,8 +6,9 @@ import { supabase } from '@/shared/lib/supabase';
 import { ProjectHeader } from '@/widgets';
 import { useProjectIdentity } from '@/entities/project';
 import { Button, Container, Quantity, RemoveButton } from '@/shared/ui';
-import { Loader2, Plus, Edit2 } from 'lucide-react';
+import { Loader2, Plus, Edit2, Users } from 'lucide-react';
 import Link from 'next/link';
+import { cn } from '@/shared/lib/utils/commonUtils';
 
 const ProjectVacanciesPage = () => {
     const { id: projectId } = useParams();
@@ -94,22 +95,56 @@ const ProjectVacanciesPage = () => {
                         vacancies.map(vacancy => (
                             <div 
                                 key={vacancy.id} 
-                                className='card p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all hover:border-brand-purple/30'
+                                className={cn(
+                                    'card p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all',
+                                    // Если вакансия закрыта, делаем её полупрозрачной и меняем фон
+                                    vacancy.is_closed ? 'opacity-60 bg-black/40 border-dashed' : 'hover:border-brand-purple/30'
+                                )}
                             >
                                 <div className='flex-1 min-w-0'>
-                                    <h3 className='text-xl font-bold text-white truncate'>{vacancy.role}</h3>
-                                    <p className='text-header-icons text-sm mt-1 line-clamp-2 leading-relaxed break-all'>
+                                    <div className="flex items-center gap-3 mb-1">
+                                        <h3 className='text-xl font-bold text-white truncate'>
+                                            {vacancy.role}
+                                        </h3>
+                                        
+                                        {/* ИНДИКАТОР ЗАКРЫТОЙ ВАКАНСИИ */}
+                                        {vacancy.is_closed && (
+                                            <span className="px-2 py-0.5 rounded-md bg-deep-lime/10 border border-deep-lime/30 text-deep-lime text-[10px] font-black uppercase tracking-widest">
+                                                Место занято
+                                            </span>
+                                        )}
+                                    </div>
+                                    
+                                    <p className='text-header-icons text-sm line-clamp-2 leading-relaxed break-all'>
                                         {vacancy.hook}
                                     </p>
                                 </div>
 
-                                <div className='flex gap-3 shrink-0'>
-                                    <Button variant='ghost' asChild size="sm" className="border-card-border hover:border-brand-purple/50">
-                                        <Link href={`/project/${projectId}/vacancies/${vacancy.id}`}>
-                                            <Edit2 size={16} className='mr-2'/> Редактировать
-                                        </Link>
-                                    </Button>
+                                <div className='flex gap-3 shrink-0 items-center'>
+                                    {/* Если вакансия ОТКРЫТА — показываем все кнопки */}
+                                    {!vacancy.is_closed ? (
+                                        <>
+                                            <Button variant='secondary' asChild size="sm" className="border-card-border">
+                                                <Link href={`/project/${projectId}/vacancies/${vacancy.id}/applications`}>
+                                                    <Users size={16} className='mr-2'/> 
+                                                    Заявки ({vacancy.applicants?.length || 0})
+                                                </Link>
+                                            </Button>
 
+                                            <Button variant='ghost' asChild size="sm" className="border-card-border hover:border-brand-purple/50">
+                                                <Link href={`/project/${projectId}/vacancies/${vacancy.id}`}>
+                                                    <Edit2 size={16} className='mr-2'/> Редактировать
+                                                </Link>
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        /* Если вакансия ЗАКРЫТА — пишем текст вместо кнопок управления */
+                                        <span className="text-header-icons text-xs font-bold uppercase italic mr-4">
+                                            Набор завершен
+                                        </span>
+                                    )}
+
+                                    {/* Кнопку удаления оставляем всегда, чтобы можно было убрать старый слот */}
                                     <RemoveButton 
                                         onClick={() => handleDelete(vacancy.id)}
                                         className="rounded-xl"

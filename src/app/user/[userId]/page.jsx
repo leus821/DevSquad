@@ -3,10 +3,14 @@ import { Container } from '@/shared/ui';
 import { UserProfileHero, useProfile } from '@/entities/user';
 import { useParams } from 'next/navigation';
 import { UserProfileLeft, UserProjects, UserSkillsList } from '@/widgets';
+import ProjectCardMinimal from '@/entities/project/ui/ProjectCard/ProjectCardMinimal';
+import { useAuth } from '@/app/providers/AuthContext'; 
 
 const ProfilePage = () => {
 	const params = useParams();
 	const { userId } = params;
+
+	const { user: currentUser } = useAuth(); 
 
 	const { data: user, loading } = useProfile(userId);
 
@@ -18,10 +22,12 @@ const ProfilePage = () => {
 			</div>
 		);
 
+	const isOwner = currentUser?.id === userId;
+
 	return (
 		<section className='py-12 bg-[#0B0E14] min-h-screen'>
 			<Container className='flex flex-col gap-8'>
-				<UserProfileHero user={user} isOwner={user.id === userId} />
+				<UserProfileHero user={user} isOwner={isOwner} />
 
 				<div className='grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-10 items-start'>
 					<UserProfileLeft
@@ -33,20 +39,41 @@ const ProfilePage = () => {
 					/>
 
 					<main className='flex flex-col gap-10'>
-						<div className='card p-10 space-y-6 relative overflow-hidden'>
-							<h3 className='text-white text-2xl font-black tracking-tight'>
-								О себе
-							</h3>
-							<div className='prose prose-invert max-w-none text-header-icons text-lg leading-relaxed'>
+						{/* О себе */}
+						<div className='card p-8'>
+							<h3 className='text-white text-xs font-black uppercase tracking-[0.2em] mb-4 opacity-50'>О себе</h3>
+							<div className='text-front text-lg leading-relaxed'>
 								{user.bio || 'Пользователь еще не заполнил информацию о себе.'}
 							</div>
 						</div>
 
-						{user?.skills?.length > 0 && <UserSkillsList skills={user.skills} />}
+						{/* Компактный список проектов */}
+						<div className='space-y-4'>
+							<div className='flex items-center justify-between px-1'>
+								<h3 className='text-white text-xl font-black uppercase tracking-tighter'>Активные проекты</h3>
+								<span className='text-[10px] font-bold text-header-icons bg-white/5 px-2 py-1 rounded-md'>
+									ВСЕГО: {user.active_projects?.length || 0}
+								</span>
+							</div>
+							
+							<div className='grid grid-cols-1 gap-2'>
+								{user.active_projects?.length > 0 ? (
+									user.active_projects.map(project => (
+										<ProjectCardMinimal 
+											key={project.id} 
+											project={project} 
+											userId={userId} 
+										/>
+									))
+								) : (
+									<div className='p-10 border-2 border-dashed border-card-border rounded-3xl text-center text-header-icons italic'>
+										Нет активных проектов
+									</div>
+								)}
+							</div>
+						</div>
 
-						{user.founded_projects?.length > 0 && (
-							<UserProjects projects={user.founded_projects} />
-						)}
+						{user?.skills?.length > 0 && <UserSkillsList skills={user.skills} />}
 					</main>
 				</div>
 			</Container>

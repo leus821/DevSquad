@@ -6,4 +6,4 @@ export const NAV_ICONS = [
 	{ id: 3, name: 'Messages', href: '#', icon: MessageSquare },
 ];
 
-export const NAV_LINKS = [{ id: 1, label: 'Отклики', href: '#' }];
+export const NAV_LINKS = [{ id: 1, label: 'Отклики', href: '/my-applications' }];
