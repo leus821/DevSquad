@@ -1,7 +1,8 @@
 import { EXPERIENCE_VALUES } from '@/shared/static/vacancy';
-import { Button } from '@/shared/ui';
 
-const CardVacancy = ({ role, experience }) => {
+import { ApplyButton } from '@/features/apply-project'; 
+
+const CardVacancy = ({ role, experience, vacancyId, projectId }) => {
 	return (
 		<div className='ml-3 flex wrap-break-word min-w-0 basis-[44%] shrink flex-col'>
 			<div>
@@ -12,9 +13,10 @@ const CardVacancy = ({ role, experience }) => {
 					{EXPERIENCE_VALUES[experience]}
 				</span>
 			</div>
-			<Button className='mt-auto w-full pointer-events-auto'>
-				Откликнуться
-			</Button>
+
+			<div className="mt-auto w-full pointer-events-auto">
+				<ApplyButton vacancyId={vacancyId} projectId={projectId} />
+			</div>
 		</div>
 	);
 };

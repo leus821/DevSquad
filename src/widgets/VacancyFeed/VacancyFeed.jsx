@@ -23,6 +23,7 @@ const VacancyFeed = () => {
 						vacancyExperience={item.experience || 'Без опыта'}
 						skills={item.stack}
 						vacancyId={item.id}
+						projectId={item.project_id}
 					/>
 				))}
 			</div>

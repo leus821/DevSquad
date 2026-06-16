@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { supabase } from '@/shared/lib/supabase';
 
 const AuthContext = createContext({});
@@ -7,6 +7,7 @@ const AuthContext = createContext({});
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(true);
+	const fetchingRef = useRef(false);
 
 	const fetchProfile = async sessionUser => {
 		if (!sessionUser) return null;
@@ -19,45 +20,38 @@ export const AuthProvider = ({ children }) => {
 
 			if (error) throw error;
 
-			// Если профиля физически нет в таблице
-			if (!profile) {
-				return { ...sessionUser, is_completed: false };
-			}
-
-			return { ...sessionUser, ...profile };
+			return profile ? { ...sessionUser, ...profile } : { ...sessionUser, is_completed: false };
 		} catch (e) {
-			console.error('Ошибка загрузки профиля:', e.message);
+			console.error('Auth: fetchProfile error:', e.message);
 			return { ...sessionUser, is_completed: false };
 		}
 	};
 
-	const initializeAuth = async () => {
-		try {
+	useEffect(() => {
+		let isMounted = true;
+
+		const init = async () => {
 			setLoading(true);
-			const {
-				data: { session },
-			} = await supabase.auth.getSession();
+			const { data: { session } } = await supabase.auth.getSession();
+
+			if (!isMounted) return;
 
 			if (session?.user) {
+				setUser(session.user);
+				setLoading(false);
 				const fullUser = await fetchProfile(session.user);
-				setUser(fullUser);
+				if (isMounted && fullUser) setUser(fullUser);
 			} else {
 				setUser(null);
+				setLoading(false);
 			}
-		} catch (e) {
-			console.error('Auth init error:', e);
-			setUser(null);
-		} finally {
-			setLoading(false);
-		}
-	};
+		};
 
-	useEffect(() => {
-		initializeAuth();
+		init();
 
-		const {
-			data: { subscription },
-		} = supabase.auth.onAuthStateChange(async (event, session) => {
+		const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+			if (!isMounted) return;
+
 			if (event === 'SIGNED_OUT') {
 				setUser(null);
 				setLoading(false);
@@ -65,22 +59,41 @@ export const AuthProvider = ({ children }) => {
 			}
 
 			if (session?.user) {
-				// Не включаем loading заново, чтобы UI не "моргал" при обновлении токена
+				setUser(session.user);
+				setLoading(false);
 				const fullUser = await fetchProfile(session.user);
-				setUser(fullUser);
+				if (isMounted && fullUser) setUser(fullUser);
+			} else {
+				setLoading(false);
 			}
-			setLoading(false);
 		});
 
-		return () => subscription.unsubscribe();
+		return () => {
+			isMounted = false;
+			subscription.unsubscribe();
+		};
 	}, []);
+
+	const refreshUser = async () => {
+		if (fetchingRef.current) return;
+		fetchingRef.current = true;
+		try {
+			const { data: { session } } = await supabase.auth.getSession();
+			if (session?.user) {
+				const fullUser = await fetchProfile(session.user);
+				if (fullUser) setUser(fullUser);
+			}
+		} finally {
+			fetchingRef.current = false;
+		}
+	};
 
 	return (
 		<AuthContext.Provider
 			value={{
 				user,
 				loading,
-				refreshUser: initializeAuth,
+				refreshUser,
 				isAuthenticated: !!user && user.is_completed === true,
 			}}
 		>

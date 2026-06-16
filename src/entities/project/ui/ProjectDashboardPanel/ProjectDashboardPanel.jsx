@@ -11,7 +11,7 @@ const ProjectDashboardPanel = ({ stats, team, projectId }) => {
 					<Link href={`/editproject/${projectId}`}>Редактировать</Link>
 				</Button>
 				<Button asChild={true} className='w-1/2 py-2.5'>
-					<Link href={`project/${projectId}/vacancies/1`}>Вакансии</Link>
+    				<Link href={`/project/${projectId}/vacancies`}>Вакансии</Link>
 				</Button>
 			</div>
 

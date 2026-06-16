@@ -6,7 +6,7 @@ import { Bold, Italic, List, ListOrdered, Underline } from 'lucide-react';
 import { cn } from '@/shared/lib/utils/commonUtils';
 import { ErrorField, Quantity } from '@/shared/ui';
 import CharacterCount from '@tiptap/extension-character-count';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const RichEditor = ({
 	value,
@@ -16,6 +16,7 @@ const RichEditor = ({
 	maxLength = 2000,
 }) => {
 	const [characters, setCharacters] = useState(value ? value.length : 0);
+	const isUserUpdate = useRef(false);
 
 	const editor = useEditor({
 		extensions: [
@@ -39,6 +40,7 @@ const RichEditor = ({
 		content: value,
 		immediatelyRender: false,
 		onUpdate: ({ editor }) => {
+			isUserUpdate.current = true;
 			onChange(editor.getHTML());
 			setCharacters(editor.storage.characterCount.characters());
 		},
@@ -58,6 +60,13 @@ const RichEditor = ({
 			},
 		},
 	});
+
+	useEffect(() => {
+		if (editor && value !== editor.getHTML() && !isUserUpdate.current) {
+			editor.commands.setContent(value || '');
+		}
+		isUserUpdate.current = false;
+	}, [value, editor]);
 
 	if (!editor) return null;
 

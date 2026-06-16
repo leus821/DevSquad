@@ -9,23 +9,21 @@ import { Eye, Save } from 'lucide-react';
 import { VacancyCard } from '@/entities/vacancy';
 
 const CreateVacancyPage = () => {
-	const { id: projectId } = useParams();
+	const { id: projectId, vacancyId } = useParams();
+
+	const isEditing = vacancyId && vacancyId !== 'create';
 
 	const [isOpenModal, setIsOpenModal] = useState(false);
 
 	const { form, submitForm, isFetching, isSubmitting, error } =
-		useVacancyForm(projectId);
+		useVacancyForm(projectId, vacancyId);
 
 	const { project: projectIdentity, loading: isProjectLoading } =
 		useProjectIdentity(projectId);
 
 	const isLoading = isFetching && isProjectLoading;
 
-	const {
-		handleSubmit,
-		control,
-		formState: { errors },
-	} = form;
+	const {handleSubmit, control, formState: { errors },} = form;
 
 	const onSubmit = async data => {
 		await submitForm(data);
@@ -41,7 +39,7 @@ const CreateVacancyPage = () => {
 			{!isLoading && (
 				<>
 					<h1 className='text-3xl font-bold text-white tracking-tight mb-2'>
-						Новая вакансия
+						{isEditing ? 'Редактировать вакансию' : 'Новая вакансия'}
 					</h1>
 					<div className='flex flex-col lg:flex-row gap-10 items-start'>
 						<div className='grow w-full space-y-8'>
@@ -55,7 +53,7 @@ const CreateVacancyPage = () => {
 									className='w-full gap-2 py-4'
 								>
 									<Save size={18} />
-									{isSubmitting ? 'Публикация...' : 'Опубликовать'}
+									{isSubmitting ? 'Сохранение...' : (isEditing ? 'Сохранить изменения' : 'Опубликовать')}
 								</Button>
 
 								<Button

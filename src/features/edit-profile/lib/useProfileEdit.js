@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+'use client';
+import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { supabase } from '@/shared/lib/supabase';
@@ -10,6 +11,7 @@ const useProfileEdit = () => {
 	const { user, refreshUser, loading: authLoading } = useAuth();
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [apiError, setApiError] = useState(null);
+	const hasResetRef = useRef(false);
 
 	const form = useForm({
 		resolver: zodResolver(editProfileSchema),
@@ -33,10 +35,11 @@ const useProfileEdit = () => {
 	});
 
 	useEffect(() => {
-		if (user && !authLoading && !form.formState.isDirty) {
+		if (user && !authLoading && !hasResetRef.current) {
+			hasResetRef.current = true;
 			form.reset({
-				name: user.name || user.user_metadata.name || '',
-				surname: user.surname || user.user_metadata.surname || '',
+				name: user.name || user.user_metadata?.name || '',
+				surname: user.surname || user.user_metadata?.surname || '',
 				role: user.role || '',
 				avatar_url: user.avatar_url || '',
 				username: user.username || '',
@@ -51,6 +54,7 @@ const useProfileEdit = () => {
 				skills: user.skills || [],
 			});
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [user, authLoading]);
 
 	const updateProfile = async data => {

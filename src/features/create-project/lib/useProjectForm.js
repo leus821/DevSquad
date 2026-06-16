@@ -7,8 +7,15 @@ import { useAuth } from '@/app/providers/AuthContext';
 import { createProjectSchema } from '../model/createProjectSchema';
 import { uploadFile } from '@/shared/lib/utils/fileUpload';
 
+import { useRouter } from 'next/navigation'; 
+
+const generateDefaultLinks = () => [{ id: crypto.randomUUID(), label: 'Сайт', url: '' }];
+
 const useProjectForm = (projectId = null) => {
 	const { user } = useAuth();
+
+	const router = useRouter(); 
+
 	const [isFetching, setIsFetching] = useState(!!projectId);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState(null);
@@ -23,7 +30,7 @@ const useProjectForm = (projectId = null) => {
 			description: '',
 			idea: '',
 			approach: '',
-			links: [{ id: Date.now().toString(), label: 'Сайт', url: '' }],
+			links: generateDefaultLinks(),
 			gallery: [],
 		},
 	});
@@ -56,7 +63,8 @@ const useProjectForm = (projectId = null) => {
 		};
 
 		fetchProject();
-	}, [projectId, form]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [projectId]);
 
 	const submitForm = async data => {
 		setIsSubmitting(true);
@@ -98,10 +106,13 @@ const useProjectForm = (projectId = null) => {
 				console.log(result);
 			} else {
 				result = await supabase.from('projects').insert([payload]);
-				console.log(result);
 			}
 
 			if (result.error) throw result.error;
+
+			router.refresh(); 
+			router.push('/myprojects');
+
 		} catch (err) {
 			setError(err.message);
 		} finally {

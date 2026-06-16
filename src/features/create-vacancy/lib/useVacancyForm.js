@@ -7,7 +7,9 @@ import { uploadFile } from '@/shared/lib/utils/fileUpload';
 import { vacancySchema } from '../model/vacancySchema';
 
 const useVacancyForm = (projectId, vacancyId = null) => {
-	const [isFetching, setIsFetching] = useState(!!vacancyId);
+	const isEditing = vacancyId && vacancyId !== 'create';
+	const [isFetching, setIsFetching] = useState(isEditing);
+
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState(null);
 
@@ -25,7 +27,7 @@ const useVacancyForm = (projectId, vacancyId = null) => {
 	});
 
 	useEffect(() => {
-		if (!vacancyId) return;
+		if (!isEditing) return;
 
 		const fetchVacancy = async () => {
 			setIsFetching(true);
@@ -37,19 +39,19 @@ const useVacancyForm = (projectId, vacancyId = null) => {
 
 			if (data) {
 				form.reset({
-					role: data.role,
-					experience: data.experience,
-					stack: data.stack || [],
-					thumbnail_url: data.thumbnail_url,
-					hook: data.hook,
-					description: data.description,
+                    role: data.role || '',
+                    experience: data.experience || 'none',
+                    stack: data.stack || [],
+                    thumbnail_url: data.thumbnail_url || '',
+                    hook: data.hook || '',
+                    description: data.description || '',
 				});
 			}
 			setIsFetching(false);
 		};
 
 		fetchVacancy();
-	}, [vacancyId, form]);
+	}, [vacancyId, isEditing]);
 
 	const submitForm = async data => {
 		setIsSubmitting(true);
@@ -64,17 +66,17 @@ const useVacancyForm = (projectId, vacancyId = null) => {
 
 			const payload = {
 				project_id: projectId,
-				role: data.role,
-				experience: data.experience,
-				stack: data.stack,
-				hook: data.hook,
-				description: data.description,
-				thumbnail_url: finalCoverUrl,
+                role: data.role,
+                experience: data.experience,
+                stack: data.stack,
+                hook: data.hook,
+                description: data.description,
+                thumbnail_url: finalCoverUrl,
 			};
 
 			let result;
 
-			if (vacancyId) {
+			if (isEditing) {
 				// Обновление
 				result = await supabase
 					.from('vacancies')
@@ -86,6 +88,9 @@ const useVacancyForm = (projectId, vacancyId = null) => {
 			}
 
 			if (result.error) throw result.error;
+
+			window.location.href = `/project/${projectId}/vacancies`;
+
 		} catch (err) {
 			console.error('Ошибка при сохранении вакансии:', err);
 			setError(err.message);
