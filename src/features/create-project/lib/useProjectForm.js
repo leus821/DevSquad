@@ -63,7 +63,8 @@ const useProjectForm = (projectId = null) => {
 		};
 
 		fetchProject();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
+
 	}, [projectId]);
 
 	const submitForm = async data => {

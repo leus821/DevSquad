@@ -17,7 +17,8 @@ const VacancyApplicationsPage = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			setIsLoading(true);
-			// 1. Берем данные вакансии, чтобы знать роль и список ID соискателей
+			
+
 			const { data: vac } = await supabase
 				.from('vacancies')
 				.select('*')
@@ -27,7 +28,8 @@ const VacancyApplicationsPage = () => {
 			setVacancy(vac);
 
 			if (vac?.applicants?.length > 0) {
-				// 2. Магия: запрашиваем профили всех людей, чьи ID есть в массиве applicants
+				
+
 				const { data: users, error } = await supabase
 					.from('profiles')
 					.select('*')
@@ -47,7 +49,7 @@ const VacancyApplicationsPage = () => {
         try {
             const { data: projectData, error: projFetchError } = await supabase
                 .from('projects')
-                .select('members')
+                .select('members, name')
                 .eq('id', projectId)
                 .single();
     
@@ -56,13 +58,16 @@ const VacancyApplicationsPage = () => {
             const newMember = {
                 user_id: candidate.id,
                 full_name: candidate.full_name,
-                role: vacancy.role, // Берем роль из вакансии
+                role: vacancy.role, 
+
                 avatar_url: candidate.avatar_url,
                 joined_at: new Date().toISOString()
             };
     
-            // 2. Обновляем проект: пушим нового участника в массив members
-            // Если members еще пустой (null), создаем новый массив
+            
+
+            
+
             const currentMembers = Array.isArray(projectData.members) ? projectData.members : [];
             
             const { error: projectUpdateError } = await supabase
@@ -74,20 +79,41 @@ const VacancyApplicationsPage = () => {
     
             if (projectUpdateError) throw projectUpdateError;
     
-            // 3. Закрываем вакансию и очищаем список соискателей
+            
+
             const { error: vacancyUpdateError } = await supabase
                 .from('vacancies')
                 .update({ 
                     is_closed: true,
-                    applicants: [] // Очищаем массив, так как место занято
+                    applicants: []
                 })
                 .eq('id', vacancyId);
     
             if (vacancyUpdateError) throw vacancyUpdateError;
+
+            const { data: candidateProfile } = await supabase
+                .from('profiles')
+                .select('accepted_notifications')
+                .eq('id', candidate.id)
+                .single();
+
+            const newNotif = {
+                project_id: projectId,
+                project_name: projectData.name || 'Проект',
+                role: vacancy.role,
+                accepted_at: new Date().toISOString(),
+            };
+
+            const currentNotifs = candidateProfile?.accepted_notifications || [];
+            await supabase
+                .from('profiles')
+                .update({ accepted_notifications: [...currentNotifs, newNotif] })
+                .eq('id', candidate.id);
     
             alert('Участник принят! Вакансия закрыта и удалена из общего поиска.');
             
-            // Перенаправляем обратно в список вакансий проекта
+            
+
             router.push(`/project/${projectId}/vacancies`);
     
         } catch (e) {

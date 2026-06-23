@@ -6,7 +6,7 @@ const TeamList = ({ teamList = [] }) => {
 		<ul className='flex flex-col gap-2 mb-4'>
 			{teamList.map((member, index) => (
 				<li key={member.user_id || index}>
-					{/* 2. Оборачиваем все содержимое в ссылку на профиль */}
+					{}
 					<Link 
 						href={`/user/${member.user_id}`} 
 						className='flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-colors group'

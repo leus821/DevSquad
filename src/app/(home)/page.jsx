@@ -1,8 +1,10 @@
 import { VacancyFeed } from '@/widgets';
+import IncompleteProfileBanner from '@/widgets/IncompleteProfileBanner/IncompleteProfileBanner';
 
 const Home = () => {
 	return (
-		<main className='py-10'>
+		<main>
+			<IncompleteProfileBanner />
 			<VacancyFeed />
 		</main>
 	);

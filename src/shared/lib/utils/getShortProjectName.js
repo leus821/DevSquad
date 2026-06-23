@@ -17,7 +17,7 @@ export const getShortProjectName = (projectName, options = {}) => {
 		'щенячий патруль сила щенков': 'ЩПСЩ',
 	};
 
-	const lowerInput = projectName.toLowerCase().trim();
+	const lowerInput = projectName.trim().toLowerCase().replace(/\s+/g, ' ');
 	if (specialCases[lowerInput]) {
 		return specialCases[lowerInput];
 	}

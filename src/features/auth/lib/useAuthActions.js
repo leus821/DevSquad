@@ -24,7 +24,8 @@ const useAuthActions = () => {
 			setError(err.message);
 			return { data: null, error: err };
 		} finally {
-			// Это гарантирует, что лоадер выключится ВСЕГДА
+			
+
 			setLoading(false);
 		}
 	};

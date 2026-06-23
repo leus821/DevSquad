@@ -13,7 +13,7 @@ const LinksEditor = ({
 }) => {
 	const addLink = () => {
 		if (value.length < maxLinks) {
-			// Используем Date.now() для уникальности во время создания
+			
 			onChange([...value, { id: Date.now().toString(), label: '', url: '' }]);
 		}
 	};
@@ -35,7 +35,7 @@ const LinksEditor = ({
 				<AnimatePresence mode='popLayout'>
 					{value.map((link, index) => (
 						<motion.div
-							key={link.id} // Теперь id уникальный и анимация сработает
+							key={link.id} 
 							initial={{ opacity: 0, y: 10 }}
 							animate={{ opacity: 1, y: 0 }}
 							exit={{ opacity: 0, scale: 0.95 }}

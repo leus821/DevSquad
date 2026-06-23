@@ -54,7 +54,8 @@ const useProfileEdit = () => {
 				skills: user.skills || [],
 			});
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
+
 	}, [user, authLoading]);
 
 	const updateProfile = async data => {

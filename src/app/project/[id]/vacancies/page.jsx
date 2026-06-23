@@ -45,7 +45,8 @@ const ProjectVacanciesPage = () => {
 
             if (error) throw error;
 
-            // Мгновенно удаляем из списка на экране
+            
+
             setVacancies(prev => prev.filter(v => v.id !== vacancyId));
         } catch (err) {
             alert('Ошибка при удалении: ' + err.message);
@@ -97,7 +98,8 @@ const ProjectVacanciesPage = () => {
                                 key={vacancy.id} 
                                 className={cn(
                                     'card p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all',
-                                    // Если вакансия закрыта, делаем её полупрозрачной и меняем фон
+                                    
+
                                     vacancy.is_closed ? 'opacity-60 bg-black/40 border-dashed' : 'hover:border-brand-purple/30'
                                 )}
                             >
@@ -107,7 +109,7 @@ const ProjectVacanciesPage = () => {
                                             {vacancy.role}
                                         </h3>
                                         
-                                        {/* ИНДИКАТОР ЗАКРЫТОЙ ВАКАНСИИ */}
+                                        {}
                                         {vacancy.is_closed && (
                                             <span className="px-2 py-0.5 rounded-md bg-deep-lime/10 border border-deep-lime/30 text-deep-lime text-[10px] font-black uppercase tracking-widest">
                                                 Место занято
@@ -121,7 +123,7 @@ const ProjectVacanciesPage = () => {
                                 </div>
 
                                 <div className='flex gap-3 shrink-0 items-center'>
-                                    {/* Если вакансия ОТКРЫТА — показываем все кнопки */}
+                                    {}
                                     {!vacancy.is_closed ? (
                                         <>
                                             <Button variant='secondary' asChild size="sm" className="border-card-border">
@@ -138,13 +140,13 @@ const ProjectVacanciesPage = () => {
                                             </Button>
                                         </>
                                     ) : (
-                                        /* Если вакансия ЗАКРЫТА — пишем текст вместо кнопок управления */
+                                        
                                         <span className="text-header-icons text-xs font-bold uppercase italic mr-4">
                                             Набор завершен
                                         </span>
                                     )}
 
-                                    {/* Кнопку удаления оставляем всегда, чтобы можно было убрать старый слот */}
+                                    {}
                                     <RemoveButton 
                                         onClick={() => handleDelete(vacancy.id)}
                                         className="rounded-xl"

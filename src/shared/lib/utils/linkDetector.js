@@ -1,7 +1,7 @@
 import { Github, Vk, Youtube } from '@/shared/assets/icons';
 import { Globe, Send } from 'lucide-react';
 
-// Конфигурация поддерживаемых ссылок
+
 const LINK_CONFIG = [
 	{
 		name: 'github',
@@ -17,7 +17,7 @@ const LINK_CONFIG = [
 	},
 	{
 		name: 'youtube',
-		pattern: ['youtube.com', 'youtu.be'], // Можно массивом
+		pattern: ['youtube.com', 'youtu.be'], 
 		icon: Youtube,
 		isSocial: true,
 	},
@@ -39,7 +39,7 @@ export const detectLinkData = url => {
 	);
 
 	if (found) {
-		if (found.name === 'vk') return { icon: VkIcon, isSocial: true };
+		if (found.name === 'vk') return { icon: Vk, isSocial: true };
 		return { icon: found.icon, isSocial: true };
 	}
 

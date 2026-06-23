@@ -15,7 +15,8 @@ const useVacancy = vacancyId => {
 				setIsLoading(true);
 				setError(null);
 
-				// Делаем Join с таблицей проектов, чтобы получить "лицо" бренда
+				
+
 				const { data, error: dbError } = await supabase
 					.from('vacancies')
 					.select(

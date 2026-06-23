@@ -1,14 +1,20 @@
 'use client';
 
-import { Controller } from 'react-hook-form';
+import { Controller, useFormState } from 'react-hook-form';
 import { Github, Vk } from '@/shared/assets/icons';
-import { Input } from '@/shared/ui';
+import { Input, ErrorField } from '@/shared/ui';
 import { Send } from 'lucide-react';
 
-const SocialsBlock = ({ errors, control }) => {
+	const SocialsBlock = ({ errors, control }) => {
+	const { errors: stateErrors } = useFormState({ control });
+	const socialError = stateErrors.github_url?.message;
 	return (
 		<div className='card p-6 flex flex-col gap-5'>
-			<h3 className='text-xl font-semibold'>Соц. сети</h3>
+			<div className='flex items-center justify-between'>
+				<h3 className='text-xl font-semibold'>Соц. сети</h3>
+				<span className='text-[10px] text-header-icons font-bold uppercase tracking-wider'>хотя бы 1</span>
+			</div>
+			{socialError && <ErrorField errorText={socialError} />}
 			<Controller
 				name='github_url'
 				control={control}

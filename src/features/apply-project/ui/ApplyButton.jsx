@@ -3,13 +3,15 @@ import { Button } from '@/shared/ui';
 import { supabase } from '@/shared/lib/supabase';
 import { useAuth } from '@/app/providers/AuthContext';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // Добавим для обновления страницы
+import { useRouter } from 'next/navigation'; 
+
 
 const ApplyButton = ({ vacancyId, projectId }) => {
 	const { user } = useAuth();
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
-	const [status, setStatus] = useState('idle'); // 'idle' | 'applied' | 'member'
+	const [status, setStatus] = useState('idle'); 
+
 
 	useEffect(() => {
 		if (!user || !projectId || !vacancyId) return;
@@ -43,14 +45,13 @@ const ApplyButton = ({ vacancyId, projectId }) => {
 		checkStatus();
 	}, [user, projectId, vacancyId]);
 
-	// Функция для подачи заявки
 	const handleApply = async () => {
 		const { data: vac } = await supabase.from('vacancies').select('applicants, is_closed').eq('id', vacancyId).single();
 		if (vac.is_closed) return alert("Вакансия закрыта");
 
 		const { error } = await supabase
 			.from('vacancies')
-			.update({ applicants: [...(vac.applicants || []), user.id] })
+			.update({ applicants: [...(vac.applicants || []), user.id], applicant_notified: false })
 			.eq('id', vacancyId);
 
 		if (error) throw error;
@@ -58,13 +59,15 @@ const ApplyButton = ({ vacancyId, projectId }) => {
 		alert('Заявка отправлена!');
 	};
 
-	// ФУНКЦИЯ ДЛЯ ОТЗЫВА ЗАЯВКИ
+	
+
 	const handleWithdraw = async () => {
 		if (!confirm('Вы уверены, что хотите отозвать свой отклик?')) return;
 
 		const { data: vac } = await supabase.from('vacancies').select('applicants').eq('id', vacancyId).single();
 		
-		// Фильтруем массив, удаляя ID текущего пользователя
+		
+
 		const newApplicants = (vac.applicants || []).filter(id => id !== user.id);
 
 		const { error } = await supabase
@@ -77,7 +80,8 @@ const ApplyButton = ({ vacancyId, projectId }) => {
 		setStatus('idle');
 		alert('Отклик отозван');
 		
-		// Если мы на странице "Мои отклики", страница обновится и карточка исчезнет
+		
+
 		router.refresh();
 	};
 
@@ -86,6 +90,11 @@ const ApplyButton = ({ vacancyId, projectId }) => {
 		e.stopPropagation();
 
 		if (!user) return alert('Войдите в аккаунт');
+		if (!user.is_completed) {
+			alert('Сначала заполните профиль, чтобы откликаться на вакансии');
+			router.push('/myprofile');
+			return;
+		}
 		if (status === 'member') return;
 
 		setLoading(true);
@@ -102,7 +111,8 @@ const ApplyButton = ({ vacancyId, projectId }) => {
 		}
 	};
 
-	// Стилизация и текст в зависимости от статуса
+	
+
 	const getButtonUI = () => {
 		if (status === 'member') return { 
             text: 'В команде', 

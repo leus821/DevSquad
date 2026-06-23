@@ -14,7 +14,7 @@ const VacancyCard = ({
 	status,
 	className,
 	vacancyId,
-	projectId
+	projectId,
 }) => {
 	return (
 		<article
@@ -33,9 +33,9 @@ const VacancyCard = ({
 						description={description}
 						skills={skills}
 					/>
-					<CardVacancy 
-						role={vacancyRole} 
-						experience={vacancyExperience} 
+					<CardVacancy
+						role={vacancyRole}
+						experience={vacancyExperience}
 						vacancyId={vacancyId}
 						projectId={projectId}
 					/>

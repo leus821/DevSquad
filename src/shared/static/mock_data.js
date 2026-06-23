@@ -115,12 +115,12 @@ export const TEAMLIST = [
 	},
 ];
 
-// Список пользователей (для TeamStack и страниц профиля)
+
 export const MOCK_USERS = [
   {
     id: 'u1',
     name: 'Даниил Колбасенко',
-    avatar: 'https://i.pravatar.cc/150?u=daniil', // Рандомные аватарки
+    avatar: 'https://i.pravatar.cc/150?u=daniil', 
     role: 'Senior Fullstack Developer',
     github: 'https://github.com/daniil'
   },
@@ -147,31 +147,31 @@ export const MOCK_USERS = [
   }
 ];
 
-// Данные конкретного проекта
+
 export const MOCK_PROJECT = {
   id: 'p1',
   name: 'STUD HOME',
   description: 'Платформа для прогноза погоды и управления умным домом и другими крутыми проектами',
-  status: 'Идея', // Идея, MVP, Запущен
+  status: 'Идея', 
   links: [
     { url: 'https://studhome.com' },
     { url: 'https://vk.com/studhome' },
     { url: 'https://youtube.com/studhome' },
     { url: 'https://github.com/studhome' }
   ],
-  // Статистика для Dashboard
+  
   stats: {
     views: '1.2k',
     totalResponses: 25,
     newResponses: 12
   },
-  // Команда проекта (ссылаемся на пользователей выше)
+  
   team: [
     MOCK_USERS[0],
     MOCK_USERS[1],
     MOCK_USERS[2],
     MOCK_USERS[3]
   ],
-  // Для страницы создания/редактирования
+  
   tags: ['React', 'Node.js', 'Tailwind', 'Framer Motion']
 };

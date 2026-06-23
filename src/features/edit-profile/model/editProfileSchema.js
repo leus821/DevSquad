@@ -37,24 +37,38 @@ export const editProfileSchema = z.object({
 
 	github_url: z
 		.string()
-		.url('Введите корректную ссылку')
-		.includes('github.com', { message: 'Ссылка должна быть на GitHub' })
 		.optional()
 		.or(z.literal('')),
 
 	telegram: z
 		.string()
-		.min(2, 'Слишком короткий никнейм')
-		.max(32, 'Слишком длинный никнейм')
-		.regex(/^[a-zA-Z0-9_]+$/, 'Только латиница, цифры и _')
 		.optional()
 		.or(z.literal('')),
 
 	linkedin_url: z
 		.string()
-		.url('Введите корректную ссылку')
 		.optional()
 		.or(z.literal('')),
 
 	skills: techStackRule,
+}).superRefine((data, ctx) => {
+	const infoFields = [data.location, data.languages, data.education];
+	const hasInfo = infoFields.some(v => v && (typeof v !== 'string' || v.trim()));
+	if (!hasInfo) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			message: 'Заполните хотя бы одно поле в блоке Инфо',
+			path: ['location'],
+		});
+	}
+
+	const socialFields = [data.github_url, data.telegram, data.linkedin_url];
+	const hasSocial = socialFields.some(v => v && (typeof v !== 'string' || v.trim()));
+	if (!hasSocial) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			message: 'Заполните хотя бы одну соц. сеть',
+			path: ['github_url'],
+		});
+	}
 });

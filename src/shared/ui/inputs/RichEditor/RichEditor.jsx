@@ -80,7 +80,7 @@ const RichEditor = ({
 						: 'border-card-border focus-within:border-brand-purple',
 				)}
 			>
-				{/* Панель инструментов */}
+				{}
 				<div className='flex items-center gap-1 p-2 border-b border-card-border bg-black/20'>
 					<MenuButton
 						onClick={() => editor.chain().focus().toggleBold().run()}
@@ -99,14 +99,14 @@ const RichEditor = ({
 					/>
 					<div className='w-px h-4 bg-card-border mx-1' />
 
-					{/* Кнопка ненумерованного списка */}
+					{}
 					<MenuButton
 						onClick={() => editor.chain().focus().toggleBulletList().run()}
 						active={editor.isActive('bulletList')}
 						icon={List}
 					/>
 
-					{/* Кнопка нумерованного списка */}
+					{}
 					<MenuButton
 						onClick={() => editor.chain().focus().toggleOrderedList().run()}
 						active={editor.isActive('orderedList')}

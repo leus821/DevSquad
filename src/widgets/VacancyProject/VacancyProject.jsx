@@ -18,7 +18,8 @@ const VacancyProject = ({ project, vacancy = null }) => {
 					links={project.links}
 					projectName={project.name}
 					status={project.status}
-					projectId={project.id} // Добавили на всякий случай
+					projectId={project.id} 
+
 				/>
 				<div className='grid grid-cols-14 gap-7'>
 					<Accordion
@@ -37,11 +38,16 @@ const VacancyProject = ({ project, vacancy = null }) => {
 					<div className='col-span-4'>
 						{vacancy && (
 							<VacancyAction
-								experience={vacancy.experience} // Берем реальный опыт
-								role={vacancy.role}             // Берем реальную роль
-								responses={vacancy.applicants?.length} // Реальное кол-во откликов
-								vacancyId={vacancy.id}          // ПЕРЕДАЕМ ID
-								projectId={project.id}          // ПЕРЕДАЕМ ID ПРОЕКТА
+								experience={vacancy.experience} 
+
+								role={vacancy.role}             
+
+								responses={vacancy.applicants?.length} 
+
+								vacancyId={vacancy.id}          
+
+								projectId={project.id}          
+
 							/>
 						)}
 						<TeamStack teamList={team} />

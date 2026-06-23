@@ -35,6 +35,7 @@ const EditMainInfo = ({ errors, control }) => {
 								label='Имя'
 								placeholder='Даниил'
 								error={errors.name}
+								required
 							/>
 						)}
 					/>
@@ -47,6 +48,7 @@ const EditMainInfo = ({ errors, control }) => {
 								label='Фамилия'
 								placeholder='Колбасенко'
 								error={errors.surname}
+								required
 							/>
 						)}
 					/>
@@ -60,6 +62,7 @@ const EditMainInfo = ({ errors, control }) => {
 							label='Ваша роль'
 							error={errors.role}
 							placeholder='Senior Fullstack Developer | React & Go'
+							required
 						/>
 					)}
 				/>
@@ -72,6 +75,7 @@ const EditMainInfo = ({ errors, control }) => {
 							error={errors.username}
 							label='Никнейм (@)'
 							placeholder='daniil_dev'
+							required
 						/>
 					)}
 				/>

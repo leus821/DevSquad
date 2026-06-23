@@ -1,8 +1,8 @@
-import { FavoritesButton } from '@/features/add-to-favorite';
 import { ApplyButton } from '@/features/apply-project';
 import { Eye, Users } from 'lucide-react';
 
-// 1. Добавляем vacancyId и projectId в пропсы
+
+
 const VacancyAction = ({ experience, role, responses, vacancyId, projectId }) => {
 	return (
 		<div className='bg-card flex-1 border-card-border border-2 rounded-3xl p-4 self-start mb-7'>
@@ -11,9 +11,7 @@ const VacancyAction = ({ experience, role, responses, vacancyId, projectId }) =>
 				<span className='text-front text-sm'>{experience}</span>
 			</div>
 			<div className='flex gap-4 mb-4'>
-				{/* 2. Передаем ID в кнопку */}
 				<ApplyButton vacancyId={vacancyId} projectId={projectId} />
-				<FavoritesButton />
 			</div>
 			<div className='flex justify-between px-3'>
 				<div className='flex gap-1 items-center'>

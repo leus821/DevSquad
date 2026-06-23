@@ -13,7 +13,7 @@ const EditProfileForm = ({ control, errors }) => {
 				<EditMainInfo control={control} errors={errors} />
 
 				<div className='card p-5 '>
-					<h3 className='text-white text-lg font-bold mb-2'>О себе</h3>
+					<h3 className='text-white text-lg font-bold mb-2'>О себе <span className='text-primary'>*</span></h3>
 					<Controller
 						name='bio'
 						control={control}

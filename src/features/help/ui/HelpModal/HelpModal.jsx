@@ -5,11 +5,13 @@ import { Modal } from '@/shared/ui';
 
 import { Info, ChevronLeft, ChevronRight } from 'lucide-react';
 
-// Импорт Swiper
+
+
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation } from 'swiper/modules';
 
-// Импорт стилей Swiper
+
+
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
@@ -63,7 +65,7 @@ export const HelpModal = () => {
 			title={content.title}
 		>
 			<div className='p-6 space-y-6'>
-				{/* СЛАЙДЕР С КАРТИНКАМИ */}
+				{}
 				<div className='relative group rounded-2xl overflow-hidden border border-card-border bg-input'>
 					<Swiper
 						modules={[Pagination, Navigation]}
@@ -87,7 +89,7 @@ export const HelpModal = () => {
 						))}
 					</Swiper>
 
-					{/* Кастомные стрелочки (появляются при наведении на слайдер) */}
+					{}
 					<button className='swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 bg-black/50 backdrop-blur-md text-white rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-brand-purple'>
 						<ChevronLeft size={20} />
 					</button>
@@ -96,7 +98,7 @@ export const HelpModal = () => {
 					</button>
 				</div>
 
-				{/* ОПИСАНИЕ И КНОПКИ */}
+				{}
 				<div className='flex gap-4 items-start bg-white/5 p-5 rounded-2xl border border-card-border'>
 					<div className='p-2.5 bg-brand-purple/20 rounded-xl text-brand-purple shrink-0'>
 						<Info size={24} />
@@ -117,7 +119,7 @@ export const HelpModal = () => {
 				</div>
 			</div>
 
-			{/* Глобальные стили для пагинации Swiper (под твой неон) */}
+			{}
 			<style jsx global>{`
 				.swiper-pagination-bullet {
 					background: #94a3b8 !important;

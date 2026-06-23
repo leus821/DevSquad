@@ -3,7 +3,8 @@ import { ProjectStatus } from '@/shared/ui';
 import { ChevronRight, Briefcase } from 'lucide-react';
 
 const ProjectCardMinimal = ({ project, userId }) => {
-    // Находим роль текущего пользователя в этом проекте
+    
+
     const memberData = project.members?.find(m => String(m.user_id) === String(userId));
     
     const myRole = memberData ? memberData.role : 'Владелец';
@@ -14,7 +15,7 @@ const ProjectCardMinimal = ({ project, userId }) => {
 			className='group flex items-center justify-between p-4 bg-card border border-card-border rounded-2xl hover:border-brand-purple/40 transition-all'
 		>
 			<div className='flex items-center gap-4 min-w-0'>
-                {/* Иконка вместо большой картинки */}
+                {}
                 <div className='w-10 h-10 rounded-xl bg-brand-purple/10 flex items-center justify-center text-brand-purple shrink-0'>
                     <Briefcase size={20} />
                 </div>

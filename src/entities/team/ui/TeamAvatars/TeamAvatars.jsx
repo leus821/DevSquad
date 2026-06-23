@@ -1,5 +1,6 @@
 import { UserAvatar } from '@/entities/user';
-import Link from 'next/link'; // 1. Импортируем Link
+import Link from 'next/link'; 
+
 
 const TeamStack = ({ users = [], maxVisible = 4, size = 'md' }) => {
 	const visibleUsers = users.slice(0, maxVisible);
@@ -14,7 +15,8 @@ const TeamStack = ({ users = [], maxVisible = 4, size = 'md' }) => {
 	return (
 		<div className='flex items-center -space-x-5 overflow-hidden'>
 			{visibleUsers.map((user, index) => (
-				// 2. Оборачиваем в Link
+				
+
 				<Link
 					key={user.user_id || index}
 					href={`/user/${user.user_id}`}

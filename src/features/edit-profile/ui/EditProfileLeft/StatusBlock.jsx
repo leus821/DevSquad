@@ -7,7 +7,7 @@ import { Controller } from 'react-hook-form';
 const StatusBlock = ({ errors, control }) => {
 	return (
 		<div className='card p-6 flex flex-col gap-4'>
-			<h3 className='text-xl font-semibold'>Статус</h3>
+			<h3 className='text-xl font-semibold'>Статус <span className='text-primary'>*</span></h3>
 			<div className='flex flex-col gap-3'>
 				<label className='text-header-icons text-xs font-bold uppercase tracking-wider'>
 					Ваша занятость
@@ -34,6 +34,7 @@ const StatusBlock = ({ errors, control }) => {
 							type='number'
 							placeholder='20'
 							className='ml-0'
+							required
 						/>
 					)}
 				/>

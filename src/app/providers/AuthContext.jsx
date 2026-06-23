@@ -4,6 +4,21 @@ import { supabase } from '@/shared/lib/supabase';
 
 const AuthContext = createContext({});
 
+const checkProfileCompletion = profile => {
+	if (!profile) return false;
+
+	const required = [profile.role, profile.username, profile.status, profile.hours_available, profile.bio];
+	if (required.some(v => !v || (typeof v === 'string' && !v.trim()))) return false;
+
+	const infoFields = [profile.location, profile.languages, profile.education];
+	const hasInfo = infoFields.some(v => v && (typeof v !== 'string' || v.trim()));
+
+	const socialFields = [profile.github_url, profile.telegram, profile.linkedin_url];
+	const hasSocial = socialFields.some(v => v && (typeof v !== 'string' || v.trim()));
+
+	return hasInfo && hasSocial;
+};
+
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(true);
@@ -20,7 +35,9 @@ export const AuthProvider = ({ children }) => {
 
 			if (error) throw error;
 
-			return profile ? { ...sessionUser, ...profile } : { ...sessionUser, is_completed: false };
+			return profile
+				? { ...sessionUser, ...profile, is_completed: checkProfileCompletion(profile) }
+				: { ...sessionUser, is_completed: false };
 		} catch (e) {
 			console.error('Auth: fetchProfile error:', e.message);
 			return { ...sessionUser, is_completed: false };
@@ -51,6 +68,8 @@ export const AuthProvider = ({ children }) => {
 
 		const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
 			if (!isMounted) return;
+
+			if (event === 'TOKEN_REFRESHED') return;
 
 			if (event === 'SIGNED_OUT') {
 				setUser(null);

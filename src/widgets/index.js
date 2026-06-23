@@ -9,3 +9,5 @@ export { default as UserProfileLeft } from './UserProfileLeft/UserProfileLeft';
 export { default as UserSkillsList } from './UserSkillsList/UserSkillsList';
 export { default as UserProjects } from './UserProjects/UserProjects';
 export { default as VacancyProject } from './VacancyProject/VacancyProject';
+export { default as VacancyFilters } from './VacancyFilters/VacancyFilters';
+export { default as VacancyFiltersDrawer } from './VacancyFilters/VacancyFiltersDrawer';

@@ -7,7 +7,8 @@ const ProfileHero = ({ user, isOwner }) => {
 	const socialLinks = [
 		{ url: user.github_url },
 		{ url: `https://t.me/${user.telegram?.replace('@', '')}` },
-		// ... другие ссылки
+		
+
 	].filter(link => link.url);
 
 	return (

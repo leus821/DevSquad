@@ -4,8 +4,8 @@ export const createImage = url =>
 		image.addEventListener('load', () => resolve(image));
 		image.addEventListener('error', error => reject(error));
 
-		// ВАЖНО: crossOrigin нужен только для внешних ссылок (http/https).
-		// Для data: URL (локальных файлов) он вызывает ошибку в браузерах.
+		
+		
 		if (url && !url.startsWith('data:')) {
 			image.setAttribute('crossOrigin', 'anonymous');
 		}
@@ -14,6 +14,9 @@ export const createImage = url =>
 	});
 
 export async function getCroppedImg(imageSrc, pixelCrop) {
+	if (!pixelCrop || pixelCrop.width <= 0 || pixelCrop.height <= 0) {
+		throw new Error('Invalid crop dimensions');
+	}
 	const image = await createImage(imageSrc);
 	const canvas = document.createElement('canvas');
 	const ctx = canvas.getContext('2d');

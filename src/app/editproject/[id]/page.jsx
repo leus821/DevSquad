@@ -15,13 +15,7 @@ const EditProjectPage = () => {
 	const [openModal, setOpenModal] = useState(false);
 	const { id } = useParams();
 
-	const {
-		form,
-		submitForm,
-		isFetching,
-		isSubmitting,
-		error: apiError,
-	} = useProjectForm(id);
+	const { form, submitForm, isFetching, isSubmitting } = useProjectForm(id);
 	const {
 		handleSubmit,
 		control,

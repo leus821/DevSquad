@@ -77,13 +77,15 @@ const useVacancyForm = (projectId, vacancyId = null) => {
 			let result;
 
 			if (isEditing) {
-				// Обновление
+				
+
 				result = await supabase
 					.from('vacancies')
 					.update(payload)
 					.eq('id', vacancyId);
 			} else {
-				// Создание новой
+				
+
 				result = await supabase.from('vacancies').insert([payload]);
 			}
 

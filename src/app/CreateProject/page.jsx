@@ -67,5 +67,5 @@ const CreateProjectPage = () => {
 	);
 };
 
-/*wfwfwefwefwef*/
+
 export default CreateProjectPage;

@@ -13,7 +13,7 @@ const UserStatus = ({ status = 'search', className }) => {
 				className,
 			)}
 		>
-			{/* Пульсирующая точка */}
+			{}
 			<div className='relative flex h-2 w-2'>
 				<span
 					className={cn(

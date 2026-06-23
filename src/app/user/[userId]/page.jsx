@@ -2,7 +2,7 @@
 import { Container } from '@/shared/ui';
 import { UserProfileHero, useProfile } from '@/entities/user';
 import { useParams } from 'next/navigation';
-import { UserProfileLeft, UserProjects, UserSkillsList } from '@/widgets';
+import { UserProfileLeft, UserSkillsList } from '@/widgets';
 import ProjectCardMinimal from '@/entities/project/ui/ProjectCard/ProjectCardMinimal';
 import { useAuth } from '@/app/providers/AuthContext'; 
 
@@ -39,7 +39,7 @@ const ProfilePage = () => {
 					/>
 
 					<main className='flex flex-col gap-10'>
-						{/* О себе */}
+						{}
 						<div className='card p-8'>
 							<h3 className='text-white text-xs font-black uppercase tracking-[0.2em] mb-4 opacity-50'>О себе</h3>
 							<div className='text-front text-lg leading-relaxed'>
@@ -47,7 +47,7 @@ const ProfilePage = () => {
 							</div>
 						</div>
 
-						{/* Компактный список проектов */}
+						{}
 						<div className='space-y-4'>
 							<div className='flex items-center justify-between px-1'>
 								<h3 className='text-white text-xl font-black uppercase tracking-tighter'>Активные проекты</h3>

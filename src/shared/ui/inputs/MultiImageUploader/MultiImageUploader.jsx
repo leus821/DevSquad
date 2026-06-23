@@ -64,7 +64,7 @@ const MultiImageUploader = ({ value = [], onChange, maxFiles = 10, error }) => {
 		disabled: value.length >= maxFiles,
 	});
 
-	// 2. Открытие кроппера для конкретного фото
+	
 	const handleStartEdit = (src, index) => {
 		setImageToCrop(src);
 		setEditIndex(index);
@@ -73,7 +73,7 @@ const MultiImageUploader = ({ value = [], onChange, maxFiles = 10, error }) => {
 		setIsCropOpen(true);
 	};
 
-	// 3. Сохранение результата кропа
+	
 	const handleSaveCropped = async () => {
 		try {
 			const cropped = await getCroppedImg(imageToCrop, croppedAreaPixels);
@@ -92,7 +92,7 @@ const MultiImageUploader = ({ value = [], onChange, maxFiles = 10, error }) => {
 
 	return (
 		<div className='card p-8 space-y-6'>
-			{/* Header блока */}
+			{}
 			<input
 				type='file'
 				ref={replaceInputRef}
@@ -103,7 +103,7 @@ const MultiImageUploader = ({ value = [], onChange, maxFiles = 10, error }) => {
 
 			<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
 				<AnimatePresence mode='popLayout'>
-					{/* Список загруженных фото */}
+					{}
 					{value.map((src, index) => (
 						<motion.div
 							key={src}
@@ -119,7 +119,7 @@ const MultiImageUploader = ({ value = [], onChange, maxFiles = 10, error }) => {
 								alt='Preview'
 							/>
 
-							{/* Overlay управления */}
+							{}
 							<div className='absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3'>
 								<button
 									type='button'
@@ -133,7 +133,7 @@ const MultiImageUploader = ({ value = [], onChange, maxFiles = 10, error }) => {
 						</motion.div>
 					))}
 
-					{/* Кнопка "Добавить" (Dropzone) */}
+					{}
 					{value.length < maxFiles && (
 						<motion.div
 							layout
