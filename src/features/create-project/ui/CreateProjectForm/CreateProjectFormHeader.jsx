@@ -57,7 +57,7 @@ const CreateProjectFormHeader = ({ control, register, errors }) => {
 
 					<div className='flex flex-wrap items-center gap-8 pt-2'>
 						<div className='flex items-center gap-3'>
-							<span className='text-xs font-bold text-header-icons uppercase tracking-wider'>
+							<span className='text-xs font-bold text-header-icons uppercase '>
 								Статус:
 							</span>
 							<Controller

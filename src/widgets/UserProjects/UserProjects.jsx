@@ -4,9 +4,7 @@ const UserProjects = ({ projects }) => {
 	return (
 		<div className='space-y-8'>
 			<div className='flex items-center justify-between px-2'>
-				<h3 className='text-white text-2xl font-black tracking-tight'>
-					Активные проекты
-				</h3>
+				<h3 className='text-white text-2xl font-black  '>Активные проекты</h3>
 				<span className='text-xs font-bold text-header-icons uppercase tracking-widest'>
 					Всего: {projects?.length}
 				</span>

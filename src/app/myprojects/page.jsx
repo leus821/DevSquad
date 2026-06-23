@@ -49,7 +49,7 @@ const MyProjects = () => {
 								<ProjectDashboardPanel
 									projectId={project.id}
 									team={project.members || []}
-									stats={{ views: 0, totalResponses: 0, newResponses: 0 }}
+									totalResponses={project.totalResponses || 0}
 								/>
 							</ProjectHeader>
 						))

@@ -10,7 +10,7 @@ const CardVacancy = ({ role, experience, vacancyId, projectId }) => {
 					{role}
 				</h2>
 				<span className='block text-sm text-front'>
-					{EXPERIENCE_VALUES[experience]}
+					{EXPERIENCE_VALUES[experience] || experience}
 				</span>
 			</div>
 

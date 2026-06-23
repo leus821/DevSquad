@@ -832,7 +832,7 @@ const ProjectCard = ({ project, className }) => {
 
 			<div className='p-6 flex flex-col grow'>
 				<div className='mb-4'>
-					<h3 className='text-xl font-black text-white tracking-tight group-hover:text-brand-purple transition-colors uppercase leading-tight'>
+					<h3 className='text-xl font-black text-white   group-hover:text-brand-purple transition-colors uppercase leading-tight'>
 						{name || 'Без названия'}
 					</h3>
 					<p className='text-sm text-header-icons font-medium mt-1 line-clamp-1'>
@@ -1723,7 +1723,7 @@ const StatusBlock = ({ errors, control }) => {
 		<div className='card p-6 flex flex-col gap-4'>
 			<h3 className='text-xl font-semibold'>Статус</h3>
 			<div className='flex flex-col gap-3'>
-				<label className='text-header-icons text-xs font-bold uppercase tracking-wider'>
+				<label className='text-header-icons text-xs font-bold uppercase '>
 					Ваша занятость
 				</label>
 				<Controller
@@ -4195,7 +4195,7 @@ const UserProjects = ({ projects }) => {
 	return (
 		<div className='space-y-8'>
 			<div className='flex items-center justify-between px-2'>
-				<h3 className='text-white text-2xl font-black tracking-tight'>
+				<h3 className='text-white text-2xl font-black  '>
 					Активные проекты
 				</h3>
 				<span className='text-xs font-bold text-header-icons uppercase tracking-widest'>
@@ -4222,7 +4222,7 @@ import { Skill } from '@/shared/ui';
 const UserSkillsList = ({ skills }) => {
 	return (
 		<div className='card p-10 space-y-8'>
-			<h3 className='text-white text-2xl font-black tracking-tight'>Навыки</h3>
+			<h3 className='text-white text-2xl font-black  '>Навыки</h3>
 			<ul className='flex flex-wrap gap-3'>
 				{skills?.map(skill => (
 					<li key={skill}>
@@ -4594,7 +4594,7 @@ const ProfileHero = ({ user, isOwner }) => {
 						</h1>
 					</div>
 					<div className='gap-3 mt-1'>
-						<p className='text-front text-lg font-medium tracking-tight mb-2'>
+						<p className='text-front text-lg font-medium   mb-2'>
 							@{user.username}
 						</p>
 						<p className='text-front text-xl font-bold'>
@@ -4982,7 +4982,7 @@ const CreateProjectFormHeader = ({ control, register, errors }) => {
 
 					<div className='flex flex-wrap items-center gap-8 pt-2'>
 						<div className='flex items-center gap-3'>
-							<span className='text-xs font-bold text-header-icons uppercase tracking-wider'>
+							<span className='text-xs font-bold text-header-icons uppercase '>
 								Статус:
 							</span>
 							<Controller
@@ -5558,7 +5558,7 @@ const StatItem = ({
 			)}
 
 			<div className='flex items-baseline gap-1.5 leading-none'>
-				<span className={`text-base font-semibold tracking-tight ${valueColor}`}>
+				<span className={`text-base font-semibold   ${valueColor}`}>
 					{value}
 				</span>
 				<span className='text-sm text-header-icons font-medium'>{label}</span>
@@ -6284,7 +6284,7 @@ const CreateVacancyPage = () => {
 		<main className='container-wide py-10'>
 			{!isLoading && (
 				<>
-					<h1 className='text-3xl font-bold text-white tracking-tight mb-2'>
+					<h1 className='text-3xl font-bold text-white   mb-2'>
 						{isEditing ? 'Редактировать вакансию' : 'Новая вакансия'}
 					</h1>
 					<div className='flex flex-col lg:flex-row gap-10 items-start'>
@@ -6387,7 +6387,7 @@ const ProfilePage = () => {
 						{/* Компактный список проектов */}
 						<div className='space-y-4'>
 							<div className='flex items-center justify-between px-1'>
-								<h3 className='text-white text-xl font-black uppercase tracking-tighter'>Активные проекты</h3>
+								<h3 className='text-white text-xl font-black uppercase  er'>Активные проекты</h3>
 								<span className='text-[10px] font-bold text-header-icons bg-white/5 px-2 py-1 rounded-md'>
 									ВСЕГО: {user.active_projects?.length || 0}
 								</span>
@@ -6603,7 +6603,7 @@ const VacancyImage = ({ imageUrl, status, projectName, className }) => {
 				className,
 			)}
 		>
-			<span className='text-white/20 font-black text-6xl uppercase tracking-tighter select-none break-all text-center leading-none'>
+			<span className='text-white/20 font-black text-6xl uppercase  er select-none break-all text-center leading-none'>
 				{projectName}
 			</span>
 
@@ -6940,7 +6940,7 @@ const OnboardingStepper = () => {
 					<p className='text-brand-purple text-xs font-black uppercase tracking-[0.3em] mb-3'>
 						Шаг {step} из 3
 					</p>
-					<h1 className='text-3xl md:text-4xl font-bold text-white tracking-tight'>
+					<h1 className='text-3xl md:text-4xl font-bold text-white  '>
 						{step === 1 && 'Давайте познакомимся'}
 						{step === 2 && 'Ваш опыт и навыки'}
 						{step === 3 && 'Последние штрихи'}
@@ -7052,7 +7052,7 @@ const StepThree = ({ register, control, bio }) => {
 	return (
 		<div className='flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500'>
 			<div className='space-y-2'>
-				<label className='text-xs font-bold text-header-icons uppercase ml-1 tracking-wider'>
+				<label className='text-xs font-bold text-header-icons uppercase ml-1 '>
 					Краткое био
 				</label>
 				<TextArea
@@ -7157,7 +7157,7 @@ const MultiCreatableSelect = ({
 	return (
 		<div className='w-full space-y-1.5 text-left'>
 			{label && (
-				<label className='text-xs font-bold text-header-icons uppercase ml-1 tracking-wider'>
+				<label className='text-xs font-bold text-header-icons uppercase ml-1 '>
 					{label}
 				</label>
 			)}
@@ -7203,7 +7203,7 @@ const MultiCreatableSelect = ({
 					multiValue: () =>
 						'bg-brand-purple/10 border border-brand-purple/30 rounded-full m-1 flex items-center',
 					multiValueLabel: () =>
-						'text-brand-purple text-[11px] font-bold uppercase tracking-wider px-3 py-1',
+						'text-brand-purple text-[11px] font-bold uppercase  px-3 py-1',
 					multiValueRemove: () =>
 						'text-brand-purple hover:bg-brand-purple hover:text-white rounded-r-full px-2 transition-colors cursor-pointer',
 					input: () => 'text-white text-sm ml-1',
@@ -7247,7 +7247,7 @@ const SelectCustom = ({
 	return (
 		<div className='w-full space-y-1.5'>
 			{label && (
-				<label className='text-xs font-bold text-header-icons uppercase ml-1 tracking-wider'>
+				<label className='text-xs font-bold text-header-icons uppercase ml-1 '>
 					{label}
 				</label>
 			)}

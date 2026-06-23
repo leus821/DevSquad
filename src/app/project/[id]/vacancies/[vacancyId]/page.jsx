@@ -15,15 +15,21 @@ const CreateVacancyPage = () => {
 
 	const [isOpenModal, setIsOpenModal] = useState(false);
 
-	const { form, submitForm, isFetching, isSubmitting, error } =
-		useVacancyForm(projectId, vacancyId);
+	const { form, submitForm, isFetching, isSubmitting, error } = useVacancyForm(
+		projectId,
+		vacancyId,
+	);
 
 	const { project: projectIdentity, loading: isProjectLoading } =
 		useProjectIdentity(projectId);
 
 	const isLoading = isFetching && isProjectLoading;
 
-	const {handleSubmit, control, formState: { errors },} = form;
+	const {
+		handleSubmit,
+		control,
+		formState: { errors },
+	} = form;
 
 	const onSubmit = async data => {
 		await submitForm(data);
@@ -38,7 +44,7 @@ const CreateVacancyPage = () => {
 		<main className='container-wide py-10'>
 			{!isLoading && (
 				<>
-					<h1 className='text-3xl font-bold text-white tracking-tight mb-2'>
+					<h1 className='text-3xl font-bold text-white mb-2'>
 						{isEditing ? 'Редактировать вакансию' : 'Новая вакансия'}
 					</h1>
 					<div className='flex flex-col lg:flex-row gap-10 items-start'>
@@ -53,7 +59,11 @@ const CreateVacancyPage = () => {
 									className='w-full gap-2 py-4'
 								>
 									<Save size={18} />
-									{isSubmitting ? 'Сохранение...' : (isEditing ? 'Сохранить изменения' : 'Опубликовать')}
+									{isSubmitting
+										? 'Сохранение...'
+										: isEditing
+											? 'Сохранить изменения'
+											: 'Опубликовать'}
 								</Button>
 
 								<Button

@@ -17,7 +17,7 @@ const StatItem = ({
 			)}
 
 			<div className='flex items-baseline gap-1.5 leading-none'>
-				<span className={`text-base font-semibold tracking-tight ${valueColor}`}>
+				<span className={`text-base font-semibold   ${valueColor}`}>
 					{value}
 				</span>
 				<span className='text-sm text-header-icons font-medium'>{label}</span>

@@ -9,12 +9,24 @@ const TextArea = ({
 	maxLength = 2000,
 	watchValue = '',
 	className,
+	label,
+	required,
 	...props
 }) => {
 	const currentLength = watchValue?.length || 0;
 
 	return (
 		<div className='w-full space-y-1.5'>
+			{label && (
+				<label className='text-xs font-bold text-header-icons uppercase ml-1'>
+					{label}
+					{required && (
+						<span className='text-primary text-lg leading-none ml-0.5' title='Обязательное поле'>
+							*
+						</span>
+					)}
+				</label>
+			)}
 			<div className='relative'>
 				<TextareaAutosize
 					{...props}

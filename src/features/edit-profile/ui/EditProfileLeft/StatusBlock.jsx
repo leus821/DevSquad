@@ -9,8 +9,11 @@ const StatusBlock = ({ errors, control }) => {
 		<div className='card p-6 flex flex-col gap-4'>
 			<h3 className='text-xl font-semibold'>Статус</h3>
 			<div className='flex flex-col gap-3'>
-				<label className='text-header-icons text-xs font-bold uppercase tracking-wider'>
+				<label className='text-header-icons text-xs font-bold uppercase '>
 					Ваша занятость
+					<span className='text-primary text-lg leading-none ml-0.5' title='Обязательное поле'>
+						*
+					</span>
 				</label>
 				<Controller
 					name='status'
@@ -31,6 +34,7 @@ const StatusBlock = ({ errors, control }) => {
 							{...field}
 							error={errors.hours_available}
 							label='Доступность часов в неделю'
+							required
 							type='number'
 							placeholder='20'
 							className='ml-0'

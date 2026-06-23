@@ -1,6 +1,19 @@
 import { useState } from 'react';
 import { supabase } from '@/shared/lib/supabase';
 
+const ERROR_MAP = {
+	'Invalid login credentials': 'Неверный email или пароль',
+	'Email not confirmed': 'Email не подтверждён',
+	'User already registered': 'Пользователь с таким email уже зарегистрирован',
+	'Password should be at least 6 characters': 'Пароль должен содержать минимум 6 символов',
+	'rate limit exceeded': 'Слишком много попыток. Попробуйте позже',
+	'Email link is invalid or has expired': 'Ссылка недействительна или истекла',
+};
+
+const localizeError = (message) => {
+	return ERROR_MAP[message] || message;
+};
+
 const useAuthActions = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
@@ -16,7 +29,8 @@ const useAuthActions = () => {
 				},
 			);
 			if (authError) {
-				setError(authError.message);
+				const localized = localizeError(authError.message);
+				setError(localized);
 				return { data: null, error: authError };
 			}
 			return { data, error: null };
@@ -24,7 +38,7 @@ const useAuthActions = () => {
 			setError(err.message);
 			return { data: null, error: err };
 		} finally {
-			// Это гарантирует, что лоадер выключится ВСЕГДА
+			
 			setLoading(false);
 		}
 	};
@@ -41,7 +55,8 @@ const useAuthActions = () => {
 				},
 			});
 			if (authError) {
-				setError(authError.message);
+				const localized = localizeError(authError.message);
+				setError(localized);
 				return { data: null, error: authError };
 			}
 			return { data, error: null };
@@ -57,7 +72,7 @@ const useAuthActions = () => {
 		setLoading(true);
 		try {
 			const { error: authError } = await supabase.auth.signOut();
-			if (authError) setError(authError.message);
+			if (authError) setError(localizeError(authError.message));
 		} catch (err) {
 			setError(err.message);
 		} finally {

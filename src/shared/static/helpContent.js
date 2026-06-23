@@ -58,15 +58,6 @@ export const PAGE_HELP_DATA = {
 			'Подробная информация о роли в проекте. Ознакомьтесь с требованиями и свяжитесь с автором напрямую.',
 		images: ['/help-screens/vacancypage.png'],
 	},
-	'/welcome': {
-		title: 'Регистрация',
-		description: 'Регистрация',
-		images: [
-			'/help-screens/register1.png',
-			'/help-screens/register2.png',
-			'/help-screens/register3.png',
-		],
-	},
 	'/user': {
 		title: 'Пользователь',
 		description: 'Страница пользователя',

@@ -45,7 +45,7 @@ const ProjectCard = ({ project, className }) => {
 
 			<div className='p-6 flex flex-col grow'>
 				<div className='mb-4'>
-					<h3 className='text-xl font-black text-white tracking-tight group-hover:text-brand-purple transition-colors uppercase leading-tight'>
+					<h3 className='text-xl font-black text-white group-hover:text-brand-purple transition-colors uppercase leading-tight'>
 						{name || 'Без названия'}
 					</h3>
 					<p className='text-sm text-header-icons font-medium mt-1 line-clamp-1'>

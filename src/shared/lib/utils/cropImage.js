@@ -4,8 +4,6 @@ export const createImage = url =>
 		image.addEventListener('load', () => resolve(image));
 		image.addEventListener('error', error => reject(error));
 
-		// ВАЖНО: crossOrigin нужен только для внешних ссылок (http/https).
-		// Для data: URL (локальных файлов) он вызывает ошибку в браузерах.
 		if (url && !url.startsWith('data:')) {
 			image.setAttribute('crossOrigin', 'anonymous');
 		}

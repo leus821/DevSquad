@@ -46,9 +46,7 @@ function UserAccountMenu({ handleUserExit }) {
 						<User className='mr-2 h-4 w-4' /> Профиль
 					</Link>
 				</DropdownMenuItem>
-				<DropdownMenuItem className='cursor-pointer'>
-					<Settings className='mr-2 h-4 w-4' /> Настройки
-				</DropdownMenuItem>
+
 				<DropdownMenuSeparator />
 				<DropdownMenuItem className='text-red-500'>
 					<button onClick={handleUserExit} className='flex-all-center'>

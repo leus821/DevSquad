@@ -21,7 +21,7 @@ const SelectCustom = ({
 	return (
 		<div className='w-full space-y-1.5'>
 			{label && (
-				<label className='text-xs font-bold text-header-icons uppercase ml-1 tracking-wider'>
+				<label className='text-xs font-bold text-header-icons uppercase ml-1 '>
 					{label}
 				</label>
 			)}

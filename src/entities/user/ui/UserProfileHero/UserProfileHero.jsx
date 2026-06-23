@@ -4,11 +4,13 @@ import { LinksList, Button } from '@/shared/ui';
 import Link from 'next/link';
 
 const ProfileHero = ({ user, isOwner }) => {
-	const socialLinks = [
-		{ url: user.github_url },
-		{ url: `https://t.me/${user.telegram?.replace('@', '')}` },
-		// ... другие ссылки
-	].filter(link => link.url);
+	const links = [
+		user.github_url && { url: user.github_url, label: 'GitHub' },
+		user.telegram && {
+			url: user.telegram.startsWith('http') ? user.telegram : `https://t.me/${user.telegram.replace('@', '')}`,
+			label: 'Telegram',
+		},
+	].filter(Boolean);
 
 	return (
 		<div className='mb-10 rounded-2xl project-header-border'>
@@ -26,18 +28,18 @@ const ProfileHero = ({ user, isOwner }) => {
 						</h1>
 					</div>
 					<div className='gap-3 mt-1'>
-						<p className='text-front text-lg font-medium tracking-tight mb-2'>
+						<p className='text-front text-lg font-medium mb-2'>
 							@{user.username}
 						</p>
-						<p className='text-front text-xl font-bold'>
-							{user.role || 'Разработчик на реакте чисто'}
+						<p className='text-front text-xl font-semibold'>
+							{user.role || 'У пользователя нет статуса'}
 						</p>
 						<div className='flex gap-2 justify-end'>
-							<LinksList links={user.links} />
+							<LinksList links={links} />
 							{isOwner && (
 								<Button asChild>
 									<Link href='/myprofile'>Редактировать профиль</Link>
-								</Button>							
+								</Button>
 							)}
 						</div>
 					</div>

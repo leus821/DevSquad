@@ -4,13 +4,13 @@ import { UserProfileHero, useProfile } from '@/entities/user';
 import { useParams } from 'next/navigation';
 import { UserProfileLeft, UserProjects, UserSkillsList } from '@/widgets';
 import ProjectCardMinimal from '@/entities/project/ui/ProjectCard/ProjectCardMinimal';
-import { useAuth } from '@/app/providers/AuthContext'; 
+import { useAuth } from '@/app/providers/AuthContext';
 
 const ProfilePage = () => {
 	const params = useParams();
 	const { userId } = params;
 
-	const { user: currentUser } = useAuth(); 
+	const { user: currentUser } = useAuth();
 
 	const { data: user, loading } = useProfile(userId);
 
@@ -36,33 +36,39 @@ const ProfilePage = () => {
 						location={user.location}
 						languages={user.languages}
 						education={user.education}
+						projectsCount={user.active_projects?.length || 0}
 					/>
 
 					<main className='flex flex-col gap-10'>
-						{/* О себе */}
-						<div className='card p-8'>
-							<h3 className='text-white text-xs font-black uppercase tracking-[0.2em] mb-4 opacity-50'>О себе</h3>
-							<div className='text-front text-lg leading-relaxed'>
-								{user.bio || 'Пользователь еще не заполнил информацию о себе.'}
+						<div>
+							<h3 className='text-white pl-2 text-2xl mb-4 font-bold'>
+								О себе
+							</h3>
+							<div className='card p-5'>
+								<div className='text-front text-lg'>
+									{user.bio ||
+										'Пользователь еще не заполнил информацию о себе.'}
+								</div>
 							</div>
 						</div>
 
-						{/* Компактный список проектов */}
 						<div className='space-y-4'>
 							<div className='flex items-center justify-between px-1'>
-								<h3 className='text-white text-xl font-black uppercase tracking-tighter'>Активные проекты</h3>
-								<span className='text-[10px] font-bold text-header-icons bg-white/5 px-2 py-1 rounded-md'>
-									ВСЕГО: {user.active_projects?.length || 0}
+								<h3 className='text-white pl-2 text-2xl font-bold'>
+									Активные проекты
+								</h3>
+								<span className='text-[12px] font-bold text-header-icons bg-white/5 px-2 py-1 rounded-md'>
+									Всего: {user.active_projects?.length || 0}
 								</span>
 							</div>
-							
+
 							<div className='grid grid-cols-1 gap-2'>
 								{user.active_projects?.length > 0 ? (
 									user.active_projects.map(project => (
-										<ProjectCardMinimal 
-											key={project.id} 
-											project={project} 
-											userId={userId} 
+										<ProjectCardMinimal
+											key={project.id}
+											project={project}
+											userId={userId}
 										/>
 									))
 								) : (
@@ -73,9 +79,19 @@ const ProfilePage = () => {
 							</div>
 						</div>
 
-						{user?.skills?.length > 0 && <UserSkillsList skills={user.skills} />}
+						{user?.skills?.length > 0 && (
+							<div>
+								<h3 className='text-white pl-2 text-2xl font-bold mb-4'>
+									Навыки
+								</h3>
+								<div className='card p-5'>
+									<UserSkillsList skills={user.skills} />
+								</div>
+							</div>
+						)}
 					</main>
 				</div>
+				<div></div>
 			</Container>
 		</section>
 	);

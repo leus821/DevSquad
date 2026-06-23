@@ -1,6 +1,8 @@
 export const EXPERIENCE_VALUES = {
 	none: 'Без опыта',
+	one_till_three: 'От 1 до 3 лет',
 	from_one_till_three: 'От 1 до 3 лет',
+	three_till_five: 'От 3 до 5 лет',
 	from_three_till_five: 'От 3 до 5 лет',
 	five_plus: 'Более 5 лет',
 };

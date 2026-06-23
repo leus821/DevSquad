@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
 import { useAuthActions } from '@/features/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import AuthFields from './AuthFields';
@@ -16,8 +15,6 @@ const AuthModal = ({ isOpen, onClose }) => {
 
 	const [mode, setMode] = useState('login');
 	const isLogin = mode === 'login';
-
-	const router = useRouter();
 
 	const {
 		register,
@@ -44,7 +41,6 @@ const AuthModal = ({ isOpen, onClose }) => {
 			);
 			if (!error) {
 				onClose();
-				router.push('/welcome');
 			}
 		}
 	};

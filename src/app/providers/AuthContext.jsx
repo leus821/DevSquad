@@ -4,6 +4,28 @@ import { supabase } from '@/shared/lib/supabase';
 
 const AuthContext = createContext({});
 
+const isProfileCompleted = profile => {
+	if (!profile) return false;
+	const required = ['name', 'surname', 'username', 'role', 'bio', 'status', 'hours_available'];
+	const hasAllRequired = required.every(field => {
+		const val = profile[field];
+		return val !== null && val !== undefined && val !== '';
+	});
+	if (!hasAllRequired) return false;
+	const infoFields = ['location', 'languages', 'education'];
+	const hasInfo = infoFields.some(field => {
+		const val = profile[field];
+		return val !== null && val !== undefined && val !== '';
+	});
+	const socialFields = ['github_url', 'telegram'];
+	const hasSocial = socialFields.some(field => {
+		const val = profile[field];
+		return val !== null && val !== undefined && val !== '';
+	});
+	const hasSkills = profile.skills?.length > 0;
+	return hasInfo || hasSocial || hasSkills;
+};
+
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(true);
@@ -20,7 +42,12 @@ export const AuthProvider = ({ children }) => {
 
 			if (error) throw error;
 
-			return profile ? { ...sessionUser, ...profile } : { ...sessionUser, is_completed: false };
+			if (profile) {
+				const merged = { ...sessionUser, ...profile };
+				merged.is_completed = isProfileCompleted(profile);
+				return merged;
+			}
+			return { ...sessionUser, is_completed: false };
 		} catch (e) {
 			console.error('Auth: fetchProfile error:', e.message);
 			return { ...sessionUser, is_completed: false };

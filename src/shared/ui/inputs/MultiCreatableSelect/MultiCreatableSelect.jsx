@@ -22,7 +22,7 @@ const MultiCreatableSelect = ({
 	return (
 		<div className='w-full space-y-1.5 text-left'>
 			{label && (
-				<label className='text-xs font-bold text-header-icons uppercase ml-1 tracking-wider'>
+				<label className='text-xs font-bold text-header-icons uppercase ml-1 '>
 					{label}
 				</label>
 			)}
@@ -68,7 +68,7 @@ const MultiCreatableSelect = ({
 					multiValue: () =>
 						'bg-brand-purple/10 border border-brand-purple/30 rounded-full m-1 flex items-center',
 					multiValueLabel: () =>
-						'text-brand-purple text-[11px] font-bold uppercase tracking-wider px-3 py-1',
+						'text-brand-purple text-[11px] font-bold uppercase  px-3 py-1',
 					multiValueRemove: () =>
 						'text-brand-purple hover:bg-brand-purple hover:text-white rounded-r-full px-2 transition-colors cursor-pointer',
 					input: () => 'text-white text-sm ml-1',

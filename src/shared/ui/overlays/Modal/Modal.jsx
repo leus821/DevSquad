@@ -2,7 +2,7 @@
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
-import { cn } from '@/shared/lib/utils/commonUtils'; // Импортируем cn
+import { cn } from '@/shared/lib/utils/commonUtils'; 
 
 const Modal = ({
 	isOpen,
@@ -46,13 +46,13 @@ const Modal = ({
 
 	return createPortal(
 		<div className='fixed inset-0 z-100 flex items-center justify-center p-4'>
-			{/* Overlay */}
+			{}
 			<div
 				className='fixed inset-0 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200'
 				onClick={onClose}
 			/>
 
-			{/* Content */}
+			{}
 			<div
 				ref={modalRef}
 				className={cn(

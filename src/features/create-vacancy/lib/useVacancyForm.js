@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { supabase } from '@/shared/lib/supabase';
 import { uploadFile } from '@/shared/lib/utils/fileUpload';
 import { vacancySchema } from '../model/vacancySchema';
+import { useRouter } from 'next/navigation';
 
 const useVacancyForm = (projectId, vacancyId = null) => {
 	const isEditing = vacancyId && vacancyId !== 'create';
@@ -12,6 +13,8 @@ const useVacancyForm = (projectId, vacancyId = null) => {
 
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState(null);
+
+	const router = useRouter();
 
 	const form = useForm({
 		resolver: zodResolver(vacancySchema),
@@ -77,19 +80,19 @@ const useVacancyForm = (projectId, vacancyId = null) => {
 			let result;
 
 			if (isEditing) {
-				// Обновление
+				
 				result = await supabase
 					.from('vacancies')
 					.update(payload)
 					.eq('id', vacancyId);
 			} else {
-				// Создание новой
+				
 				result = await supabase.from('vacancies').insert([payload]);
 			}
 
 			if (result.error) throw result.error;
 
-			window.location.href = `/project/${projectId}/vacancies`;
+			router.push(`/project/${projectId}/vacancies`);
 
 		} catch (err) {
 			console.error('Ошибка при сохранении вакансии:', err);

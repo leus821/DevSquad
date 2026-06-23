@@ -7,17 +7,17 @@ const UserStatus = ({ status = 'search', className }) => {
 	return (
 		<div
 			className={cn(
-				'inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full border bg-black/20 backdrop-blur-sm transition-all',
+				'inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full border bg-black/20 transition-all',
 				config.borderColor,
 				config.glow,
 				className,
 			)}
 		>
-			{/* Пульсирующая точка */}
+			{}
 			<div className='relative flex h-2 w-2'>
 				<span
 					className={cn(
-						'animate-ping absolute inline-flex h-full w-full rounded-full opacity-75',
+						'absolute inline-flex h-full w-full rounded-full opacity-75',
 						config.color,
 					)}
 				></span>
@@ -29,9 +29,7 @@ const UserStatus = ({ status = 'search', className }) => {
 				></span>
 			</div>
 
-			<span
-				className={cn('text-[14px] font-semibold uppercase', config.textColor)}
-			>
+			<span className={cn('text-[14px] font-semibold', config.textColor)}>
 				{config.label}
 			</span>
 		</div>

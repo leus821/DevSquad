@@ -24,6 +24,8 @@ const EditProfileForm = ({ control, errors }) => {
 								watchValue={field.value}
 								error={errors.bio}
 								placeholder='Расскажите о себе (минимум 20 символов)'
+								label='О себе'
+								required
 							/>
 						)}
 					/>

@@ -16,12 +16,20 @@ export const useMyProjects = () => {
 			setIsLoading(true);
 			const { data, error: dbError } = await supabase
 				.from('projects')
-				.select('*')
+				.select('*, vacancies(applicants)')
 				.eq('owner_id', user.id)
 				.order('created_at', { ascending: false });
 
 			if (dbError) throw dbError;
-			setProjects(data || []);
+
+			const enriched = (data || []).map(project => {
+				const totalResponses = (project.vacancies || []).reduce(
+					(sum, v) => sum + (v.applicants?.length || 0), 0
+				);
+				return { ...project, totalResponses };
+			});
+
+			setProjects(enriched);
 		} catch (err) {
 			setError(err.message);
 		} finally {

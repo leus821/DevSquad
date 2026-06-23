@@ -1,6 +1,5 @@
 import {
 	ProjectGallery,
-	ProjectRoadMap,
 	ProjectTextInfo,
 } from '@/entities/project';
 import {
@@ -9,36 +8,11 @@ import {
 	AccordionTrigger,
 } from '@/shared/ui/shadcn/accordion';
 
-const steps = [
-	{
-		number: 1,
-		date: 'Июнь 2023',
-		status: 'Идея',
-		isCompleted: true,
-		isActive: false,
-	},
-	{
-		number: 2,
-		date: 'Июнь 2023',
-		status: 'MVP',
-		isCompleted: false,
-		isActive: true,
-	},
-	{
-		number: 3,
-		date: 'Июнь 2023',
-		status: 'Запущен',
-		isCompleted: false,
-		isActive: false,
-	},
-];
-
 const ProjectInfoBlock = ({
 	description,
 	idea,
 	approach,
 	gallery,
-	roadmap,
 }) => {
 	return (
 		<AccordionItem
@@ -60,7 +34,6 @@ const ProjectInfoBlock = ({
 						<ProjectGallery gallery={gallery} />
 					</div>
 				)}
-				<ProjectRoadMap steps={steps} />
 			</AccordionContent>
 		</AccordionItem>
 	);

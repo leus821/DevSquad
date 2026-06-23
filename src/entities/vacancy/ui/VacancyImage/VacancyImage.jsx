@@ -16,15 +16,6 @@ const VacancyImage = ({ imageUrl, status, projectName, className }) => {
 					alt='project preview'
 				/>
 
-				<div className='absolute top-3 left-3 pointer-events-auto'>
-					<svg
-						className='w-6 h-8 text-indigo-500 fill-current drop-shadow-md'
-						viewBox='0 0 24 24'
-					>
-						<path d='M5 3v18l7-5 7 5V3z' />
-					</svg>
-				</div>
-
 				<ProjectStatus status={status} />
 			</div>
 		);
@@ -39,7 +30,7 @@ const VacancyImage = ({ imageUrl, status, projectName, className }) => {
 				className,
 			)}
 		>
-			<span className='text-white/20 font-black text-6xl uppercase tracking-tighter select-none break-all text-center leading-none'>
+			<span className='text-white/20 font-black text-6xl uppercase select-none break-all text-center leading-none'>
 				{projectName}
 			</span>
 

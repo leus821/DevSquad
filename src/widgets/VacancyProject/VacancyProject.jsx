@@ -9,7 +9,7 @@ import {
 
 const VacancyProject = ({ project, vacancy = null }) => {
 	const team = project.members || [];
-	
+
 	return (
 		<section>
 			<div className='mx-auto max-w-300 w-full'>
@@ -18,7 +18,7 @@ const VacancyProject = ({ project, vacancy = null }) => {
 					links={project.links}
 					projectName={project.name}
 					status={project.status}
-					projectId={project.id} // Добавили на всякий случай
+					projectId={project.id}
 				/>
 				<div className='grid grid-cols-14 gap-7'>
 					<Accordion
@@ -33,15 +33,15 @@ const VacancyProject = ({ project, vacancy = null }) => {
 						/>
 						{vacancy && <VacancyBlock vacancyProps={vacancy} />}
 					</Accordion>
-					
+
 					<div className='col-span-4'>
 						{vacancy && (
 							<VacancyAction
-								experience={vacancy.experience} // Берем реальный опыт
-								role={vacancy.role}             // Берем реальную роль
-								responses={vacancy.applicants?.length} // Реальное кол-во откликов
-								vacancyId={vacancy.id}          // ПЕРЕДАЕМ ID
-								projectId={project.id}          // ПЕРЕДАЕМ ID ПРОЕКТА
+								experience={vacancy.experience}
+								role={vacancy.role}
+								responses={vacancy.applicants?.length}
+								vacancyId={vacancy.id}
+								projectId={project.id}
 							/>
 						)}
 						<TeamStack teamList={team} />

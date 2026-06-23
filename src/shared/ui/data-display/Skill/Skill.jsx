@@ -12,7 +12,7 @@ const Skill = ({ skillName, className, variant = 'purple' }) => {
 		<div
 			className={cn(
 				'inline-flex items-center gap-2 px-4 py-1 rounded-full border',
-				'text-sm font-mono whitespace-nowrap transition-all duration-200',
+				'text-sm font-mono whitespace-nowrap transition-all duration-200 list-none',
 				variants[variant],
 				className,
 			)}
