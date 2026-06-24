@@ -65,15 +65,6 @@ const CreateVacancyPage = () => {
 											? 'Сохранить изменения'
 											: 'Опубликовать'}
 								</Button>
-
-								<Button
-									variant='secondary'
-									onClick={() => setIsOpenModal(true)}
-									className='w-full gap-2'
-								>
-									<Eye size={18} />
-									Предпросмотр
-								</Button>
 							</div>
 
 							<Modal

@@ -1,3 +1,6 @@
+'use client';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/shared/lib/supabase';
 import { Accordion } from '@/shared/ui/shadcn/accordion';
 import {
 	ProjectHeader,
@@ -8,7 +11,33 @@ import {
 } from '..';
 
 const VacancyProject = ({ project, vacancy = null }) => {
-	const team = project.members || [];
+	const [team, setTeam] = useState([]);
+
+	useEffect(() => {
+		const enrichTeam = async () => {
+			const members = project.members || [];
+			const ownerInMembers = members.some(
+				m => String(m.user_id) === String(project.owner_id),
+			);
+			if (!ownerInMembers && project.owner_id) {
+				const { data: ownerProfile } = await supabase
+					.from('profiles')
+					.select('id, full_name, name, role, avatar_url')
+					.eq('id', project.owner_id)
+					.single();
+				if (ownerProfile) {
+					members.unshift({
+						user_id: ownerProfile.id,
+						full_name: ownerProfile.full_name || ownerProfile.name,
+						role: 'Владелец',
+						avatar_url: ownerProfile.avatar_url,
+					});
+				}
+			}
+			setTeam(members);
+		};
+		enrichTeam();
+	}, [project]);
 
 	return (
 		<section>
@@ -19,6 +48,7 @@ const VacancyProject = ({ project, vacancy = null }) => {
 					projectName={project.name}
 					status={project.status}
 					projectId={project.id}
+					logo={project.logo_url}
 				/>
 				<div className='grid grid-cols-14 gap-7'>
 					<Accordion
@@ -30,6 +60,7 @@ const VacancyProject = ({ project, vacancy = null }) => {
 							idea={project.idea}
 							description={project.description}
 							approach={project.approach}
+							gallery={project.gallery}
 						/>
 						{vacancy && <VacancyBlock vacancyProps={vacancy} />}
 					</Accordion>

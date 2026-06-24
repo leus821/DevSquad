@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { UserProfileLeft, UserProjects, UserSkillsList } from '@/widgets';
 import ProjectCardMinimal from '@/entities/project/ui/ProjectCard/ProjectCardMinimal';
 import { useAuth } from '@/app/providers/AuthContext';
+import { Loader2 } from 'lucide-react';
 
 const ProfilePage = () => {
 	const params = useParams();
@@ -14,7 +15,11 @@ const ProfilePage = () => {
 
 	const { data: user, loading } = useProfile(userId);
 
-	if (loading) return <div>loading..</div>;
+	if (loading) return (
+		<div className='min-h-screen flex flex-all-center'>
+			<Loader2 className='animate-spin text-brand-purple' size={40} />
+		</div>
+	);
 	if (!user)
 		return (
 			<div className='text-white text-center py-20 font-bold'>
@@ -36,7 +41,6 @@ const ProfilePage = () => {
 						location={user.location}
 						languages={user.languages}
 						education={user.education}
-						projectsCount={user.active_projects?.length || 0}
 					/>
 
 					<main className='flex flex-col gap-10'>

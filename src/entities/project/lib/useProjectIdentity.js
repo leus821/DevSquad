@@ -13,7 +13,7 @@ const useProjectIdentity = projectId => {
 			try {
 				const { data, error } = await supabase
 					.from('projects')
-					.select('name, status')
+					.select('name, status, slogan, logo_url')
 					.eq('id', projectId)
 					.single();
 

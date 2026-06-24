@@ -44,7 +44,7 @@ const SelectCustom = ({
 						className,
 					)}
 				>
-					<SelectValue />
+					<SelectValue placeholder='Любой' />
 				</SelectTrigger>
 				<SelectContent className='bg-input'>
 					<SelectGroup>

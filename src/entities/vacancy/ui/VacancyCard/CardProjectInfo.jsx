@@ -11,7 +11,7 @@ const CardProjectInfo = ({ title, description, skills }) => {
 			<h2 className='font-extrabold text-[18px] pointer-events-auto line-clamp-2'>
 				{title}
 			</h2>
-			<p className='text-front break-all text-sm mb-2 pointer-events-auto line-clamp-3'>
+			<p className='text-front text-sm mb-2 pointer-events-auto line-clamp-3 break-words'>
 				{description}
 			</p>
 			<div className='flex gap-x-2 mt-auto items-center'>

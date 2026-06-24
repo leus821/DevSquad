@@ -16,7 +16,7 @@ export const useMyProjects = () => {
 			setIsLoading(true);
 			const { data, error: dbError } = await supabase
 				.from('projects')
-				.select('*, vacancies(applicants)')
+				.select('*, owner:owner_id(id, full_name, name, role, avatar_url), vacancies(applicants)')
 				.eq('owner_id', user.id)
 				.order('created_at', { ascending: false });
 
@@ -26,7 +26,18 @@ export const useMyProjects = () => {
 				const totalResponses = (project.vacancies || []).reduce(
 					(sum, v) => sum + (v.applicants?.length || 0), 0
 				);
-				return { ...project, totalResponses };
+				const ownerProfile = project.owner;
+				const members = project.members || [];
+				const ownerInMembers = members.some(m => String(m.user_id) === String(project.owner_id));
+				if (ownerProfile && !ownerInMembers) {
+					members.unshift({
+						user_id: ownerProfile.id,
+						full_name: ownerProfile.full_name || ownerProfile.name,
+						role: 'Владелец',
+						avatar_url: ownerProfile.avatar_url,
+					});
+				}
+				return { ...project, totalResponses, members };
 			});
 
 			setProjects(enriched);

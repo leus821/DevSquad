@@ -47,7 +47,7 @@ const RichEditor = ({
 		editorProps: {
 			attributes: {
 				class: cn(
-					'prose prose-invert max-w-none focus:outline-none min-h-[200px] p-5 text-white',
+					'prose prose-invert max-w-none focus:outline-none min-h-[200px] p-5 text-white break-words',
 					'prose-ul:list-disc prose-ul:ml-4 prose-ol:list-decimal prose-ol:ml-4',
 					'prose-li:my-0',
 				),
@@ -114,7 +114,7 @@ const RichEditor = ({
 					/>
 				</div>
 
-				<EditorContent editor={editor} />
+				<EditorContent editor={editor} className='break-words' />
 			</div>
 			<div className='flex justify-between items-center'>
 				{error && <ErrorField errorText={error.message} />}

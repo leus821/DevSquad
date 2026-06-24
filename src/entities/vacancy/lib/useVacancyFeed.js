@@ -54,14 +54,22 @@ const useVacancyFeed = () => {
 		}
 
 		if (filters.experience) {
-			result = result.filter(v => v.experience === filters.experience);
+			const synonyms = {
+				none: ['none'],
+				one_till_three: ['one_till_three', 'from_one_till_three'],
+				from_one_till_three: ['one_till_three', 'from_one_till_three'],
+				three_till_five: ['three_till_five', 'from_three_till_five'],
+				from_three_till_five: ['three_till_five', 'from_three_till_five'],
+				five_plus: ['five_plus'],
+			};
+			const allowed = synonyms[filters.experience] || [filters.experience];
+			result = result.filter(v => allowed.includes(v.experience));
 		}
 
 		if (filters.stack && filters.stack.length > 0) {
+			const filterSkills = filters.stack.map(s => s.toLowerCase());
 			result = result.filter(v =>
-				filters.stack.every(skill =>
-					v.stack?.some(s => s.toLowerCase() === skill.toLowerCase()),
-				),
+				v.stack?.some(s => filterSkills.includes(s.toLowerCase())),
 			);
 		}
 

@@ -10,7 +10,7 @@ const ViewModal = ({ openModal, setOpenModal, watchedData }) => {
 
 	return (
 		<Modal
-			className='mx-auto max-w-300 p-10 w-full'
+			className='mx-auto max-w-300 p-10 w-full max-h-[90vh] overflow-y-auto'
 			isOpen={openModal}
 			onClose={() => setOpenModal(false)}
 		>
@@ -20,6 +20,7 @@ const ViewModal = ({ openModal, setOpenModal, watchedData }) => {
 					links={linksValue}
 					projectName={watchedData?.name || 'Название'}
 					status={watchedData?.status || 'idea'}
+					logo={watchedData?.logo_url}
 				/>
 				<div className='flex gap-7'>
 					<Accordion

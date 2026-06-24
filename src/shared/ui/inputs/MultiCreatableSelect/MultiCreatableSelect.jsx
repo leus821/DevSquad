@@ -16,7 +16,7 @@ const MultiCreatableSelect = ({
 	const formattedValue = value.map(skill => ({ label: skill, value: skill }));
 
 	const handleChange = selected => {
-		onChange(selected ? selected.map(item => item.value) : []);
+		onChange(selected ? selected.map(item => item.value.toLowerCase()) : []);
 	};
 
 	return (

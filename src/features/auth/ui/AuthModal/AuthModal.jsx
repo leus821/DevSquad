@@ -74,17 +74,8 @@ const AuthModal = ({ isOpen, onClose }) => {
 					<div className='absolute inset-0 flex items-center'>
 						<div className='w-full border-t border-card-border'></div>
 					</div>
-					<div className='relative flex justify-center text-xs uppercase'>
-						<span className='bg-deep-dark px-2 text-header-icons'>
-							Или через
-						</span>
-					</div>
+					<div className='relative flex justify-center text-xs uppercase'></div>
 				</div>
-
-				<Button variant='secondary' type='button' className='w-full py-3 gap-3'>
-					<Github />
-					Продолжить с GitHub
-				</Button>
 
 				<AuthFooter isLogin={isLogin} onSwitch={toggleMode} />
 			</div>

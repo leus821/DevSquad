@@ -71,6 +71,7 @@ const ProjectVacanciesPage = () => {
 					projectName={identity?.name}
 					slogan={identity?.slogan}
 					status={identity?.status}
+					logo={identity?.logo_url}
 					isDashboard={true}
 					projectId={projectId}
 				/>

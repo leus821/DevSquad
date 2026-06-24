@@ -5,11 +5,28 @@ import { ProjectHeader } from '@/widgets';
 import { ProjectDashboardPanel } from '@/entities/project';
 import { Loader2, Plus } from 'lucide-react';
 import { Button, Container } from '@/shared/ui';
+import { supabase } from '@/shared/lib/supabase';
+import { useState } from 'react';
 
 const MyProjects = () => {
-	const { projects, isLoading, canCreate, count } = useMyProjects();
+	const { projects, isLoading, canCreate, count, refresh } = useMyProjects();
+	const [deletingId, setDeletingId] = useState(null);
 
-	console.log(projects);
+	const handleDelete = async (projectId, e) => {
+		e.stopPropagation();
+		if (!confirm('Вы уверены, что хотите удалить проект? Это действие нельзя отменить.')) return;
+		setDeletingId(projectId);
+		try {
+			await supabase.from('vacancies').delete().eq('project_id', projectId);
+			const { error } = await supabase.from('projects').delete().eq('id', projectId);
+			if (error) throw error;
+			refresh();
+		} catch (err) {
+			alert('Ошибка при удалении: ' + err.message);
+		} finally {
+			setDeletingId(null);
+		}
+	};
 
 	if (isLoading) {
 		return (
@@ -37,21 +54,24 @@ const MyProjects = () => {
 				<div className='flex flex-col gap-10'>
 					{projects.length > 0 ? (
 						projects.map(project => (
-							<ProjectHeader
-								key={project.id}
-								projectId={project.id}
-								projectName={project.name}
-								slogan={project.slogan}
-								links={project.links}
-								status={project.status}
-								isDashboard={true}
-							>
-								<ProjectDashboardPanel
+							<div key={project.id}>
+								<ProjectHeader
 									projectId={project.id}
-									team={project.members || []}
-									totalResponses={project.totalResponses || 0}
-								/>
-							</ProjectHeader>
+									projectName={project.name}
+									slogan={project.slogan}
+									links={project.links}
+									status={project.status}
+									logo={project.logo_url}
+									isDashboard={true}
+								>
+									<ProjectDashboardPanel
+										projectId={project.id}
+										team={project.members || []}
+										onDelete={e => handleDelete(project.id, e)}
+										isDeleting={deletingId === project.id}
+									/>
+								</ProjectHeader>
+							</div>
 						))
 					) : (
 						<div className='card p-20 flex flex-col items-center gap-6 border-dashed opacity-80'>

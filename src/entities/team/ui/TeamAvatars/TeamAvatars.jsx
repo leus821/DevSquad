@@ -12,7 +12,7 @@ const TeamStack = ({ users = [], maxVisible = 4, size = 'md' }) => {
 	};
 
 	return (
-		<div className='flex items-center -space-x-5 overflow-hidden'>
+		<div className='flex items-center p-2 -space-x-5 overflow-hidden'>
 			{visibleUsers.map((user, index) => (
 				<Link
 					key={user.user_id || index}

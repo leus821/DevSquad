@@ -10,11 +10,12 @@ const ProjectHeader = ({
 	slogan,
 	status,
 	projectId,
+	logo,
 }) => {
 	return (
 		<div className='mb-10 rounded-2xl project-header-border'>
 			<div className='flex gap-10 items-center relative pl-16 py-6 pr-8'>
-				<ProjectLogo text={projectName} />
+				<ProjectLogo url={logo} text={projectName} />
 				<div className='w-full min-w-0'>
 					<div className='flex gap-10'>
 						<h1 className='text-[50px] w-full leading-14 font-bold wrap-break-word'>
